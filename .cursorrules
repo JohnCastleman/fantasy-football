@@ -133,6 +133,13 @@ If you catch yourself writing "new", "old", "legacy", "wrapper", "unified", or i
 - Don't add random test files to the repo.
 - Git commit messages should be as simple as possible, preferably fitting on one line. If multiple sentences/paragraphs are needed, the same could often be done with multiple commits to reduce complexity.
 
+### Code Review Process
+
+- YOU MUST use the native diff/merge tool (via search_replace or write tools) to present changes for review BEFORE any local git actions (add/commit/push)
+- NEVER commit code without first showing changes using the built-in diff viewer
+- The native diff/merge interface is superior to `git diff` output in chat for reviewing changes
+- Wait for John to accept changes before proceeding to git operations
+
 ## Issue Tracking
 
 - You MUST use your TodoWrite tool to keep track of what you're doing
