@@ -1,0 +1,125 @@
+# Fantasy Football Rankings System - AI Development Rules
+
+## Project Overview
+
+Node.js application for fetching and displaying fantasy football player rankings from FantasyPros API. Modular architecture with client/server/common separation of concerns.
+
+## Core Principles
+
+1. **Modularity**: Single-responsibility modules with clear interfaces
+2. **Configuration**: Settings-driven with sensible defaults
+3. **Type Safety**: Enum patterns using Object.freeze() for immutable contracts
+4. **Testability**: Comprehensive testing with configurable output
+5. **Extensibility**: Architecture supports future enhancements
+
+## Code Standards
+
+### Module Structure
+
+- Each module has focused files + `index.js` for clean public API
+- Use re-export pattern: internal files remain private, index.js exposes public interface
+- Follow existing patterns: common/ server/ client/ structure
+
+### Enum Patterns
+
+```javascript
+const EnumName = Object.freeze({
+  VALUE: "VALUE",
+  OTHER: "OTHER"
+});
+```
+
+### Settings Pattern
+
+- Centralized Settings objects per module
+- Support future CLI argument overrides
+- Separate client vs server concerns
+
+### Function Naming
+
+- Consistent patterns: `displayRosQbRankings()`, `dumpWeeklyWrRankings()`
+- Generate all combinations of ranking types (ROS/WEEKLY/DYNASTY/DRAFT) × positions (QB/RB/WR/TE/K/DST)
+
+## API Integration
+
+### FantasyPros API
+
+- Season: 2025 (hardcoded in server/settings.js)
+- Default scoring: STD (hardcoded in server/settings.js)
+- League-specific: Geeksquadron (Yahoo Standard scoring)
+- **API key**: REQUIRED via FANTASYPROS_API_KEY environment variable
+  - Set via PowerShell: `$env:FANTASYPROS_API_KEY = "your_key"`
+  - Future: Load from .env file with dotenv package
+  - **NEVER commit actual API keys to git**
+
+### Data Models
+
+- `PlayerRankingData`: rank, name, team
+- `RankingsResult`: players array + metadata (season, scoringType, rankingType, week, position, lastUpdated)
+- **Future expansion**: bye weeks, opponent teams, projections, injury status, ADP, tiers
+
+## Environment Constraints
+
+- **Current**: Google Drive folder, npm packages incompatible, using NODE_PATH workaround
+- **Future**: Local git repository with proper npm support
+- **Workaround**: PowerShell script in package.json for NODE_PATH setup
+
+## Testing
+
+- Test framework: client/tests/
+- Configurable execution via TestSettings
+- Preview-sized output prevents console spam
+- Real API calls for integration validation
+
+## File Organization
+
+- `/client` - Display and output logic
+- `/server` - API integration layer
+- `/common` - Shared utilities and data models
+- `/legacy` - Backup files and archived development history
+- `/bin` - Utility scripts
+- `/docs` - Documentation (architecture, development, command history, session notes)
+
+## Documentation Standards
+
+### Markdown Formatting
+
+- Headings must have blank lines before and after
+- Lists must have blank lines before and after
+- Code blocks must have blank lines before and after
+- No trailing spaces (except for line breaks with 2 spaces)
+- No multiple consecutive blank lines
+- Follow markdownlint rules for consistency
+
+### Neutral Tool References
+
+- Use neutral terms like "editor", "IDE", or "development environment" instead of tool-specific names
+- Keep documentation portable across different tools and environments
+
+## TODO Management
+
+- Track tasks using editor's built-in todo system
+- Mirror important tasks in docs for git-sync persistence
+- Update status in real-time as work progresses
+
+## Known Issues
+
+1. API key requires environment variable setup (no .env file support yet due to Google Drive npm issues)
+2. Limited player data extraction (only 3 fields from rich API)
+3. Google Drive + npm incompatibility
+
+## Future Plans
+
+1. Git migration to local folder (unlock npm ecosystem)
+2. Expand player data (bye weeks, opponent teams, projections, injury status, ADP, tiers)
+3. TypeScript migration
+4. MCP GitHub integration for cross-device AI workflow
+
+## Development Session Guidelines
+
+- Run tests after architectural changes
+- Preserve modular independence
+- Follow consistent patterns across modules
+- Update this file when establishing new patterns
+- Document architectural decisions in docs/architecture.md
+- Follow markdown linting rules when editing documentation

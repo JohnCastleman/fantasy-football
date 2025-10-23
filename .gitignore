@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables (contains API keys)
+.env
+
+# Temporary files
+*.tmp
+*.temp
+tmp_*
+
+# Editor/IDE
+.vscode/
+.cursor/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test output
+client/tests/output/
+
+# Legacy backup files (already in legacy folder)
+*.backup.js
+

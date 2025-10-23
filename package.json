@@ -1,0 +1,14 @@
+{
+  "name": "fantasy-football",
+  "version": "1.0.0",
+  "description": "A modular Node.js application for fetching and displaying fantasy football player rankings from multiple fantasy sports data sources. Currently supports FantasyPros API with configurable league-specific settings, designed to easily integrate additional ranking services and data providers. NOTE: under development, so, currently, the only application is the test runner under the client tests folder.",
+  "main": "./client/tests/index.js",
+  "scripts": {
+    "test": "powershell -NoProfile -Command \"$env:NODE_PATH = [System.IO.Path]::Combine($env:APPDATA,'npm','node_modules'); node './client/tests/index.js'\"",
+    "remove-tiers": "node ./bin/remove-tiers.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

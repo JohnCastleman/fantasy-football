@@ -1,0 +1,91 @@
+const { ScoringTypeEnum } = require('../common');
+const { Settings } = require('./settings');
+const { toFantasyProsApiParams, toFantasyprosUrl, toFantasyprosHttpHeaders, fromFantasyprosApiResponse } = require('./utils');
+
+async function fetchRankings(apiParams, apiHeaders) {
+  if (!apiParams.scoringType) {
+    const error = new Error(`Invalid API scoring type parameter: ${apiParams.scoringType}`);
+    console.error(error.message);
+    throw error;
+  }
+
+  if (!apiParams.rankingType) {
+    const error = new Error(`Invalid API ranking type parameter: ${apiParams.rankingType}`);
+    console.error(error.message);
+    throw error;
+  }
+
+  if (!apiParams.position) {
+    const error = new Error(`Invalid API position parameter: ${apiParams.position}`);
+    console.error(error.message);
+    throw error;
+  }
+
+  const url = toFantasyprosUrl(apiParams);
+
+  console.log('Fetching rankings using API param strings...', apiParams);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: apiHeaders
+    });
+
+    if (!response.ok) {
+      const error = new Error(`HTTP error! status: ${response.status}`);
+      console.error(error.message);
+      throw error;
+    }
+
+    const data = await response.json();
+
+    const results = fromFantasyprosApiResponse(data);
+
+    if (!results.players || !Array.isArray(results.players)) {
+      const error = new Error('Invalid response: missing players array');
+      console.error(error.message);
+      throw error;
+    }
+
+    console.log(`Returning rankings mapped from API response (${results.metadata.lastUpdated.toLocaleDateString('en-US')})...`, {
+      season: results.metadata.season,
+      scoringType: results.metadata.scoringType,
+      rankingType: results.metadata.rankingType,
+      position: results.metadata.position,
+      playerCount: results.players.length
+    });
+
+    return results;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
+}
+
+async function fetchGeeksquadronRankings(rankingType, position) {
+  const season = Settings.season;
+  const scoringType = ScoringTypeEnum.STD; // Yahoo public league Geeksquadron uses Standard scoring
+  const leagueKey = 'nfl~686bb718-0adf-4076-bbca-f78f0d5176e1'; // Yahoo public league Geeksquadron
+  const apiKey = Settings.fantasyprosApiKey; // impl detail: server is using FantasyPros to source rankings
+
+  const apiParams = toFantasyProsApiParams(season, scoringType, rankingType, position, leagueKey);
+  const apiHeaders = toFantasyprosHttpHeaders(apiKey);
+
+  return fetchRankings(apiParams, apiHeaders);
+}
+
+async function fetchDefaultRankings(rankingType, position) {
+  const season = Settings.season;
+  const scoringType = Settings.scoringType;
+  const apiKey = Settings.fantasyprosApiKey;
+
+  const apiParams = toFantasyProsApiParams(season, scoringType, rankingType, position);
+  const apiHeaders = toFantasyprosHttpHeaders(apiKey);
+
+  return fetchRankings(apiParams, apiHeaders);
+}
+
+module.exports = {
+  fetchDefaultRankings,
+  fetchGeeksquadronRankings
+};
