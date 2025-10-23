@@ -156,26 +156,26 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### Immediate Priority
 
-1. **SECURITY (Immediate)**: Revoke GitHub Personal Access Token (shared in chat session) and generate a new one at https://github.com/settings/tokens
+1. **SECURITY (Immediate)**: Revoke GitHub Personal Access Token (shared in chat session) and generate a new one at <https://github.com/settings/tokens>
 2. **API Key Setup**: Install dotenv package and configure to load .env file (test with new GitHub PAT - see instructions below)
 3. **Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly
 4. **Dependency Migration**: Move globally-installed packages to local node_modules (e.g., date-fns used only in this project, remove unused axios)
 
 ### High Priority
 
-5. **Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)
-6. **Process (Important)**: Use backlog in development.md as persistent source of truth for task work and TodoWrite chat tool as a writethrough cache of it
-7. **Player Data Expansion (Immediate Need)**: Add BYE week per player (ROS rankings) and Opponent per player (WEEKLY rankings)
-8. **Update package.json**: Update for modular architecture (entry points, scripts, dependencies)
-9. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+1. **Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)
+2. **Process (Important)**: Use backlog in development.md as persistent source of truth for task work and TodoWrite chat tool as a writethrough cache of it
+3. **Player Data Expansion (Immediate Need)**: Add BYE week per player (ROS rankings) and Opponent per player (WEEKLY rankings)
+4. **Update package.json**: Update for modular architecture (entry points, scripts, dependencies)
+5. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements
 
-10. **Player Data Expansion (Full API)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
-11. **Tab-Delimited Output Handling**: Explore routing dump function output to files for spreadsheet import (console stream separation approach)
-12. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
-13. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
-14. **Cross-Device AI Context**: Enhance MCP GitHub integration for full cross-device development workflow
+1. **Player Data Expansion (Full API)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
+2. **Tab-Delimited Output Handling**: Explore routing dump function output to files for spreadsheet import (console stream separation approach)
+3. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
+4. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
+5. **Cross-Device AI Context**: Enhance MCP GitHub integration for full cross-device development workflow
 
 ### Future: Enable .env File Support
 
