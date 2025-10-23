@@ -1,4 +1,4 @@
-const { ScoringTypeEnum, RankingTypeEnum, PositionEnum } = require('../common');
+import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 
 const Settings = {
   verbose: false, // Whether to show detailed ranking metadata (and, later, expanded player stats)
@@ -29,6 +29,4 @@ const Settings = {
   }
 };
 
-module.exports = {
-  Settings
-};
+export { Settings };

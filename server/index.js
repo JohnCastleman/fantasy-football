@@ -1,6 +1,1 @@
-const { fetchDefaultRankings, fetchGeeksquadronRankings } = require('./server');
-
-module.exports = {
-  fetchDefaultRankings,
-  fetchGeeksquadronRankings
-};
+export { fetchDefaultRankings, fetchGeeksquadronRankings } from './server.js';

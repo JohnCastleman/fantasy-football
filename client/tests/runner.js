@@ -1,6 +1,6 @@
-const { RankingTypeEnum, PositionEnum } = require('../../common');
-const { TestOutputTypeEnum, TestSettings } = require('./settings');
-const {
+import { RankingTypeEnum, PositionEnum } from '../../common/index.js';
+import { TestOutputTypeEnum, TestSettings } from './settings.js';
+import {
   // Display functions
   displayRosQbRankings, displayRosRbRankings, displayRosWrRankings, displayRosTeRankings, displayRosKRankings, displayRosDstRankings,
   displayWeeklyQbRankings, displayWeeklyRbRankings, displayWeeklyWrRankings, displayWeeklyTeRankings, displayWeeklyKRankings, displayWeeklyDstRankings,
@@ -11,7 +11,7 @@ const {
   dumpWeeklyQbRankings, dumpWeeklyRbRankings, dumpWeeklyWrRankings, dumpWeeklyTeRankings, dumpWeeklyKRankings, dumpWeeklyDstRankings,
   dumpDynastyQbRankings, dumpDynastyRbRankings, dumpDynastyWrRankings, dumpDynastyTeRankings, dumpDynastyKRankings, dumpDynastyDstRankings,
   dumpDraftQbRankings, dumpDraftRbRankings, dumpDraftWrRankings, dumpDraftTeRankings, dumpDraftKRankings, dumpDraftDstRankings
-} = require('../');
+} from '../index.js';
 
 function runConfigurableTests() {
   const { testRankingTypes, testOutputTypes, testPositions } = TestSettings;
@@ -124,6 +124,6 @@ function runConfigurableTests() {
   }
 }
 
-module.exports = {
+export {
   runConfigurableTests
 };

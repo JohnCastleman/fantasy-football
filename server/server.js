@@ -1,6 +1,6 @@
-const { ScoringTypeEnum } = require('../common');
-const { Settings } = require('./settings');
-const { toFantasyProsApiParams, toFantasyprosUrl, toFantasyprosHttpHeaders, fromFantasyprosApiResponse } = require('./utils');
+import { ScoringTypeEnum } from '../common/index.js';
+import { Settings } from './settings.js';
+import { toFantasyProsApiParams, toFantasyprosUrl, toFantasyprosHttpHeaders, fromFantasyprosApiResponse } from './utils.js';
 
 async function fetchRankings(apiParams, apiHeaders) {
   if (!apiParams.scoringType) {
@@ -85,7 +85,7 @@ async function fetchDefaultRankings(rankingType, position) {
   return fetchRankings(apiParams, apiHeaders);
 }
 
-module.exports = {
+export {
   fetchDefaultRankings,
   fetchGeeksquadronRankings
 };

@@ -1,7 +1,6 @@
 // Load environment variables from .env file
-require('dotenv').config();
-
-const { ScoringTypeEnum, RankingTypeEnum, PositionEnum } = require('../common');
+import 'dotenv/config';
+import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 
 const Settings = {
   season: 2025,
@@ -35,4 +34,4 @@ const Settings = {
   }
 };
 
-module.exports = { Settings };
+export { Settings };

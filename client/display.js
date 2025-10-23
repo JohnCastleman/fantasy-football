@@ -1,5 +1,5 @@
-const { RankingTypeEnum, PositionEnum } = require('../common');
-const { getRankings, displayRankings } = require('./client');
+import { RankingTypeEnum, PositionEnum } from '../common/index.js';
+import { getRankings, displayRankings } from './client.js';
 
 // ==========================================
 // Display Functions (human-readable Output)
@@ -196,7 +196,7 @@ async function displayDraftDstRankings() {
   displayRankings(rankings);
 }
 
-module.exports = {
+export {
   displayRosQbRankings, displayRosRbRankings, displayRosWrRankings, displayRosTeRankings, displayRosKRankings, displayRosDstRankings,
   displayWeeklyQbRankings, displayWeeklyRbRankings, displayWeeklyWrRankings, displayWeeklyTeRankings, displayWeeklyKRankings, displayWeeklyDstRankings,
   displayDynastyQbRankings, displayDynastyRbRankings, displayDynastyWrRankings, displayDynastyTeRankings, displayDynastyKRankings, displayDynastyDstRankings,

@@ -1,5 +1,5 @@
-const { ScoringTypeEnum, RankingTypeEnum, PositionEnum } = require('../common');
-const { Settings } = require('./settings');
+import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
+import { Settings } from './settings.js';
 
 function rankingsMetadataToString(metadata, verbose = false) {
   let typeText = Settings.displayText.rankingType[metadata.rankingType] || metadata.rankingType;
@@ -30,7 +30,7 @@ function playerToTabDelimitedString(player) {
   return `${player.rank}\t${player.name}\t${player.team}`;
 }
 
-module.exports = {
+export {
   rankingsMetadataToString,
   playerToString,
   playerToTabDelimitedString

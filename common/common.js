@@ -49,7 +49,7 @@ class RankingsResult {
   }
 }
 
-module.exports = {
+export {
   ScoringTypeEnum,
   RankingTypeEnum,
   PositionEnum,

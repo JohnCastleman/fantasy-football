@@ -1,4 +1,4 @@
-const { RankingTypeEnum, PositionEnum } = require('../../common');
+import { RankingTypeEnum, PositionEnum } from '../../common/index.js';
 
 const TestOutputTypeEnum = Object.freeze({
   DISPLAY: "DISPLAY",
@@ -16,7 +16,7 @@ const TestSettings = {
   testPositions: [PositionEnum.K, PositionEnum.DST]
 };
 
-module.exports = {
+export {
   TestOutputTypeEnum,
   TestSettings
 };

@@ -160,14 +160,14 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 2. ~~**API Key Setup**: Install dotenv package and configure to load .env file (test with new GitHub PAT)~~ ✅
 3. ~~**Dependency Migration**: Move globally-installed packages to local node_modules (date-fns installed locally, axios not used in code)~~ ✅
 4. ~~**Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly~~ ✅
+5. ~~**ES Modules Migration**: Convert entire project from CommonJS (require/module.exports) to ES modules (import/export)~~ ✅
 
 ### High Priority
 
 1. **Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)
 2. **Process (Important)**: Use backlog in development.md as persistent source of truth for task work and TodoWrite chat tool as a writethrough cache of it
 3. **Player Data Expansion (Immediate Need)**: Add BYE week per player (ROS rankings) and Opponent per player (WEEKLY rankings)
-4. **Update package.json**: Update for modular architecture (entry points, scripts, dependencies)
-5. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+4. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements
 
@@ -176,26 +176,6 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 3. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
 4. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
 5. **Cross-Device AI Context**: Enhance MCP GitHub integration for full cross-device development workflow
-
-### Future: Enable .env File Support
-
-Once ready to migrate from environment variables to .env file:
-
-```bash
-# Install dotenv package
-npm install dotenv
-
-# Create .env file in project root
-echo "FANTASYPROS_API_KEY=your_key_here" > .env
-
-# Add to top of server/settings.js
-require('dotenv').config();
-
-# Then run tests without manual env var:
-npm test
-```
-
-**Note**: `.env` is already in `.gitignore` to prevent committing secrets.
 
 ## Recent Development History
 
@@ -223,7 +203,11 @@ npm test
 - Organized documentation in `docs/` folder
 - Fixed all markdown linting issues across documentation
 - Added environment variable support for API key
-- Prepared baseline architecture for git commit
+- Initialized git repository with GitHub remote
+- Installed dotenv package and created .env template
+- Removed NODE_PATH workaround from package.json
+- Migrated globally-installed date-fns to local dependency
+- Converted entire project from CommonJS to ES modules
 
 ---
 

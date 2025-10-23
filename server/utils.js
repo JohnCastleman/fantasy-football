@@ -1,8 +1,7 @@
-// TODO: replace with import parse and enUS from 'date-fns' and 'date-fns/locale', resp, once the NPM/GDrive issue is addressed/resolved
-const { parse } = require('date-fns');
-const { enUS } = require('date-fns/locale');
-const { PlayerRankingData, RankingsResult } = require('../common');
-const { Settings } = require('./settings');
+import { parse } from 'date-fns';
+import { enUS } from 'date-fns/locale';
+import { PlayerRankingData, RankingsResult } from '../common/index.js';
+import { Settings } from './settings.js';
 
 function toFantasyProsApiParams(season, scoringType, rankingType, position, leagueKey = null) {
   const params = {
@@ -71,7 +70,7 @@ function fromFantasyprosApiResponse(data) {
   );
 }
 
-module.exports = {
+export {
   toFantasyProsApiParams,
   toFantasyprosUrl,
   toFantasyprosHttpHeaders,

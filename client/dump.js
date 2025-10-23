@@ -1,5 +1,5 @@
-const { RankingTypeEnum, PositionEnum } = require('../common');
-const { getRankings, dumpRankingsToTabDelimited } = require('./client');
+import { RankingTypeEnum, PositionEnum } from '../common/index.js';
+import { getRankings, dumpRankingsToTabDelimited } from './client.js';
 
 // ==========================================
 // Dump Functions (tab-delimited data output)
@@ -196,7 +196,7 @@ async function dumpDraftDstRankings() {
   dumpRankingsToTabDelimited(rankings);
 }
 
-module.exports = {
+export {
   dumpRosQbRankings, dumpRosRbRankings, dumpRosWrRankings, dumpRosTeRankings, dumpRosKRankings, dumpRosDstRankings,
   dumpWeeklyQbRankings, dumpWeeklyRbRankings, dumpWeeklyWrRankings, dumpWeeklyTeRankings, dumpWeeklyKRankings, dumpWeeklyDstRankings,
   dumpDynastyQbRankings, dumpDynastyRbRankings, dumpDynastyWrRankings, dumpDynastyTeRankings, dumpDynastyKRankings, dumpDynastyDstRankings,

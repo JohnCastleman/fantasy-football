@@ -1,6 +1,6 @@
-const { Settings } = require('./settings');
-const { rankingsMetadataToString, playerToString, playerToTabDelimitedString } = require('./utils');
-const { fetchGeeksquadronRankings } = require('../server');
+import { Settings } from './settings.js';
+import { rankingsMetadataToString, playerToString, playerToTabDelimitedString } from './utils.js';
+import { fetchGeeksquadronRankings } from '../server/index.js';
 
 async function getRankings(rankingType, position) {
   try {
@@ -51,8 +51,8 @@ function dumpRankingsToTabDelimited(rankings) {
   console.log('');
 }
 
-module.exports = {
+export {
   getRankings,
   displayRankings,
-  dumpRankingsToTabDelimited,
+  dumpRankingsToTabDelimited
 };
