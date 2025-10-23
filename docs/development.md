@@ -155,9 +155,10 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 ## Known Issues & Future Work
 
 1. **SECURITY (Immediate)**: Revoke GitHub Personal Access Token (shared in chat session) and generate a new one at https://github.com/settings/tokens
-2. **TODO (High Priority)**: Formally integrate TodoWrite tool with project backlog management
-3. **API Key Setup**: Requires environment variable (future: .env file with dotenv package - see instructions below)
-4. **Limited Player Data**: Only using 3 fields from rich API (planned expansion: bye weeks, opponent, projections)
+2. **API Key Setup**: Install dotenv package and configure to load .env file (test with new GitHub PAT - see instructions below)
+3. **TODO (High Priority)**: Formally integrate TodoWrite tool with project backlog management
+4. **Player Data Expansion (Immediate Need)**: Add BYE week per player (ROS rankings) and Opponent per player (WEEKLY rankings)
+5. **Player Data Expansion (Future)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
 
 ### Future: Enable .env File Support
 
