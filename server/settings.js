@@ -1,12 +1,12 @@
-const { ScoringTypeEnum, RankingTypeEnum, PositionEnum } = require('../common');
+require('dotenv').config();
+
+import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common';
 
 const Settings = {
   season: 2025,
   scoringType: ScoringTypeEnum.STD,
   
   // API Key from environment variable (required)
-  // Set via PowerShell: $env:FANTASYPROS_API_KEY = "your_key_here"
-  // Or create a .env file and load with dotenv package (future)
   fantasyprosApiKey: process.env.FANTASYPROS_API_KEY || null,
   
   // API mappings
@@ -33,4 +33,4 @@ const Settings = {
   }
 };
 
-module.exports = { Settings };
+export default { Settings };
