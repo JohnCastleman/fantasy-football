@@ -154,9 +154,10 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ## Known Issues & Future Work
 
-1. **TODO (High Priority)**: Formally integrate TodoWrite tool with project backlog management
-2. **API Key Setup**: Requires environment variable (future: .env file with dotenv package - see instructions below)
-3. **Limited Player Data**: Only using 3 fields from rich API (planned expansion: bye weeks, opponent, projections)
+1. **SECURITY (Immediate)**: Revoke GitHub Personal Access Token (shared in chat session) and generate a new one at https://github.com/settings/tokens
+2. **TODO (High Priority)**: Formally integrate TodoWrite tool with project backlog management
+3. **API Key Setup**: Requires environment variable (future: .env file with dotenv package - see instructions below)
+4. **Limited Player Data**: Only using 3 fields from rich API (planned expansion: bye weeks, opponent, projections)
 
 ### Future: Enable .env File Support
 
