@@ -154,8 +154,29 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ## Known Issues & Future Work
 
-1. **API Key Setup**: Requires environment variable (future: .env file with dotenv package)
-2. **Limited Player Data**: Only using 3 fields from rich API (planned expansion: bye weeks, opponent, projections)
+1. **TODO (High Priority)**: Formally integrate TodoWrite tool with project backlog management
+2. **API Key Setup**: Requires environment variable (future: .env file with dotenv package - see instructions below)
+3. **Limited Player Data**: Only using 3 fields from rich API (planned expansion: bye weeks, opponent, projections)
+
+### Future: Enable .env File Support
+
+Once ready to migrate from environment variables to .env file:
+
+```bash
+# Install dotenv package
+npm install dotenv
+
+# Create .env file in project root
+echo "FANTASYPROS_API_KEY=your_key_here" > .env
+
+# Add to top of server/settings.js
+require('dotenv').config();
+
+# Then run tests without manual env var:
+npm test
+```
+
+**Note**: `.env` is already in `.gitignore` to prevent committing secrets.
 
 ## Recent Development History
 

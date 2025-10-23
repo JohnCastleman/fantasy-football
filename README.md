@@ -45,9 +45,8 @@ code/
 │       ├── settings.js     # Test configuration
 │       └── runner.js       # Test execution logic
 └── legacy/                  # Original files and development history
-    ├── FantasyPros display rankings.js.backup.js         # Main backup (final monolithic version)
-    ├── FantasyPros display rankings - original structure.js.backup.js  # Early refactoring checkpoint
-    ├── FantasyPros display rankings - simplified structure.js.backup.js # Mid-refactoring checkpoint
+    ├── .ai-context/           # Archived AI context (pre-portable documentation)
+    ├── *.backup.js            # Original monolithic code backups
     ├── FF-scrape-position-list.js     # Chrome DevTools AI-assisted scraping script
     └── FF-ROS(W4)-position-list-K.html # Captured FantasyPros HTML for scraping
 ```
