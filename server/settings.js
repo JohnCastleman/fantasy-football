@@ -1,12 +1,14 @@
+// Load environment variables from .env file
 require('dotenv').config();
 
-import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common';
+const { ScoringTypeEnum, RankingTypeEnum, PositionEnum } = require('../common');
 
 const Settings = {
   season: 2025,
   scoringType: ScoringTypeEnum.STD,
   
   // API Key from environment variable (required)
+  // Set in .env file: FANTASYPROS_API_KEY=your_key_here
   fantasyprosApiKey: process.env.FANTASYPROS_API_KEY || null,
   
   // API mappings
@@ -33,4 +35,4 @@ const Settings = {
   }
 };
 
-export default { Settings };
+module.exports = { Settings };

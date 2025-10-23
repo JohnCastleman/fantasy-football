@@ -157,9 +157,9 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 ### Immediate Priority
 
 1. ~~**SECURITY (Immediate)**: Revoke GitHub Personal Access Token (shared in chat session) and generate a new one at <https://github.com/settings/tokens>~~ ✅
-2. **API Key Setup**: Install dotenv package and configure to load .env file (test with new GitHub PAT - see instructions below) 🔄
-3. **Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly
-4. **Dependency Migration**: Move globally-installed packages to local node_modules (e.g., date-fns used only in this project, remove unused axios)
+2. ~~**API Key Setup**: Install dotenv package and configure to load .env file (test with new GitHub PAT - see instructions below)~~ ✅
+3. ~~**Dependency Migration**: Move globally-installed packages to local node_modules (date-fns installed locally, axios not used in code)~~ ✅
+4. **Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly 🔄
 
 ### High Priority
 
