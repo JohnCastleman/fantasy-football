@@ -168,19 +168,19 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 5. ~~**ES Modules Migration**: Convert entire project from CommonJS (require/module.exports) to ES modules (import/export)~~ ✅
 6. ~~**Process (Important)**: Define TodoWrite/backlog integration in .cursorrules - TodoWrite acts as writethrough cache of subset of development.md backlog for active session work~~ ✅
 7. ~~**Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)~~ ✅
+8. ~~**Player Data: BYE Week Field**~~ ✅
+   - ~~Server: Add BYE to ranking results in ROS and WEEKLY (and anywhere else where available in API response)~~
+   - ~~Client DISPLAY: Surface BYE in tabular display anywhere it's available in the ranking result~~
+   - ~~Client DUMP: Add "bye" column ONLY in ROS dumped results (per TSV usage requirements)~~
+9. ~~**Player Data: Opponent Field**~~ ✅
+   - ~~Server: Add Opponent only in WEEKLY ranking results (opponent changes week-to-week, only makes sense in that context)~~
+   - ~~Client DISPLAY: Surface Opponent in tabular display anywhere it's available in the ranking result (should only be WEEKLY)~~
+   - ~~Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)~~
 
 ### High Priority
 
-1. **Player Data: BYE Week Field**
-   - Server: Add BYE to ranking results in ROS and WEEKLY (and anywhere else where available in API response)
-   - Client DISPLAY: Surface BYE in tabular display anywhere it's available in the ranking result
-   - Client DUMP: Add "bye" column ONLY in ROS dumped results (per TSV usage requirements)
-2. **Player Data: Opponent Field**
-   - Server: Add Opponent only in WEEKLY ranking results (opponent changes week-to-week, only makes sense in that context)
-   - Client DISPLAY: Surface Opponent in tabular display anywhere it's available in the ranking result (should only be WEEKLY)
-   - Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)
-3. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
-4. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+1. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+2. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements
 
