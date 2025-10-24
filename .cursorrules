@@ -140,11 +140,54 @@ If you catch yourself writing "new", "old", "legacy", "wrapper", "unified", or i
 - The native diff/merge interface is superior to `git diff` output in chat for reviewing changes
 - Wait for John to accept changes before proceeding to git operations
 
-## Issue Tracking
+## Task Management and Backlog Integration
 
-- You MUST use your TodoWrite tool to keep track of what you're doing
-- You MUST NEVER discard tasks from your TodoWrite todo list without John's explicit approval
-- **TODO (High Priority)**: Formally integrate TodoWrite tool with project backlog management
+### Source of Truth
+
+The persistent backlog in `docs/development.md` is the authoritative source of truth for all project tasks and priorities. It contains:
+
+- **Completed tasks**: Struck through with ✅ for historical reference
+- **High Priority tasks**: Current focus areas for active development
+- **Future Enhancements**: Planned work not yet prioritized
+
+### TodoWrite Tool as Writethrough Cache
+
+The TodoWrite chat tool acts as a **writethrough cache** of the backlog for active session work:
+
+- **Loading**: At session start or when changing focus, load relevant tasks from `docs/development.md` into TodoWrite
+- **Working Set**: TodoWrite contains only the subset of tasks actively being worked on in the current session (typically 1-3 tasks)
+  - If more than 3 tasks seem needed (e.g. if coupled/dependent), ask John first
+- **Status Writethrough**: When TodoWrite task status changes (pending/in_progress/completed/cancelled), those changes MUST be immediately written back to `docs/development.md`
+- **Content Writethrough**: When fundamental changes to task content occur in TodoWrite, write those changes back to `docs/development.md`
+  - Temporary detail expansions that don't change the high-level task do NOT need to be written through
+  - Fundamental changes to what the task is or means DO need to be written through
+- **Synchronization**: TodoWrite must stay up-to-date with any changes to the underlying tasks it has cached from `docs/development.md`, if the AI is aware of such changes. If changes are made in a way where the AI is unaware, John must bring such changes to the AI's attention
+- **Completion**: When marking tasks complete in TodoWrite, simultaneously update them in `docs/development.md` (strikethrough with ✅)
+- **Archiving**: Once all tasks in TodoWrite are completed, archive the completed work from TodoWrite while preserving them in `docs/development.md` under "### Completed"
+
+### TodoWrite Usage Rules
+
+- YOU MUST use TodoWrite to track what you're actively working on
+- YOU MUST NEVER discard tasks from TodoWrite without John's explicit approval
+- YOU MUST keep TodoWrite synchronized with `docs/development.md` - they should never diverge
+- When completing work, update BOTH TodoWrite and `docs/development.md` in the same action
+
+### Ephemeral Task Expansion in TodoWrite
+
+You MAY expand on the cached working set tasks in TodoWrite with sub-tasks that do NOT get added to `docs/development.md`, IF ALL of:
+
+1. The new tasks are aspects, details, or sub-tasks of the working set tasks loaded at session start
+2. The original working set tasks still follow the cache/writethrough rules above
+3. You ask John for permission before adding ephemeral tasks
+4. The ephemeral tasks are truly temporary and will be archived when the parent working set task completes
+
+### New Unrelated Work
+
+If new, unrelated work is discovered during a session:
+
+1. Start by adding it to the backlog in `docs/development.md` ONLY
+2. Discuss with John whether or not to also bring it into TodoWrite, and then only if there is a breaking dependency on the new task in the working set
+3. The general rule of thumb is new work should either be put off until later in the development.md file, or - if it represents a breaking dependency to the working set - the working set should either be abandoned or shelved to work on the dependent task instead, in a new dev session; however, for this reason, always ask John how to proceed with new, unrelated work
 
 ## Systematic Debugging Process
 

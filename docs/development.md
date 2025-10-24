@@ -161,13 +161,13 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 3. ~~**Dependency Migration**: Move globally-installed packages to local node_modules (date-fns installed locally, axios not used in code)~~ ✅
 4. ~~**Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly~~ ✅
 5. ~~**ES Modules Migration**: Convert entire project from CommonJS (require/module.exports) to ES modules (import/export)~~ ✅
+6. ~~**Process (Important)**: Define TodoWrite/backlog integration in .cursorrules - TodoWrite acts as writethrough cache of subset of development.md backlog for active session work~~ ✅
 
 ### High Priority
 
 1. **Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)
-2. **Process (Important)**: Use backlog in development.md as persistent source of truth for task work and TodoWrite chat tool as a writethrough cache of it
-3. **Player Data Expansion (Immediate Need)**: Add BYE week per player (ROS rankings) and Opponent per player (WEEKLY rankings)
-4. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+2. **Player Data Expansion (Immediate Need)**: Add BYE week per player (ROS rankings) and Opponent per player (WEEKLY rankings)
+3. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements
 
