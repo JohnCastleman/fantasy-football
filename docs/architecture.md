@@ -182,14 +182,44 @@
 
 **Implementation**: Tasks tracked in editor, documented in git commits/PRs
 
+### 11. Configurable Test Framework (October 2025)
+
+**Decision**: Build custom test framework instead of using external test runner
+**Context**: Need flexible testing during rapid development without test framework overhead
+**Alternatives**: Jest, Mocha, Tape, npm-only scripts
+
+**Chosen**: Custom configurable test framework in `client/tests/`
+**Rationale**:
+
+- Configurable execution via TestSettings (output types, ranking types, positions)
+- Preview-sized output prevents console spam during development
+- Real API calls for integration validation
+- No external dependencies or test framework overhead
+- Easy to understand and modify
+- Supports future migration to formal test framework
+
+**Implementation**: `client/tests/` with settings-driven test execution
+
 ## Design Principles Established
+
+### Core Architectural Principles
+
+Node.js application for fetching and displaying fantasy football player rankings from FantasyPros API. Modular architecture with client/server/common separation of concerns.
 
 1. **Modularity**: Single-responsibility modules with clear interfaces
 2. **Configuration**: Settings-driven with sensible defaults
-3. **Type Safety**: Enum patterns for contract clarity
+3. **Type Safety**: Enum patterns using Object.freeze() for immutable contracts
 4. **Testability**: Comprehensive testing with configurable output
 5. **Extensibility**: Architecture supports future enhancements
 6. **Portability**: AI context works across tools and environments
+
+### Code Organization Standards
+
+**Naming Conventions**:
+
+- Consistent function naming patterns: `displayRosQbRankings()`, `dumpWeeklyWrRankings()`
+- Generate all combinations of ranking types (ROS/WEEKLY/DYNASTY/DRAFT) × positions (QB/RB/WR/TE/K/DST)
+- Names tell what code does, not how it's implemented or its history
 
 ## Future Decision Points
 

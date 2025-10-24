@@ -101,11 +101,16 @@ const Settings = {
 };
 ```
 
-**Note**: API key must be set via environment variable:
+### FantasyPros API Configuration
 
-```powershell
-$env:FANTASYPROS_API_KEY = "your_api_key_here"
-```
+- **Season**: 2025 (hardcoded in server/settings.js)
+- **Default scoring**: STD (hardcoded in server/settings.js)
+- **League-specific**: Geeksquadron (Yahoo Standard scoring)
+- **API key**: REQUIRED via FANTASYPROS_API_KEY environment variable
+  - Set via PowerShell: `$env:FANTASYPROS_API_KEY = "your_key"`
+  - Loaded from .env file using dotenv package
+
+**Note**: API key must be set via environment variable before running tests
 
 ### Client Settings (`client/settings.js`)
 
@@ -162,27 +167,28 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 4. ~~**Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly~~ ✅
 5. ~~**ES Modules Migration**: Convert entire project from CommonJS (require/module.exports) to ES modules (import/export)~~ ✅
 6. ~~**Process (Important)**: Define TodoWrite/backlog integration in .cursorrules - TodoWrite acts as writethrough cache of subset of development.md backlog for active session work~~ ✅
+7. ~~**Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)~~ ✅
 
 ### High Priority
 
-1. **Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)
-2. **Player Data: BYE Week Field**
+1. **Player Data: BYE Week Field**
    - Server: Add BYE to ranking results in ROS and WEEKLY (and anywhere else where available in API response)
    - Client DISPLAY: Surface BYE in tabular display anywhere it's available in the ranking result
    - Client DUMP: Add "bye" column ONLY in ROS dumped results (per TSV usage requirements)
-3. **Player Data: Opponent Field**
+2. **Player Data: Opponent Field**
    - Server: Add Opponent only in WEEKLY ranking results (opponent changes week-to-week, only makes sense in that context)
    - Client DISPLAY: Surface Opponent in tabular display anywhere it's available in the ranking result (should only be WEEKLY)
    - Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)
-4. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
-5. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+3. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+4. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements
 
 1. **Player Data Expansion (Full API)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
-2. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
-3. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
-4. **Cross-Device AI Context**: Enable async AI model execution in the cloud (similar to GitHub Copilot Coding Agent or Google Jules) - submit instructions from any device (e.g., phone) that run to completion asynchronously using Cursor Pro subscription
+2. **Additional Data Source Integrations**: Integrate additional data sources (e.g., Flock Fantasy API - sample responses available in `docs/api-samples/`)
+3. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
+4. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
+5. **Cross-Device AI Context**: Enable async AI model execution in the cloud (similar to GitHub Copilot Coding Agent or Google Jules) - submit instructions from any device (e.g., phone) that run to completion asynchronously using Cursor Pro subscription
 
 ### Nice to Haves
 

@@ -32,18 +32,6 @@ When asked to do something, just do it - including obvious follow-up actions nee
 - You genuinely don't understand what's being asked
 - Your partner specifically asks "how should I approach X?" (answer the question, don't jump to implementation)
 
-## Project Overview
-
-Node.js application for fetching and displaying fantasy football player rankings from FantasyPros API. Modular architecture with client/server/common separation of concerns.
-
-### Core Principles
-
-1. **Modularity**: Single-responsibility modules with clear interfaces
-2. **Configuration**: Settings-driven with sensible defaults
-3. **Type Safety**: Enum patterns using Object.freeze() for immutable contracts
-4. **Testability**: Comprehensive testing with configurable output
-5. **Extensibility**: Architecture supports future enhancements
-
 ## Designing Software
 
 - YAGNI. The best code is no code. Don't add features we don't need right now.
@@ -70,13 +58,6 @@ FOR EVERY NEW FEATURE OR BUGFIX, YOU MUST follow Test Driven Development:
 - YOU MUST NEVER ignore system or test output - logs and messages often contain CRITICAL information.
 - Test output MUST BE PRISTINE TO PASS. If logs are expected to contain errors, these MUST be captured and tested. If a test is intentionally triggering an error, we *must* capture and validate that the error output is as we expect.
 
-### Current Test Framework
-
-- Test framework: client/tests/
-- Configurable execution via TestSettings
-- Preview-sized output prevents console spam
-- Real API calls for integration validation
-
 ## Writing Code
 
 - When submitting work, verify that you have FOLLOWED ALL RULES. (See Rule #1)
@@ -102,11 +83,6 @@ Good names tell a story about the domain:
 - `RemoteTool` not `MCPToolWrapper`
 - `Registry` not `ToolRegistryManager`
 - `execute()` not `executeToolWithValidation()`
-
-### Project-Specific Naming Patterns
-
-- Consistent patterns: `displayRosQbRankings()`, `dumpWeeklyWrRankings()`
-- Generate all combinations of ranking types (ROS/WEEKLY/DYNASTY/DRAFT) × positions (QB/RB/WR/TE/K/DST)
 
 ## Code Comments
 
@@ -225,87 +201,27 @@ YOU MUST follow this debugging framework for ANY technical issue:
 - ALWAYS test after each change
 - IF your first fix doesn't work, STOP and re-analyze rather than adding more fixes
 
-## Module Structure
+## API Keys and Secrets
 
-- Each module has focused files + `index.js` for clean public API
-- Use re-export pattern: internal files remain private, index.js exposes public interface
-- Follow existing patterns: common/ server/ client/ structure
-
-## Enum Patterns
-
-```javascript
-const EnumName = Object.freeze({
-  VALUE: "VALUE",
-  OTHER: "OTHER"
-});
-```
-
-## Settings Pattern
-
-- Centralized Settings objects per module
-- Support future CLI argument overrides
-- Separate client vs server concerns
-
-## API Integration
-
-### FantasyPros API
-
-- Season: 2025 (hardcoded in server/settings.js)
-- Default scoring: STD (hardcoded in server/settings.js)
-- League-specific: Geeksquadron (Yahoo Standard scoring)
-- **API key**: REQUIRED via FANTASYPROS_API_KEY environment variable
-  - Set via PowerShell: `$env:FANTASYPROS_API_KEY = "your_key"`
-  - Future: Load from .env file with dotenv package
-  - **NEVER commit actual API keys to git**
-
-### Data Models
-
-- `PlayerRankingData`: rank, name, team
-- `RankingsResult`: players array + metadata (season, scoringType, rankingType, week, position, lastUpdated)
-- **Future expansion**: bye weeks, opponent teams, projections, injury status, ADP, tiers
-
-## Environment Constraints
-
-- **Current Workaround**: Using NODE_PATH environment variable for npm package resolution
-- **Future**: Migrate to proper local npm package management with .env file support
-
-## File Organization
-
-- `/client` - Display and output logic
-- `/server` - API integration layer
-- `/common` - Shared utilities and data models
-- `/legacy` - Backup files and archived development history
-- `/bin` - Utility scripts
-- `/docs` - Documentation (architecture, development, command history)
+- **NEVER commit actual API keys to git**
+- All API keys and secrets must be stored in environment variables or .env files
+- .env files must be in .gitignore
 
 ## Documentation Standards
 
 ### Markdown Formatting
 
-- Headings must have blank lines before and after
-- Lists must have blank lines before and after
-- Code blocks must have blank lines before and after
-- No trailing spaces (except for line breaks with 2 spaces)
-- No multiple consecutive blank lines
-- Follow markdownlint rules for consistency
+When writing or modifying markdown files:
 
-### Neutral Tool References
-
-- Use neutral terms like "editor", "IDE", or "development environment" instead of tool-specific names
-- Keep documentation portable across different tools and environments
+- Follow [markdownlint rules](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md) for consistency
+- Always check the markdownlint linter in Cursor after making any markdown edits
+- Fix any linter errors before committing
 
 ## Development Session Guidelines
 
 - Run tests after architectural changes
 - Preserve modular independence
 - Follow consistent patterns across modules
-- Update this file when establishing new patterns
+- Update .cursorrules when establishing new AI behavior patterns
 - Document architectural decisions in docs/architecture.md
-- Follow markdown linting rules when editing documentation
-
-## Future Plans
-
-1. Expand player data (bye weeks, opponent teams, projections, injury status, ADP, tiers)
-2. TypeScript migration
-3. Enhanced CLI interface
-4. Additional data source integrations (e.g., Flock Fantasy API, as shown in api-samples)
+- Document project details and configuration in docs/development.md
