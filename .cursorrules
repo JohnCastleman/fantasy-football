@@ -103,12 +103,24 @@ Good names tell a story about the domain:
 
 - NEVER add comments explaining that something is "improved", "better", "new", "enhanced", or referencing what it used to be
 - NEVER add instructional comments telling developers what to do ("copy this pattern", "use this instead")
-- Comments should explain WHAT the code does or WHY it exists, not how it's better than something else
+- In general, we value self-documenting code over code comments (see section below)
+- Code comments should support and clarify WHAT self-documenting code does, when needed, or WHY it exists at all; they should provide usage details that might not be self-evident, not how it's better than something else
 - If you're refactoring, remove old comments - don't add new ones explaining the refactoring
-- YOU MUST NEVER remove code comments unless you can PROVE they are actively false. Comments are important documentation and must be preserved.
+- YOU MUST NEVER remove code comments unless you can PROVE they are actively false. Comments are important documentation and must be preserved (but see below regarding code comments that are redundant with properly self-documenting code).
 - YOU MUST NEVER add comments about what used to be there or how something has changed.
 - YOU MUST NEVER refer to temporal context in comments (like "recently refactored" "moved") or code. Comments should be evergreen and describe the code as it is.
 - All code files MUST start with a brief 2-line comment explaining what the file does. Each line MUST start with "ABOUTME: " to make them easily greppable.
+
+### Self-Documenting Code Over Comments
+
+We value self-documenting code:
+
+- **Write self-documenting code first**: Clear variable/function names, obvious logic structure - the code itself should tell its story
+- **Avoid redundant comments**: If the code is self-explanatory, don't add comments that merely repeat what the code does
+- **Consider refactoring over commenting**: If you're tempted to add a comment to explain complex code, first consider whether you can make the code self-documenting instead
+- **Use comments as commit messages**: For projects in git, redundant comments often make better commit messages than code comments. This leads to clearer git history
+- **Multiple commits for clarity**: In order to follow our rules for commit messages (keep them short and focused), if needed, split a single commit into multiple commits rather than one commit with an unnecessarily long commit message
+- **Sweeping existing projects**: When adding an existing project to git for the first time, review and remove extraneous comments that would be better as commit messages
 
 If you catch yourself writing "new", "old", "legacy", "wrapper", "unified", or implementation details in names or comments, STOP and find a better name that describes the thing's actual purpose.
 

@@ -221,6 +221,19 @@ Node.js application for fetching and displaying fantasy football player rankings
 - Generate all combinations of ranking types (ROS/WEEKLY/DYNASTY/DRAFT) × positions (QB/RB/WR/TE/K/DST)
 - Names tell what code does, not how it's implemented or its history
 
+**ToString Function Design**:
+
+- ToString functions (`playerToString()`, `playerToTabDelimitedString()`, `rankingsMetadataToString()`) contain ALL rendering logic for their context
+- Callers (e.g., `displayRankings()`, `dumpRankingsToTabDelimited()`) should not need to know how to format objects
+- ToString functions render objects entirely from the object's own context - if context is missing, expand the object being rendered rather than passing additional parameters
+- This encapsulation makes rendering logic maintainable and consistent across the application
+
+**Data Normalization Standards**:
+
+- **Opponent format**: All fantasy football data sources must normalize opponent format to "vs [opponent]" for HOME games, "@ [opponent]" for AWAY games, and "BYE" for teams on their bye week
+- Server-side normalization ensures consistency across all data sources (FantasyPros, future integrations)
+- While primarily important for DUMP (tab-delimited output), DISPLAY also benefits from standardization
+
 ## Future Decision Points
 
 ### Pending Decisions
