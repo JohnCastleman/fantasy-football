@@ -58,6 +58,21 @@ FOR EVERY NEW FEATURE OR BUGFIX, YOU MUST follow Test Driven Development:
 - YOU MUST NEVER ignore system or test output - logs and messages often contain CRITICAL information.
 - Test output MUST BE PRISTINE TO PASS. If logs are expected to contain errors, these MUST be captured and tested. If a test is intentionally triggering an error, we *must* capture and validate that the error output is as we expect.
 
+### Test Configuration Before Starting Work
+
+BEFORE beginning TDD implementation, YOU MUST:
+
+1. **Check and configure test settings** to maximize testing surface area
+2. **Configure system settings** appropriately for comprehensive testing
+3. **Verify test configuration** covers all relevant scenarios
+
+General principles:
+
+- Set test parameters to cover maximum scenarios in a single test run (e.g., if a test can run in mode 1, mode 2, mode 3, or mode ALL which incorporates all modes, opt for mode ALL)
+- Balance comprehensive coverage with manageable output (use size limits, pagination, etc.)
+- Always include verbose/detailed output as a test facet when performing final testing - testing should cover both terse and verbose modes, which generally requires multiple test runs
+- Test all orthogonal configuration dimensions before completing work
+
 ## Writing Code
 
 - When submitting work, verify that you have FOLLOWED ALL RULES. (See Rule #1)
@@ -108,6 +123,15 @@ If you catch yourself writing "new", "old", "legacy", "wrapper", "unified", or i
 - NEVER use `git add -A` unless you've just done a `git status`
 - Don't add random test files to the repo.
 - Git commit messages should be as simple as possible, preferably fitting on one line. If multiple sentences/paragraphs are needed, the same could often be done with multiple commits to reduce complexity.
+
+### Commit Organization
+
+- **Separate commits by area of work**: Process changes (.cursorrules, docs/) should be in separate commits from development work
+- **Commit early and often**: Make multiple local commits per task as work progresses
+- **One push per task**: Generally push once at the end of task completion
+- **Interactive rebase (before pushing)**: Consider using interactive rebase to clean up commit history after completing a task but before pushing - MUST include John in the rebase decision and in the actual rebase process. Interactive rebase is valuable for reorganizing/combining/splitting commits to better tell a story for PR reviewers
+- **Interactive rebase / Squashing (post-PR review)**: May use interactive rebase or squash after PR review if needed - MUST include John in the decision and process
+- This commit organization should be a natural part of the PR workflow when using pull requests
 
 ### Code Review Process
 
