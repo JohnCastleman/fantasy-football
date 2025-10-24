@@ -166,16 +166,28 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 ### High Priority
 
 1. **Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)
-2. **Player Data Expansion (Immediate Need)**: Add BYE week per player (ROS rankings) and Opponent per player (WEEKLY rankings)
-3. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+2. **Player Data: BYE Week Field**
+   - Server: Add BYE to ranking results in ROS and WEEKLY (and anywhere else where available in API response)
+   - Client DISPLAY: Surface BYE in tabular display anywhere it's available in the ranking result
+   - Client DUMP: Add "bye" column ONLY in ROS dumped results (per TSV usage requirements)
+3. **Player Data: Opponent Field**
+   - Server: Add Opponent only in WEEKLY ranking results (opponent changes week-to-week, only makes sense in that context)
+   - Client DISPLAY: Surface Opponent in tabular display anywhere it's available in the ranking result (should only be WEEKLY)
+   - Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)
+4. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+5. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements
 
 1. **Player Data Expansion (Full API)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
-2. **Tab-Delimited Output Handling**: Explore routing dump function output to files for spreadsheet import (console stream separation approach)
-3. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
-4. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
-5. **Cross-Device AI Context**: Enhance MCP GitHub integration for full cross-device development workflow
+2. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
+3. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
+4. **Cross-Device AI Context**: Enable async AI model execution in the cloud (similar to GitHub Copilot Coding Agent or Google Jules) - submit instructions from any device (e.g., phone) that run to completion asynchronously using Cursor Pro subscription
+
+### Nice to Haves
+
+1. **Alternative GSheets Integration**: Explore options beyond TSV-to-stdout for transferring DUMP results into Google Sheets (e.g., direct Google Sheets API integration). Note: Current TSV-to-stdout implementation is intentional and works well with shell redirection/piping
+2. **UI Client**: Supplement existing CLI client with a UI client (web or desktop) that provides the same functionality. Would leverage the separate HTTP API server from task #4 in High Priority
 
 ## Recent Development History
 
