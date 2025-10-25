@@ -136,6 +136,21 @@ If you catch yourself writing "new", "old", "legacy", "wrapper", "unified", or i
 - Don't add random test files to the repo.
 - Git commit messages should be as simple as possible, preferably fitting on one line. If multiple sentences/paragraphs are needed, the same could often be done with multiple commits to reduce complexity.
 
+### Git Push Safety
+
+- ALWAYS use `git push --force-with-lease` instead of `git push --force`
+- `--force-with-lease` protects against accidentally overwriting others' commits (even in single-developer repos, provides safety against accidental overwrites from different machines)
+- NEVER use `git push --force` unless explicitly requested
+- In general, `git push --force` should not be necessary if you follow the rules in the first place about stopping and locally interactive rebase and/or squash before pushing remote
+
+### Platform-Specific: PowerShell Git Commands
+
+When running git commands in PowerShell:
+
+- Git commit messages containing double quotes MUST be wrapped in single quotes
+- Example: `git commit -m 'message with "quotes" inside'`
+- This avoids PowerShell parsing issues with nested quotes
+
 ### Commit Organization
 
 - **Separate commits by area of work**: Process changes (.cursorrules, docs/) should be in separate commits from development work
@@ -144,6 +159,15 @@ If you catch yourself writing "new", "old", "legacy", "wrapper", "unified", or i
 - **Interactive rebase (before pushing)**: Consider using interactive rebase to clean up commit history after completing a task but before pushing - MUST include John in the rebase decision and in the actual rebase process. Interactive rebase is valuable for reorganizing/combining/splitting commits to better tell a story for PR reviewers
 - **Interactive rebase / Squashing (post-PR review)**: May use interactive rebase or squash after PR review if needed - MUST include John in the decision and process
 - This commit organization should be a natural part of the PR workflow when using pull requests
+
+### Interactive Rebase Patterns
+
+When splitting or reorganizing commits during interactive rebase:
+
+- Use `git reset HEAD~` to unstage a commit while keeping changes in working directory
+- Use `git commit --fixup=<hash>` to create fixup commits that target earlier commits
+- Use `git rebase -i --autosquash` to automatically position and squash fixup commits
+- These patterns keep rebase history clean and intentions clear
 
 ### Code Review Process
 
@@ -183,6 +207,7 @@ The TodoWrite chat tool acts as a **writethrough cache** of the backlog for acti
 - YOU MUST NEVER discard tasks from TodoWrite without John's explicit approval
 - YOU MUST keep TodoWrite synchronized with `docs/development.md` - they should never diverge
 - When completing work, update BOTH TodoWrite and `docs/development.md` in the same action
+- It's fine to make use of the chat todo list tool - in fact, it's encouraged (see the todo list as writethrough cache rule) - but the contents of that list don't survive a context reset, so complex operations need planning documents in `docs/`
 
 ### Ephemeral Task Expansion in TodoWrite
 
@@ -200,6 +225,19 @@ If new, unrelated work is discovered during a session:
 1. Start by adding it to the backlog in `docs/development.md` ONLY
 2. Discuss with John whether or not to also bring it into TodoWrite, and then only if there is a breaking dependency on the new task in the working set
 3. The general rule of thumb is new work should either be put off until later in the development.md file, or - if it represents a breaking dependency to the working set - the working set should either be abandoned or shelved to work on the dependent task instead, in a new dev session; however, for this reason, always ask John how to proceed with new, unrelated work
+
+### Complex Operation Planning
+
+For complex operations (interactive rebases, large refactorings, migrations):
+
+- YOU MUST create a planning document in `docs/` BEFORE starting
+- Document should include:
+  - Goal/objective
+  - Detailed step-by-step plan
+  - Expected final state
+- This document survives context resets and provides continuity
+- Update document with status and lessons learned upon completion
+- Include "Lessons Learned" section in planning documents for future reference
 
 ## Systematic Debugging Process
 
@@ -252,6 +290,24 @@ When writing or modifying markdown files:
 - Follow [markdownlint rules](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md) for consistency
 - Always check the markdownlint linter in Cursor after making any markdown edits
 - Fix any linter errors before committing
+
+### Documentation Archive Pattern
+
+Complex operational plans should follow this lifecycle:
+
+- **During Active Work**: Create planning documents (rebase plans, migration plans, etc.) in `docs/` during active work
+- **Upon Completion**: Move completed planning documents to `docs/archive/` using `git mv`
+- **Backlog Integration**: Add completed task to `docs/development.md` Completed section with link to archived plan
+- **Lessons Learned**: Include "Lessons Learned" section in planning documents before archiving
+- **Purpose**: Archived plans serve as historical record and learning resource for future similar operations
+
+## Tool and Environment Health
+
+Before starting complex operations (rebases, multi-step refactorings, etc.):
+
+- YOU MUST verify terminal tool is working by running a simple test command (e.g., `Write-Output "test"` or `echo "test"`)
+- If terminal output is broken (commands return exit code 0 but no output), STOP and inform John that IDE restart is needed
+- NEVER proceed with complex git operations when terminal tool is not functioning properly
 
 ## Development Session Guidelines
 
