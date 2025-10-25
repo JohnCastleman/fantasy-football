@@ -178,12 +178,21 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
    - ~~Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)~~
 10. ~~**Interactive Rebase**: Reorganize commits 931ec30 through b2e3329 into focused, single-purpose commits following commit message guidelines - see [archive/rebase-plan-OCT-24-work.md](archive/rebase-plan-OCT-24-work.md)~~ ✅
 
-### High Priority
+### High Priority (top of the backlog)
 
-1. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
-2. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+(currently empty)
 
-### Future Enhancements
+### Backlog
+
+1. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
+   - `server/settings.js`: Extract `fantasyprosApiMapping` to `server/api-mappings.js`
+   - `server/settings.js`: Extract `fantasyprosLeagues` to `server/leagues.js`
+   - `client/settings.js`: Extract `tabDelimitedHeader` to `client/header-formats.js`
+   - `client/settings.js`: Extract `displayText` to `client/display-text.js`
+2. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+3. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+
+### Future Enhancements (might get to some day)
 
 1. **Player Data Expansion (Full API)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
 2. **Additional Data Source Integrations**: Integrate additional data sources (e.g., Flock Fantasy API - sample responses available in `docs/api-samples/`)
