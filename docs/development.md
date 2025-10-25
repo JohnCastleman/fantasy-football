@@ -176,6 +176,7 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
    - ~~Server: Add Opponent only in WEEKLY ranking results (opponent changes week-to-week, only makes sense in that context)~~
    - ~~Client DISPLAY: Surface Opponent in tabular display anywhere it's available in the ranking result (should only be WEEKLY)~~
    - ~~Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)~~
+10. ~~**Interactive Rebase**: Reorganize commits 931ec30 through b2e3329 into focused, single-purpose commits following commit message guidelines - see [archive/rebase-plan-OCT-24-work.md](archive/rebase-plan-OCT-24-work.md)~~ ✅
 
 ### High Priority
 
