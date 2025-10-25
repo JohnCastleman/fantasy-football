@@ -21,10 +21,12 @@ const PositionEnum = Object.freeze({
 });
 
 class PlayerRankingData {
-  constructor(rank, name, team) {
+  constructor(rank, name, team, bye, opponent = null) {
     this.rank = rank;
     this.name = name;
     this.team = team;
+    this.bye = bye;
+    this.opponent = opponent;
   }
 }
 

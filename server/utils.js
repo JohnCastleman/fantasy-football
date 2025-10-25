@@ -38,9 +38,26 @@ function toFantasyprosHttpHeaders(apiKey) {
 }
 
 function fromFantasyprosApiResponse(data) {
-  const players = data.players && Array.isArray(data.players) ? data.players.map(p =>
-    new PlayerRankingData(p.rank_ecr, p.player_name, p.player_team_id)
-  ) : null;
+  const players = data.players && Array.isArray(data.players) ? data.players.map(p => {
+    // Normalize opponent format: "vs." => "vs", "at" => "@"
+    let opponent = p.player_opponent || null;
+    if (opponent) {
+      opponent = opponent.replace(/^vs\.\s*/i, 'vs ').replace(/^at\s+/i, '@ ');
+    }
+    
+    // If no opponent but player is on bye this week (for WEEKLY rankings), set opponent to "BYE"
+    if (!opponent && data.ranking_type_name === 'weekly' && p.player_bye_week && p.player_bye_week === data.week) {
+      opponent = 'BYE';
+    }
+    
+    return new PlayerRankingData(
+      p.rank_ecr,
+      p.player_name,
+      p.player_team_id,
+      p.player_bye_week,
+      opponent
+    );
+  }) : null;
 
   // Map API values back to our enums
   const scoringType = Object.keys(Settings.fantasyprosApiMapping.scoringType).find(key => 
