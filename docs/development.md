@@ -135,10 +135,9 @@ const Settings = {
 
 Raw API response samples are stored in `docs/api-samples/` for reference:
 
-- `fantasypros-ROS(W7)-K.json` - Rest-of-Season Kickers
-- `fantasypros-ROS(W7)-DST.json` - Rest-of-Season Defense
-- `fantasypros-W7-K.json` - Weekly Kickers (Week 7)
-- `fantasypros-W7-DST.json` - Weekly Defense (Week 7)
+- `fantasypros-ROS(W*)-(QB|RB|WR|TE|K|DST).json` - Rest-of-Season rankings for all positions
+- `fantasypros-W*-(QB|RB|WR|TE|K|DST).json` - Weekly rankings for all positions
+- `fantasypros-league-roster-geeksquadron.json` - League roster data with player ownership
 - `flockfantasy-REDRAFT-ALL.json` - Alternative data source sample
 
 ## Fantasy Football Context
