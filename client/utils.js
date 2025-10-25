@@ -23,11 +23,13 @@ function rankingsMetadataToString(metadata, verbose = false) {
 }
 
 function playerToString(player) {
-  return `${player.rank}. ${player.name} (${player.team})`;
+  const opponentOrBye = player.opponent ? ` ${player.opponent}` : player.bye ? ` (BYE:${player.bye})` : '';
+  return `${player.rank}. ${player.name} ${player.team}${opponentOrBye}`;
 }
 
 function playerToTabDelimitedString(player) {
-  return `${player.rank}\t${player.name}\t${player.team}`;
+  const opponentOrBye = player.opponent ? `\t${player.opponent}` : player.bye ? `\t${player.bye}` : '';
+  return `${player.rank}\t${player.name}\t${player.team}${opponentOrBye}`;
 }
 
 export {
