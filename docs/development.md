@@ -179,8 +179,9 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### High Priority
 
-1. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
-2. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+1. **Interactive Rebase in Progress**: Reorganize recent commits into focused commits - see [rebase-plan-OCT-24-work.md](rebase-plan-OCT-24-work.md)
+2. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+3. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements
 
