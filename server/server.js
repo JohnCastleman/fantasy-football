@@ -64,9 +64,9 @@ async function fetchRankings(apiParams, apiHeaders) {
 
 async function fetchGeeksquadronRankings(rankingType, position) {
   const season = Settings.season;
-  const scoringType = ScoringTypeEnum.STD; // Yahoo public league Geeksquadron uses Standard scoring
-  const leagueKey = 'nfl~686bb718-0adf-4076-bbca-f78f0d5176e1'; // Yahoo public league Geeksquadron
   const apiKey = Settings.fantasyprosApiKey; // impl detail: server is using FantasyPros to source rankings
+  const leagueKey = Settings.fantasyprosLeagueKey; // Yahoo public league
+  const scoringType = Settings.fantasyprosLeagueScoringType || Settings.scoringType;
 
   const apiParams = toFantasyProsApiParams(season, scoringType, rankingType, position, leagueKey);
   const apiHeaders = toFantasyprosHttpHeaders(apiKey);

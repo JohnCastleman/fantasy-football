@@ -5,12 +5,10 @@ import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.
 const Settings = {
   season: 2025,
   scoringType: ScoringTypeEnum.STD,
+  fantasyprosApiKey: process.env.FANTASYPROS_API_KEY || null, // API Key from environment variable (required)
+  fantasyprosLeagueKey: process.env.FANTASYPROS_LEAGUE_KEY || null, // League Key from environment variable (required for Yahoo public leagues)
+  fantasyprosLeagueScoringType: process.env.FANTASYPROS_LEAGUE_SCORING_TYPE || null, // League Scoring Type from environment variable, corresponding to league key
   
-  // API Key from environment variable (required)
-  // Set in .env file: FANTASYPROS_API_KEY=your_key_here
-  fantasyprosApiKey: process.env.FANTASYPROS_API_KEY || null,
-  
-  // API mappings
   fantasyprosApiMapping: {
     scoringType: {
       [ScoringTypeEnum.STD]: "STD",
