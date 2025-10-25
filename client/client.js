@@ -40,8 +40,10 @@ function dumpRankingsToTabDelimited(rankings) {
   console.log(`\n${title}`);
   console.log('=' + '='.repeat(title.length) + '\n');
 
-  if (Settings.tabDelimitedHeader) {
-    console.log(Settings.tabDelimitedHeader); // Header row
+  const header = Settings.tabDelimitedHeader[metadata.rankingType];
+  
+  if (header) {
+    console.log(header);
   }
 
   players.forEach(player => {
