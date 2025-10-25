@@ -184,13 +184,14 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### Backlog
 
-1. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
+1. **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
+2. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
    - `server/settings.js`: Extract `fantasyprosApiMapping` to `server/api-mappings.js`
    - `server/settings.js`: Extract `fantasyprosLeagues` to `server/leagues.js`
    - `client/settings.js`: Extract `tabDelimitedHeader` to `client/header-formats.js`
    - `client/settings.js`: Extract `displayText` to `client/display-text.js`
-2. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
-3. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+3. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+4. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
 
 ### Future Enhancements (might get to some day)
 
