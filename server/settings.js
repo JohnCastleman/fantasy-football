@@ -6,8 +6,13 @@ const Settings = {
   season: 2025,
   scoringType: ScoringTypeEnum.STD,
   fantasyprosApiKey: process.env.FANTASYPROS_API_KEY || null, // API Key from environment variable (required)
-  fantasyprosLeagueKey: process.env.FANTASYPROS_LEAGUE_KEY || null, // League Key from environment variable (required for Yahoo public leagues)
-  fantasyprosLeagueScoringType: process.env.FANTASYPROS_LEAGUE_SCORING_TYPE || null, // League Scoring Type from environment variable, corresponding to league key
+  
+  fantasyprosLeagues: {
+    "GeekSquadron": {
+      key: "nfl~686bb718-0adf-4076-bbca-f78f0d5176e1",
+      scoringType: ScoringTypeEnum.STD
+    }
+  },
   
   fantasyprosApiMapping: {
     scoringType: {
