@@ -183,14 +183,17 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### Backlog
 
-1. **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
-2. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
+1. **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
+   - Enables rapid iteration and investigation for features like player ownership integration
+   - **Status**: Awaiting pre-work (see plan doc for prerequisites)
+   - Parameters: `--verbose`, `--displayMaxPlayers`, `--dump`, `--rankingTypes`, `--positions`
+2. **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
+3. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
    - `server/settings.js`: Extract `fantasyprosApiMapping` to `server/api-mappings.js`
    - `server/settings.js`: Extract `fantasyprosLeagues` to `server/leagues.js`
    - `client/settings.js`: Extract `tabDelimitedHeader` to `client/header-formats.js`
    - `client/settings.js`: Extract `displayText` to `client/display-text.js`
-3. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
-4. **CLI Options**: Add previewSize and verbose command-line argument overrides for Settings defaults
+4. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
 
 ### Future Enhancements (might get to some day)
 
