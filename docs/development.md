@@ -18,9 +18,9 @@
 
 **Current Session Tasks**:
 
-1. 🔄 Rename `displaySize` → `displayMaxPlayers` (in progress)
-2. 🔜 Rename `testRankingTypes` → `rankingType` (array → single enum)
-3. 🔜 Rename `testPositions` → `positions`
+1. ✅ Rename `displaySize` → `displayMaxPlayers`
+2. ✅ Rename `testRankingTypes` → `rankingType` (array → single enum)
+3. ✅ Rename `testPositions` → `positions`
 
 ## Development Workflow
 
