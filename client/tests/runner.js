@@ -14,12 +14,9 @@ import {
 } from '../index.js';
 
 function runConfigurableTests() {
-  const { testRankingTypes, testOutputTypes, testPositions } = TestSettings;
+  const { rankingType, testOutputTypes, testPositions } = TestSettings;
   
-  // Determine which ranking types to test
-  const rankingTypesToTest = testRankingTypes === null
-    ? [RankingTypeEnum.ROS, RankingTypeEnum.WEEKLY, RankingTypeEnum.DYNASTY, RankingTypeEnum.DRAFT]
-    : testRankingTypes;
+  const rankingTypeToTest = rankingType ?? RankingTypeEnum.DRAFT; // defensive default for ranking type is DRAFT
   
   // Determine which positions to test  
   const positionsToTest = testPositions === null
@@ -103,22 +100,18 @@ function runConfigurableTests() {
   
   // Run display tests
   if (shouldTestDisplay) {
-    for (const rankingType of rankingTypesToTest) {
-      for (const position of positionsToTest) {
-        if (displayFunctions[rankingType] && displayFunctions[rankingType][position]) {
-          displayFunctions[rankingType][position]();
-        }
+    for (const position of positionsToTest) {
+      if (displayFunctions[rankingTypeToTest] && displayFunctions[rankingTypeToTest][position]) {
+        displayFunctions[rankingTypeToTest][position]();
       }
     }
   }
   
   // Run dump tests  
   if (shouldTestDump) {
-    for (const rankingType of rankingTypesToTest) {
-      for (const position of positionsToTest) {
-        if (dumpFunctions[rankingType] && dumpFunctions[rankingType][position]) {
-          dumpFunctions[rankingType][position]();
-        }
+    for (const position of positionsToTest) {
+      if (dumpFunctions[rankingTypeToTest] && dumpFunctions[rankingTypeToTest][position]) {
+        dumpFunctions[rankingTypeToTest][position]();
       }
     }
   }
