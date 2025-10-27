@@ -205,8 +205,13 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### Nice to Haves
 
-1. **Alternative GSheets Integration**: Explore options beyond TSV-to-stdout for transferring DUMP results into Google Sheets (e.g., direct Google Sheets API integration). Note: Current TSV-to-stdout implementation is intentional and works well with shell redirection/piping
-2. **UI Client**: Supplement existing CLI client with a UI client (web or desktop) that provides the same functionality. Would leverage the separate HTTP API server from task #4 in High Priority
+1. **Server- and Client-Side Logging**: Add configurable logging framework for debugging and monitoring (e.g., winston, pino, or debug module)
+   - Server: Log API requests, responses, errors, and performance metrics
+   - Client: Log display/dump operations, settings overrides, and errors
+   - Configurable log levels (error, warn, info, debug, trace)
+   - Optional log file output with rotation
+2. **Alternative GSheets Integration**: Explore options beyond TSV-to-stdout for transferring DUMP results into Google Sheets (e.g., direct Google Sheets API integration). Note: Current TSV-to-stdout implementation is intentional and works well with shell redirection/piping
+3. **UI Client**: Supplement existing CLI client with a UI client (web or desktop) that provides the same functionality. Would leverage the separate HTTP API server from task #4 in High Priority
 
 ## Recent Development History
 
