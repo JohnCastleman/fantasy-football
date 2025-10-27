@@ -165,6 +165,7 @@ const rankingType = TestSettings.rankingType ?? RankingTypeEnum.DRAFT;
 
 **Files to Update**:
 
+- `client/utils.js`: Add `rankingsMetadataToMarkdownString()` following existing ToString pattern
 - `client/utils.js`: Add `playerToMarkdownString()` and `playersToMarkdownTable()` following existing ToString pattern
 - `client/client.js`: Update `displayRankings()` to use markdown table format instead of plain text
 
@@ -173,7 +174,8 @@ const rankingType = TestSettings.rankingType ?? RankingTypeEnum.DRAFT;
 ROS/DRAFT/DYNASTY (with BYE):
 
 ```markdown
-2025 Standard Rest-of-Season Quarterback Rankings (10/27/2025)
+| 2025 Standard Rest-of-Season Quarterback Rankings (10/27/2025) |
+|------------------------------------------------------------------|
 
 | Rank | Name             | Team | BYE |
 |------|------------------|------|-----|
@@ -184,7 +186,8 @@ ROS/DRAFT/DYNASTY (with BYE):
 WEEKLY (with Opponent):
 
 ```markdown
-2025 Standard Week 8 Quarterback Rankings (10/27/2025)
+| 2025 Standard Week 8 Quarterback Rankings (10/27/2025) |
+|---------------------------------------------------------|
 
 | Rank | Name             | Team | Opponent |
 |------|------------------|------|----------|
@@ -194,9 +197,10 @@ WEEKLY (with Opponent):
 
 **Implementation Pattern**:
 
-- Metadata header line included in markdown output (when writing to file or stdout)
-- Player object renders itself via ToString functions - it knows whether to show opponent or BYE based on its own fields
-- For file output: metadata + table go together; for TSV dump to file: only pure TSV (no metadata)
+- Metadata formatted as single-column markdown table via `rankingsMetadataToMarkdownString()`
+- Player data formatted via `playerToMarkdownString()` - knows whether to show opponent or BYE based on its own fields
+- Both metadata and player table included in markdown output
+- For TSV dump to file: only pure TSV (no metadata)
 
 ### 8. Implement File Output Capability
 
@@ -204,26 +208,79 @@ WEEKLY (with Opponent):
 
 **Rationale**: Separates the feature implementation from CLI parameter addition. Once this works via `Settings.outputFile`, the `-o` parameter just needs to override that setting.
 
+**Key Architectural Decision**: Explicit stdout for data output
+
+Before implementing file output, refactor to use explicit stdout for data payload:
+
+- **Data output (payload)** → `process.stdout.write()` or file
+- **Logging/status** → Keep as `console.log()` or `console.info()` (already goes to stdout but semantically clearer)
+
+This ensures clean separation: data payload uses explicit streams, logging uses console methods.
+
 **Files to Update**:
 
+- `client/client.js`: Identify and refactor data payload calls to use `process.stdout.write()`
+- `client/client.js`: Review non-data console calls and use `console.log()` vs `console.info()` appropriately
 - `client/client.js`: Update `displayRankings()` to check `Settings.outputFile` and write to file if specified
 - `client/client.js`: Update `dumpRankingsToTabDelimited()` to check `Settings.outputFile` and write to file if specified
 
 **Implementation Approach**:
 
+Step 1 - Refactor data output to explicit stdout:
+
 ```javascript
-import { writeFileSync } from 'fs';
+// Data output (payload) - currently console.log for table/TSV data
+process.stdout.write(output + '\n');
 
-// In displayRankings() and dumpRankingsToTabDelimited()
-const output = /* ... build output string ... */;
+// Logging/status - keep as console methods
+console.log('Fetching rankings using API param strings...', apiParams);
+// or
+console.info('Fetching rankings using API param strings...', apiParams);
+```
 
+Step 2 - Add file output capability using streams:
+
+```javascript
+import { createWriteStream } from 'fs';
+
+// Update function signatures to accept optional output stream
+function displayRankings(rankingType, position, outStream = process.stdout) {
+  // Stream data writes line-by-line
+  outStream.write(rankingsMetadataToMarkdownString(metadata) + '\n');
+  outStream.write('| Rank | Name | Team | ... |\n');
+  outStream.write('|------|------|------|-----|\n');
+  
+  for (const player of players) {
+    outStream.write(playerToMarkdownString(player) + '\n');
+  }
+}
+
+function dumpRankingsToTabDelimited(rankingType, position, outStream = process.stdout) {
+  // Stream TSV line-by-line
+  outStream.write(tabDelimitedHeader + '\n');
+  
+  for (const player of players) {
+    outStream.write(playerToTabDelimitedString(player) + '\n');
+  }
+}
+
+// Call site handles stream creation/cleanup:
 if (Settings.outputFile) {
-  writeFileSync(Settings.outputFile, output, 'utf8');
-  console.log(`Output written to: ${Settings.outputFile}`);
+  const outStream = createWriteStream(Settings.outputFile);
+  displayRankings(rankingType, position, outStream);
+  outStream.end();
+  console.info(`Output written to: ${Settings.outputFile}`);
 } else {
-  console.log(output);
+  displayRankings(rankingType, position);  // Defaults to stdout
 }
 ```
+
+**Benefits of stream-based approach**:
+
+- Scales well for large outputs (thousands of lines)
+- Standard Node.js pattern (dependency injection)
+- Functions don't depend on Settings
+- Default parameter makes stdout usage clean and simple
 
 **Output Matrix** (2 formats × 2 destinations = 4 combinations):
 
