@@ -13,17 +13,17 @@ async function getRankings(rankingType, position) {
 
 function displayRankings(rankings, options = {}) {
   const { players, metadata } = rankings;
-  const { displaySize = Settings.displaySize, verbose = Settings.verbose } = options;
+  const { displayMaxPlayers = Settings.displayMaxPlayers ?? 0, verbose = Settings.verbose } = options;
 
   const title = rankingsMetadataToString(metadata, verbose);  
   console.log(`\n${title}`);
   console.log('=' + '='.repeat(title.length) + '\n');
 
-  if (displaySize !== null) {
-    players.slice(0, displaySize).forEach(player => {
+  if (displayMaxPlayers !== 0) {
+    players.slice(0, displayMaxPlayers).forEach(player => {
       console.log(playerToString(player));
     });
-    console.log('... (showing', displaySize, 'of', players.length, 'players)');
+    console.log('... (showing', displayMaxPlayers, 'of', players.length, 'players)');
   } else {
     players.forEach(player => {
       console.log(playerToString(player));

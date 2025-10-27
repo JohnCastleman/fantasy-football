@@ -156,8 +156,8 @@ const Settings = {
 
 ```javascript
 const Settings = {
-  displaySize: 3,        // Number of players to show in preview
-  verbose: false,        // Include detailed headers
+  displayMaxPlayers: null,  // Number of players to show in preview; null or 0 = show all
+  verbose: false,           // Include detailed headers
   tabDelimitedHeader: "rank\tname\tteam\tbye\topponent",
   displayText: { /* UI text mappings */ }
 };
