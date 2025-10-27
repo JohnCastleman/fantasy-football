@@ -14,14 +14,14 @@ import {
 } from '../index.js';
 
 function runConfigurableTests() {
-  const { rankingType, testOutputTypes, testPositions } = TestSettings;
+  const { rankingType, testOutputTypes, positions } = TestSettings;
   
   const rankingTypeToTest = rankingType ?? RankingTypeEnum.DRAFT; // defensive default for ranking type is DRAFT
   
   // Determine which positions to test  
-  const positionsToTest = testPositions === null
+  const positionsToTest = positions === null
     ? [PositionEnum.QB, PositionEnum.RB, PositionEnum.WR, PositionEnum.TE, PositionEnum.K, PositionEnum.DST]
-    : testPositions;
+    : positions;
   
   // Determine which output types to test
   const shouldTestDisplay = testOutputTypes === TestOutputTypeEnum.ALL || testOutputTypes === TestOutputTypeEnum.DISPLAY;

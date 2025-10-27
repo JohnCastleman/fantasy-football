@@ -9,8 +9,8 @@ const TestOutputTypeEnum = Object.freeze({
 const TestSettings = {
   testOutputTypes: TestOutputTypeEnum.ALL, // TestOutputTypeEnum.DISPLAY | TestOutputTypeEnum.DUMP | TestOutputTypeEnum.ALL
   rankingType: RankingTypeEnum.DRAFT, // RankingTypeEnum value
-  testPositions: null, // a collection of PositionEnum values; set to null to test all positions
-  // Example:  testPositions: [PositionEnum.K, PositionEnum.DST]
+  positions: null, // a collection of PositionEnum values; set to null to test all positions
+  // Example:  positions: [PositionEnum.K, PositionEnum.DST]
 };
 
 export {
