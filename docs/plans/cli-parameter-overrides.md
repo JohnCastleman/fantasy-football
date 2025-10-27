@@ -104,10 +104,12 @@ WEEKLY (with Opponent):
 | 2    | Josh Allen       | BUF  | vs MIA   |
 ```
 
-### 4. Change `testRankingTypes` Array to `testRankingType` Single Enum
+### 4. Rename and Simplify Ranking Type Setting
 
 **Current**: `testRankingTypes` (array of ranking types)
-**New**: `testRankingType` (single ranking type enum)
+**New**: `rankingType` (single ranking type enum)
+
+**Rationale for name change**: The "test" prefix is redundant - this setting is already in `TestSettings` object
 
 **Rationale**:
 
@@ -122,10 +124,24 @@ WEEKLY (with Opponent):
 
 **Files to Update**:
 
-- `client/tests/settings.js`: Change `testRankingTypes` (array) to `testRankingType` (single enum), set to `RankingTypeEnum.DRAFT`
-- `client/tests/runner.js`: Remove array handling, use single value
+- `client/tests/settings.js`: Rename `testRankingTypes` → `rankingType`, change from array to single enum, set to `RankingTypeEnum.DRAFT`
+- `client/tests/runner.js`: Remove array handling, use single value, update to `TestSettings.rankingType`
+- All references to `testRankingType` throughout codebase
 
-### 5. Apply Defensive Defaults
+### 5. Rename Positions Setting
+
+**Current**: `testPositions`
+**New**: `positions`
+
+**Rationale**: The "test" prefix is redundant - this setting is already in `TestSettings` object
+
+**Files to Update**:
+
+- `client/tests/settings.js`: Rename `testPositions` → `positions`
+- `client/tests/runner.js`: Update to `TestSettings.positions`
+- All references to `testPositions` throughout codebase
+
+### 6. Apply Defensive Defaults
 
 **Objective**: Add defensive defaults as "last resort" fallbacks for unexpected situations where settings are missing/null/undefined.
 
@@ -135,8 +151,8 @@ WEEKLY (with Opponent):
 - `displayMaxPlayers`: No defensive default needed - `null`, non-positive, or missing → show all players
 - `dump`: No defensive default needed - `null`, `false`, or missing → markdown table format
 - `outputFile`: No defensive default needed - `null` or missing → stdout
-- `testRankingType`: Defensive default is `RankingTypeEnum.DRAFT` (only ranking type with year-round context)
-- `testPositions`: No defensive default needed - `null`, empty array, or missing → all positions
+- `rankingType`: Defensive default is `RankingTypeEnum.DRAFT` (only ranking type with year-round context)
+- `positions`: No defensive default needed - `null`, empty array, or missing → all positions
 
 **Implementation**:
 
@@ -149,7 +165,7 @@ const {
 } = options;
 
 // Example for client/tests/runner.js
-const rankingType = TestSettings.testRankingType ?? RankingTypeEnum.DRAFT;
+const rankingType = TestSettings.rankingType ?? RankingTypeEnum.DRAFT;
 ```
 
 ## Current Settings (After Pre-Work)
@@ -163,10 +179,10 @@ const rankingType = TestSettings.testRankingType ?? RankingTypeEnum.DRAFT;
 ### Test Settings (`client/tests/settings.js`)
 
 - `dump` (boolean): Whether to use TSV format - **default**: `false` (use markdown table format)
-- `testRankingType` (enum): Which ranking type to test - **default**: `RankingTypeEnum.DRAFT`
+- `rankingType` (enum): Which ranking type to test - **default**: `RankingTypeEnum.DRAFT`
   - Valid values: `ROS`, `WEEKLY`, `DYNASTY`, `DRAFT`
   - `null` or missing → defensive default is `DRAFT`
-- `testPositions` (array|null): Which positions to test - **default**: `null` (all positions)
+- `positions` (array|null): Which positions to test - **default**: `null` (all positions)
   - Can be array of `PositionEnum` values: `QB`, `RB`, `WR`, `TE`, `K`, `DST`
 
 ## CLI Parameter Design
@@ -345,7 +361,7 @@ npm test -- -d -o output.tsv                  # TSV to file (short)
 
 **Valid Values**: `DRAFT`, `DYNASTY`, `ROS`, `WEEKLY` (case-insensitive)
 
-**Overrides**: `TestSettings.testRankingType`
+**Overrides**: `TestSettings.rankingType`
 
 **Usage**:
 
@@ -368,7 +384,7 @@ npm test -- -t draft           # Case-insensitive
 
 **Valid Position Values**: `QB`, `RB`, `WR`, `TE`, `K`, `DST` (case-insensitive)
 
-**Overrides**: `TestSettings.testPositions`
+**Overrides**: `TestSettings.positions`
 
 **Usage**:
 
@@ -497,8 +513,8 @@ import { RankingTypeEnum } from '../../common/index.js';
 
 const TestSettings = {
   dump: cliOptions.dump ?? false,
-  testRankingType: cliOptions.type ? RankingTypeEnum[cliOptions.type] : RankingTypeEnum.DRAFT,
-  testPositions: cliOptions.position.length > 0 
+  rankingType: cliOptions.type ? RankingTypeEnum[cliOptions.type] : RankingTypeEnum.DRAFT,
+  positions: cliOptions.position.length > 0 
     ? cliOptions.position.map(p => PositionEnum[p])
     : null,
 };
