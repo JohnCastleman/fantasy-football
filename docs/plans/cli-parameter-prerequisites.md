@@ -8,6 +8,39 @@ Implement settings refactorings, markdown table formatting, and file output capa
 
 These enhancements provide immediate value to the application while also preparing the codebase for CLI parameter overrides. Settings will be clearer and more consistent, output will be more readable (markdown tables), and file output will provide precise control over what gets written to files vs console.
 
+## Implementation Strategy
+
+The work will be implemented in three working sets to respect task dependencies and provide quick wins:
+
+### Working Set 1: Simple Renamings (Tasks 1, 4, 5)
+
+- Rename `displaySize` → `displayMaxPlayers`
+- Rename `testRankingTypes` → `rankingType` (array → single enum)
+- Rename `testPositions` → `positions`
+
+**Rationale**: Three quick wins with no dependencies between them. All are straightforward renamings that can be tested immediately.
+
+### Working Set 2: New Setting and Defaults (Tasks 3, 6)
+
+- Add `outputFile` setting
+- Apply defensive defaults
+
+**Rationale**: Isolates the new setting work. Defensive defaults done first in this set (likely already close to complete). Task 2 deferred to Working Set 3 due to dependency on markdown table output.
+
+### Working Set 3: Output Enhancements (Tasks 7, 8, 2)
+
+- Implement markdown table output format (task 7)
+- Implement file output capability (task 8)
+- Replace `testOutputTypes` enum with `dump` boolean (task 2)
+
+**Rationale**: Task 2 describes `dump=false` as "markdown table format", so markdown must exist first. While technically we could make task 2 agnostic to output format (it's just enum→boolean conversion), keeping this order:
+
+1. Gets three quick wins in first working set
+2. Isolates outputFile work with defensive defaults
+3. Collects related output format work together (markdown + file output + format selector)
+
+**Dependency Note**: Task 2 was originally in "Settings Refactoring" phase but moved to Working Set 3 because the boolean's default behavior assumes markdown table format exists.
+
 ## Prerequisites Overview
 
 This work consists of three phases:
