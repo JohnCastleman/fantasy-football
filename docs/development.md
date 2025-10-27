@@ -183,17 +183,23 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### Backlog
 
-1. **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
+1. **Display and Output Enhancements**: Settings refactoring, markdown table formatting, and file output capabilities - see [plans/cli-parameter-prerequisites.md](plans/cli-parameter-prerequisites.md)
+   - Settings refactoring: clearer names, simplified types, defensive defaults
+   - Markdown table output format (replaces plain text display)
+   - File output with Node.js streams (precise control over file contents vs console logging)
+   - **Status**: Ready for implementation - prerequisites for CLI parameter support
+2. **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
    - Enables rapid iteration and investigation for features like player ownership integration
-   - **Status**: Awaiting pre-work (see plan doc for prerequisites)
-   - Parameters: one or more for each client setting and client test setting, to allow runtime overrides of these
-2. **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
-3. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
+   - Commander.js integration for POSIX-style CLI parameters
+   - **Status**: Requires completion of Display and Output Enhancements (item #1)
+   - Parameters: `-v` (verbose), `-d` (dump), `-o` (output), `-t` (type), `-p` (position), `-m` (max-players)
+3. **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
+4. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
    - `server/settings.js`: Extract `fantasyprosApiMapping` to `server/api-mappings.js`
    - `server/settings.js`: Extract `fantasyprosLeagues` to `server/leagues.js`
    - `client/settings.js`: Extract `tabDelimitedHeader` to `client/header-formats.js`
    - `client/settings.js`: Extract `displayText` to `client/display-text.js`
-4. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+5. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
 
 ### Future Enhancements (might get to some day)
 
