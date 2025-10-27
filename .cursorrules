@@ -127,9 +127,43 @@ If you catch yourself writing "new", "old", "legacy", "wrapper", "unified", or i
 
 ## Version Control
 
+### Trunk-Based Development and PR Workflow
+
+We follow trunk-based development principles:
+
+- **Short-lived branches**: Branch off main, complete work, merge back (hours to days, not weeks)
+- **Continuous integration**: All changes flow through main frequently
+- **Pull requests as quality gates**: PRs provide review, CI checks, and discussion before merge
+
+**When to use PRs vs Direct Commits**:
+
+**Code changes** (default: PRs):
+
+- Create short-lived branch before starting work
+- Complete work with frequent local commits
+- Push branch and create PR
+- Wait for review (human or AI-assisted) and CI to pass
+- Merge to main and delete branch
+- **Direct commit exceptions**: Trivial fixes, urgent hotfixes (ask first if uncertain)
+
+**Process/documentation changes** (default: Direct commits):
+
+- `.cursorrules`, `docs/`, `README.md`, planning documents
+- Lower risk, easy to review in git history
+- Commit directly to main after showing changes via diff tool
+- **PR exceptions**: Complex changes, want discussion, substantial additions (ask first if uncertain)
+
+**Decision Framework**:
+
+- If uncertain whether to PR or direct commit, ASK
+- For process/docs: "Is this complex enough to warrant PR review?"
+- For code: "Is this trivial/urgent enough to skip PR?"
+
+### Git Workflow Basics
+
 - If the project isn't in a git repo, STOP and ask permission to initialize one.
 - YOU MUST STOP and ask how to handle uncommitted changes or untracked files when starting work. Suggest committing existing work first.
-- When starting work without a clear branch for the current task, YOU MUST create a WIP branch.
+- When starting code work, YOU MUST create a short-lived branch (unless doing direct commit with explicit permission)
 - YOU MUST TRACK all non-trivial changes in git.
 - YOU MUST commit frequently throughout the development process, even if your high-level tasks are not yet done.
 - NEVER SKIP, EVADE OR DISABLE A PRE-COMMIT HOOK
