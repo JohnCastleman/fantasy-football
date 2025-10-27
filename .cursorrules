@@ -37,6 +37,7 @@ When asked to do something, just do it - including obvious follow-up actions nee
 - YAGNI. The best code is no code. Don't add features we don't need right now.
 - When it doesn't conflict with YAGNI, architect for extensibility and flexibility.
 - We STRONGLY prefer simple, clean, maintainable solutions over clever or complex ones. Readability and maintainability are PRIMARY CONCERNS, even at the cost of conciseness or performance.
+- **Make vs Buy/Borrow**: Before implementing new functionality, research existing solutions. Look for established npm packages, frameworks, or best practices that solve the problem. Prefer well-maintained, widely-used libraries over custom implementations when appropriate.
 
 ## Test Driven Development (TDD)
 
@@ -154,6 +155,7 @@ When running git commands in PowerShell:
 ### Commit Organization
 
 - **Separate commits by area of work**: Process changes (.cursorrules, docs/) should be in separate commits from development work
+- **Separate .cursorrules commits**: Changes to .cursorrules should be in their own commit, separate from other process or documentation changes
 - **Commit early and often**: Make multiple local commits per task as work progresses
 - **One push per task**: Generally push once at the end of task completion
 - **Interactive rebase (before pushing)**: Consider using interactive rebase to clean up commit history after completing a task but before pushing - MUST include John in the rebase decision and in the actual rebase process. Interactive rebase is valuable for reorganizing/combining/splitting commits to better tell a story for PR reviewers
