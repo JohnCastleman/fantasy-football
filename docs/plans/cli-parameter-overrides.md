@@ -16,7 +16,7 @@ Before implementing CLI parameter overrides, the following cleanups and refactor
 
 **Current Name**: `displaySize` (vague - "size of what?")
 **New Name**: `displayMaxPlayers` (clear - maximum number of players to display)
-**Behavior**: `null` or `0` = show all players, any positive number = show that many players
+**Behavior**: `0` or less, `null`, or missing = show all players, any positive number = show that many players, maximum
 
 **Files to Update**:
 
@@ -32,26 +32,68 @@ Before implementing CLI parameter overrides, the following cleanups and refactor
 
 - `false`, `null`, or missing = DISPLAY mode
 - `true` = DUMP mode
-- The "run both modes in one test run" functionality (ALL) is being retired
+- The "run both modes in one test run" functionality (ALL) is being retired; the general use case for an app such as this, for a general user, is the display output case - DUMP is a specialty case for me to use to integrate into Sheets
 
 **Files to Update**:
 
 - `client/tests/settings.js`: Replace `testOutputTypes` with `dump` boolean
 - `client/tests/runner.js`: Simplify test logic (remove ALL handling)
-- Remove `TestOutputTypeEnum.ALL` (keep DISPLAY and DUMP for internal use if needed)
+- ~~Remove `TestOutputTypeEnum.ALL` (keep DISPLAY and DUMP for internal use if needed)~~ get rid of `TestOutputTypeEnum` when getting rid of `TestSettings.testOutputTypes`
 
-### Reconsider `testRankingTypes` Default Behavior
+### Change `testRankingTypes` Array to `testRankingType` Single Enum
 
-**Current**: `null` = test all 4 ranking types (ROS, WEEKLY, DYNASTY, DRAFT)
-**Concern**: Running DRAFT and DYNASTY by default may not make sense for typical mid-season use
+**Current**: `testRankingTypes` (array of ranking types)
+**New**: `testRankingType` (single ranking type enum)
 
-**Decision Needed**: Should `null` mean:
+**Rationale**:
 
-- All 4 types (current)
-- Only ROS and WEEKLY (more common mid-season)
-- Require explicit specification (error if null)
+- **Pre-season context**: ROS/WEEKLY make no sense (not in season). Between DRAFT and DYNASTY, you're either one or the other, not both at once
+- **In-season context**: DRAFT/DYNASTY make almost no sense (occasionally useful for comparison early in season). Between ROS and WEEKLY, you sometimes want both, but usually want one THEN the other, not simultaneously
+- **Conclusion**: A collection doesn't match typical usage patterns - you typically want ONE ranking type at a time
 
-This should be decided before implementation.
+**Default Behavior**:
+
+- `null` or missing → defensive default is `DRAFT`
+- Cannot make it season-aware (too complex for low-level code)
+- `DRAFT` chosen as defensive default because:
+  - ROS/WEEKLY have no context outside the season
+  - DRAFT (and DYNASTY) have minimal context during the season, but maximal (only) context during the off-season
+  - DRAFT is more common than DYNASTY
+
+**Settings File Value**:
+
+- Should be explicitly set to `DRAFT` in `TestSettings` (not `null`)
+- User will naturally update this as seasons change:
+  - End of season: switch from ROS/WEEKLY to DRAFT/DYNASTY for next season
+  - New season starts: update `season` setting in server settings
+  - Season begins: switch from DRAFT/DYNASTY to ROS/WEEKLY
+
+**Files to Update**:
+
+- `client/tests/settings.js`: Change `testRankingTypes` (array) to `testRankingType` (single enum), set to `RankingTypeEnum.DRAFT`
+- `client/tests/runner.js`: Remove array handling, use single value
+
+### Apply Defensive Defaults
+
+**Objective:** Add defensive defaults as "last resort" fallbacks for unexpected situations where settings are missing/null/undefined.
+
+**Defensive Default Behavior** (only applied when setting is missing/null/undefined):
+
+- `verbose`: No defensive default needed - `null`, `false`, or missing → base display (not verbose)
+- `displayMaxPlayers`: No defensive default needed - `null`, `0`, or missing → show all players
+- `dump`: No defensive default needed - `null`, `false`, or missing → DISPLAY mode
+- `testRankingType`: Defensive default is `RankingTypeEnum.DRAFT` (only ranking type with year-round context)
+- `testPositions`: No defensive default needed - `null`, empty array, or missing → all positions
+
+**Implementation**: Add nullish coalescing where settings are consumed, but only apply actual defaults for `testRankingType`:
+
+```javascript
+// Example for client/client.js displayRankings()
+const { displayMaxPlayers = Settings.displayMaxPlayers ?? null, verbose = Settings.verbose ?? false } = options;
+
+// Example for client/tests/runner.js
+const rankingType = TestSettings.testRankingType ?? RankingTypeEnum.DRAFT;
+```
 
 ## Current Settings (After Pre-Work)
 
@@ -63,27 +105,29 @@ This should be decided before implementation.
 ### Test Settings (`client/tests/settings.js`)
 
 - `dump` (boolean): Whether to dump tab-delimited output (false = DISPLAY mode, true = DUMP mode) - **default in file**: should be `false`
-- `testRankingTypes` (array|null): Which ranking types to test - **default in file**: should be `null` (meaning TBD based on decision above)
-  - Can be array of `RankingTypeEnum` values: `ROS`, `WEEKLY`, `DYNASTY`, `DRAFT`
+- `testRankingType` (enum|null): Which ranking type to test - **default in file**: should be `RankingTypeEnum.DRAFT`
+  - Single `RankingTypeEnum` value: `ROS`, `WEEKLY`, `DYNASTY`, or `DRAFT`
+  - `null` or missing → defensive default is `DRAFT`
 - `testPositions` (array|null): Which positions to test - **default in file**: should be `null` (test all positions)
   - Can be array of `PositionEnum` values: `QB`, `RB`, `WR`, `TE`, `K`, `DST`
 
 ## Important: Understanding "Default" Values
 
-**Critical Distinction**: The "default" value for each setting is **whatever is stored in the Settings/TestSettings file**, NOT a hardcoded value. This is fundamental to the override system:
+**Three Levels of Defaults**:
 
-- CLI parameters **override** the settings file values
-- When no CLI parameter is provided, the value from the settings file is used
-- The keyword `"default"` in a CLI parameter means "use the value from the settings file"
-- Task 0's "defensive defaults" are **fallback values** used ONLY when Settings/TestSettings are missing/null/undefined
+1. **CLI Parameter Value** (highest priority): Explicitly provided on command line
+2. **Settings File Value** (middle priority): Configured in `client/settings.js` or `client/tests/settings.js`
+3. **Built-in Default** (lowest priority/last resort): Hardcoded behavior when setting is missing/null
 
-**Defensive Default Values** (used only when settings are missing):
+**The `default` Keyword**: When `default` is specified as a CLI parameter value, it means "ignore the Settings file value and use the built-in default behavior":
 
-- `verbose`: `false`
-- `displayMaxPlayers`: `null` (show all)
-- `dump`: `false` (DISPLAY mode)
-- `testRankingTypes`: `null` (behavior TBD)
-- `testPositions`: `null` (all positions)
+- `--verbose=default` → use built-in default (base display, not verbose)
+- `--displayMaxPlayers=default` → use built-in default (show all players)
+- `--dump=default` → use built-in default (DISPLAY mode)
+- `--rankingType=default` → use built-in default (DRAFT)
+- `--positions=default` → use built-in default (all positions)
+
+**When CLI Parameter is Omitted**: Uses the Settings file value (not the built-in default)
 
 ## Current Usage Patterns
 
@@ -104,115 +148,88 @@ This should be decided before implementation.
 - `client/tests/runner.js`: `runConfigurableTests()` reads `TestSettings.dump`
 - Used to determine whether to run display or dump mode
 
-**`testRankingTypes`:**
+**`testRankingType`:**
 
-- `client/tests/runner.js`: `runConfigurableTests()` reads `TestSettings.testRankingTypes`
-- `null` expands to some set of ranking types (behavior TBD)
+- `client/tests/runner.js`: `runConfigurableTests()` reads `TestSettings.testRankingType`
+- Single `RankingTypeEnum` value, no array handling needed
+- `null` or missing → uses defensive default `RankingTypeEnum.DRAFT`
 
 **`testPositions`:**
 
 - `client/tests/runner.js`: `runConfigurableTests()` reads `TestSettings.testPositions`
 - `null` expands to all positions: `[QB, RB, WR, TE, K, DST]`
 
-## Implementation Tasks
+## CLI Parameters
 
-### Task 0: Add Defensive Defaults
+### CLI Parameter 1: `--verbose`
 
-**Objective:** Ensure code gracefully handles missing settings with appropriate defensive defaults.
+**Type**: Boolean
 
-**Current State**:
-
-- Settings consumers assume settings exist and have valid values
-- No defensive checks for undefined/missing settings
-
-**Required Changes**:
-
-For each setting consumer, add defensive defaults using nullish coalescing. These defensive defaults are ONLY used if the Settings/TestSettings values are missing/null/undefined:
-
-```javascript
-// Example for client/client.js displayRankings()
-const { displayMaxPlayers = Settings.displayMaxPlayers ?? null, verbose = Settings.verbose ?? false } = options;
-```
-
-**Defensive Default Values** (fallback when Settings are missing):
-
-- `verbose`: `false`
-- `displayMaxPlayers`: `null` (show all)
-- `dump`: `false` (DISPLAY mode)
-- `testRankingTypes`: `null` (behavior TBD)
-- `testPositions`: `null` (all positions)
-
-### Task 1: Implement `--verbose` CLI Parameter
-
-**CLI Syntax:**
+**Values**:
 
 - `--verbose` or `--verbose=true` - enable verbose mode
 - `--verbose=false` - disable verbose mode
-- `--verbose=default` - use Settings file value
+- `--verbose=default` - use built-in default (base display, not verbose)
+- Omit parameter - use Settings file value
 
-**Implementation:**
+**Overrides**: `Settings.verbose`
 
-- Parse CLI arguments
-- Override `Settings.verbose` if parameter present
-- Respect "default" keyword to use Settings file value
+### CLI Parameter 2: `--displayMaxPlayers`
 
-### Task 2: Implement `--displayMaxPlayers` CLI Parameter
+**Type**: Nullable integer
 
-**CLI Syntax:**
+**Values**:
 
-- `--displayMaxPlayers=<number>` - show N players
+- `--displayMaxPlayers=<number>` - show N players (e.g., `--displayMaxPlayers=5`)
 - `--displayMaxPlayers=0` or `--displayMaxPlayers=all` or `--displayMaxPlayers=null` - show all players
-- `--displayMaxPlayers=default` - use Settings file value
+- `--displayMaxPlayers=default` - use built-in default (show all players)
+- Omit parameter - use Settings file value
 
-**Implementation:**
+**Overrides**: `Settings.displayMaxPlayers`
 
-- Parse CLI arguments, handle numeric conversion
-- Override `Settings.displayMaxPlayers` if parameter present
-- Handle special values: `0`, `all`, `null`, `default`
+### CLI Parameter 3: `--dump`
 
-### Task 3: Implement `--dump` CLI Parameter
+**Type**: Boolean
 
-**CLI Syntax:**
+**Values**:
 
 - `--dump` or `--dump=true` - enable DUMP mode (tab-delimited output)
 - `--dump=false` - enable DISPLAY mode (formatted console output)
-- `--dump=default` - use TestSettings file value
+- `--dump=default` - use built-in default (DISPLAY mode)
+- Omit parameter - use TestSettings file value
 
-**Implementation:**
+**Overrides**: `TestSettings.dump`
 
-- Parse CLI arguments
-- Override `TestSettings.dump` if parameter present
-- `true` = DUMP mode, `false` = DISPLAY mode
+### CLI Parameter 4: `--rankingType`
 
-### Task 4: Implement `--rankingTypes` CLI Parameter
+**Type**: Enum (RankingTypeEnum)
 
-**CLI Syntax:**
+**Values**:
 
-- `--rankingTypes=ROS,WEEKLY` - test specific types (comma-separated)
-- `--rankingTypes=all` or omit parameter - use default behavior (TBD)
-- `--rankingTypes=default` - use TestSettings file value
+- `--rankingType=DRAFT` - use DRAFT rankings
+- `--rankingType=DYNASTY` - use DYNASTY rankings
+- `--rankingType=ROS` - use Rest-of-Season rankings
+- `--rankingType=WEEKLY` - use Weekly rankings
+- `--rankingType=default` - use built-in default (DRAFT)
+- Omit parameter - use TestSettings file value
 
-**Implementation:**
+**Overrides**: `TestSettings.testRankingType`
 
-- Parse CLI arguments, split on comma
-- Override `TestSettings.testRankingTypes` if parameter present
-- Validate against `RankingTypeEnum` values
-- Handle special values: `all`, `default`
+### CLI Parameter 5: `--positions`
 
-### Task 5: Implement `--positions` CLI Parameter
+**Type**: Comma-separated list (PositionEnum)
 
-**CLI Syntax:**
+**Values**:
 
-- `--positions=QB,RB,WR` - test specific positions (comma-separated)
-- `--positions=all` or omit parameter - test all positions
-- `--positions=default` - use TestSettings file value
+- `--positions=QB` - test single position
+- `--positions=QB,RB,WR` - test multiple positions (comma-separated)
+- `--positions=all` - test all positions (QB, RB, WR, TE, K, DST)
+- `--positions=default` - use built-in default (all positions)
+- Omit parameter - use TestSettings file value
 
-**Implementation:**
+**Valid Position Values**: `QB`, `RB`, `WR`, `TE`, `K`, `DST`
 
-- Parse CLI arguments, split on comma
-- Override `TestSettings.testPositions` if parameter present
-- Validate against `PositionEnum` values
-- Handle special values: `all`, `default`
+**Overrides**: `TestSettings.testPositions`
 
 ## Implementation Approach
 
@@ -253,33 +270,33 @@ const Settings = {
 
 ### Special Value Handling
 
-- `"default"` - use the value from settings file
-- `"all"`, `"null"`, or `0` (for displayMaxPlayers) - use null/undefined to trigger "all" logic
-- Array values - parse comma-separated strings
+- `"default"` - ignore Settings file value and use built-in default behavior
+- `"all"`, `"null"`, or `0` (for displayMaxPlayers) - show all items
+- Array values (for positions) - parse comma-separated strings
 
 ## Testing Strategy
 
-After each task implementation:
+For each CLI parameter:
 
-1. Test with CLI parameter specified
+1. Test with explicit value specified
 2. Test without CLI parameter (should use Settings file value)
-3. Test with `default` keyword (should use Settings file value)
+3. Test with `default` keyword (should use built-in default behavior)
 4. Test with invalid values (should error gracefully)
 
 ## Usage Examples
 
 ```bash
 # Verbose weekly QB rankings, show all players
-npm test -- --verbose --displayMaxPlayers=all --rankingTypes=WEEKLY --positions=QB
+npm test -- --verbose --displayMaxPlayers=all --rankingType=WEEKLY --positions=QB
 
 # Quick dump of all ROS positions
-npm test -- --dump --rankingTypes=ROS
+npm test -- --dump --rankingType=ROS
 
-# Display only kickers and defense across all ranking types, limit to 5 players
-npm test -- --positions=K,DST --displayMaxPlayers=5
+# Display only kickers and defense for WEEKLY rankings, limit to 5 players
+npm test -- --rankingType=WEEKLY --positions=K,DST --displayMaxPlayers=5
 
-# Reset to defaults after code has non-default values
-npm test -- --verbose=default --displayMaxPlayers=default --dump=default
+# Use built-in defaults instead of Settings file values
+npm test -- --verbose=default --displayMaxPlayers=default --dump=default --rankingType=default --positions=default
 ```
 
 ## Benefits

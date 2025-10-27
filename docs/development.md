@@ -186,7 +186,7 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 1. **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
    - Enables rapid iteration and investigation for features like player ownership integration
    - **Status**: Awaiting pre-work (see plan doc for prerequisites)
-   - Parameters: `--verbose`, `--displayMaxPlayers`, `--dump`, `--rankingTypes`, `--positions`
+   - Parameters: one or more for each client setting and client test setting, to allow runtime overrides of these
 2. **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
 3. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
    - `server/settings.js`: Extract `fantasyprosApiMapping` to `server/api-mappings.js`
