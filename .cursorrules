@@ -178,6 +178,53 @@ We follow trunk-based development principles:
 - NEVER use `git push --force` unless explicitly requested
 - In general, `git push --force` should not be necessary if you follow the rules in the first place about stopping and locally interactive rebase and/or squash before pushing remote
 
+### Branch Tracking and Multi-Agent Coordination
+
+**Context**: Work may be done from multiple devices/AI agents (e.g., phone, different AI instances), requiring proper branch tracking to handle conflicts cleanly.
+
+**Branch Tracking Strategy**:
+
+- **Local `main`**: ALWAYS track `origin/main` - never work directly on main
+- **Feature branches**: Create remotely first (via GitHub MCP or web UI), then fetch and checkout locally as tracking branches
+- This makes branches immediately visible to all devices and AI agents
+
+**Before Starting Work**:
+
+1. `git fetch` to see all upstream changes
+2. Check if `origin/main` has moved ahead: `git log main..origin/main`
+3. If yes, update local main: `git checkout main && git pull`
+4. Then update feature branch: `git checkout feature/branch && git merge main`
+
+**Conflict Resolution - Two-Phase Approach**:
+
+**Phase 1 - Upstream Conflicts** (remote changes):
+
+- Fetch latest: `git fetch`
+- Merge `origin/main` into feature branch: `git merge origin/main`
+- Resolve conflicts between feature branch and updated main
+- Commit resolution
+
+**Phase 2 - Local Conflicts** (uncommitted work):
+
+- If you have uncommitted changes during Phase 1, stash first: `git stash`
+- Complete Phase 1
+- Reapply stashed work: `git stash pop`
+- Resolve any conflicts with your local uncommitted changes
+
+**When to Sync Feature Branch with Main**:
+
+- Before starting work (always fetch first)
+- Before creating PR
+- When notified of conflicts by other agents/devices
+- After significant main updates (multiple commits)
+
+**Multi-Agent Coordination**:
+
+- Always push feature branch commits immediately (makes them visible to other agents)
+- Before starting work from different device/agent, always `git fetch` first
+- If another agent pushed to your feature branch, `git pull` before continuing work
+- Use descriptive commit messages so other agents understand context
+
 ### Platform-Specific: PowerShell Git Commands
 
 When running git commands in PowerShell:
