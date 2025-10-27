@@ -57,7 +57,8 @@ Before implementing CLI parameter overrides, the following cleanups and refactor
 - `client/tests/settings.js`: Replace `testOutputTypes` with `dump` boolean
 - `client/tests/runner.js`: Simplify test logic (remove ALL handling)
 - Remove `TestOutputTypeEnum` enum entirely
-- **Update existing display output to use markdown table syntax**
+
+**Note**: Markdown table formatting implementation is pre-work item #7.
 
 ### 3. Add `outputFile` Setting
 
@@ -67,42 +68,30 @@ Before implementing CLI parameter overrides, the following cleanups and refactor
 - `null` or missing = output to stdout (console)
 - `<filename>` = write output to specified file
 
-**Output Format Matrix** (simplified to 2 formats × 2 destinations):
+**Benefit**: Dedicated file output allows precise control over file contents. Currently, shell redirection (`> file.txt`) captures ALL stdout including logging/debug messages. With `outputFile`, only valid markdown or TSV data goes to the file; logging stays on stdout.
+
+**Output Format Matrix** (2 formats × 2 destinations):
 
 | dump | outputFile | Result |
 |------|------------|--------|
 | false | null | Markdown table to stdout |
-| false | \<file> | Markdown table to file |
+| false | \<file> | Markdown table to file (metadata + table) |
 | true | null | TSV to stdout |
-| true | \<file> | TSV to file |
+| true | \<file> | TSV to file (pure TSV, no metadata) |
 
-**Key Insight**: The `-o` flag controls destination (stdout vs file), NOT format. The `dump` flag controls format (markdown vs TSV).
+**Key Insights**:
+
+- The `-o` flag controls destination (stdout vs file), NOT format
+- The `dump` flag controls format (markdown vs TSV)
+- Only valid markdown or TSV will be output to the respective file; logging and status messages remain on stdout
+- DUMP mode writes pure TSV to file (no metadata header) for clean spreadsheet import
+- DISPLAY mode writes metadata + markdown table to file for complete, readable output
 
 **Files to Update**:
 
 - `client/settings.js`: Add `outputFile` setting (default: `null`)
-- `client/client.js`: Convert existing display output to markdown table format, add file output support
-- `client/dump.js`: Add file output support (or merge into unified output handler)
 
-**Markdown Table Format Examples**:
-
-ROS/DRAFT/DYNASTY (with BYE):
-
-```markdown
-| Rank | Name             | Team | BYE |
-|------|------------------|------|-----|
-| 1    | Patrick Mahomes  | KC   | 10  |
-| 2    | Josh Allen       | BUF  | 12  |
-```
-
-WEEKLY (with Opponent):
-
-```markdown
-| Rank | Name             | Team | Opponent |
-|------|------------------|------|----------|
-| 1    | Patrick Mahomes  | KC   | @ DEN    |
-| 2    | Josh Allen       | BUF  | vs MIA   |
-```
+**Note**: Actual implementation of markdown table format and file output capability are pre-work items #7 and #8.
 
 ### 4. Rename and Simplify Ranking Type Setting
 
@@ -167,6 +156,83 @@ const {
 // Example for client/tests/runner.js
 const rankingType = TestSettings.rankingType ?? RankingTypeEnum.DRAFT;
 ```
+
+### 7. Implement Markdown Table Output Format
+
+**Objective**: Add markdown table formatting as the display output format (replacing current plain text).
+
+**Rationale**: Separates the feature implementation from CLI parameter addition. Once this works via settings, the CLI parameter just needs to override settings.
+
+**Files to Update**:
+
+- `client/utils.js`: Add `playerToMarkdownString()` and `playersToMarkdownTable()` following existing ToString pattern
+- `client/client.js`: Update `displayRankings()` to use markdown table format instead of plain text
+
+**Markdown Table Format Examples**:
+
+ROS/DRAFT/DYNASTY (with BYE):
+
+```markdown
+2025 Standard Rest-of-Season Quarterback Rankings (10/27/2025)
+
+| Rank | Name             | Team | BYE |
+|------|------------------|------|-----|
+| 1    | Patrick Mahomes  | KC   | 10  |
+| 2    | Josh Allen       | BUF  | 12  |
+```
+
+WEEKLY (with Opponent):
+
+```markdown
+2025 Standard Week 8 Quarterback Rankings (10/27/2025)
+
+| Rank | Name             | Team | Opponent |
+|------|------------------|------|----------|
+| 1    | Patrick Mahomes  | KC   | @ DEN    |
+| 2    | Josh Allen       | BUF  | vs MIA   |
+```
+
+**Implementation Pattern**:
+
+- Metadata header line included in markdown output (when writing to file or stdout)
+- Player object renders itself via ToString functions - it knows whether to show opponent or BYE based on its own fields
+- For file output: metadata + table go together; for TSV dump to file: only pure TSV (no metadata)
+
+### 8. Implement File Output Capability
+
+**Objective**: Add ability to write output to file instead of stdout.
+
+**Rationale**: Separates the feature implementation from CLI parameter addition. Once this works via `Settings.outputFile`, the `-o` parameter just needs to override that setting.
+
+**Files to Update**:
+
+- `client/client.js`: Update `displayRankings()` to check `Settings.outputFile` and write to file if specified
+- `client/client.js`: Update `dumpRankingsToTabDelimited()` to check `Settings.outputFile` and write to file if specified
+
+**Implementation Approach**:
+
+```javascript
+import { writeFileSync } from 'fs';
+
+// In displayRankings() and dumpRankingsToTabDelimited()
+const output = /* ... build output string ... */;
+
+if (Settings.outputFile) {
+  writeFileSync(Settings.outputFile, output, 'utf8');
+  console.log(`Output written to: ${Settings.outputFile}`);
+} else {
+  console.log(output);
+}
+```
+
+**Output Matrix** (2 formats × 2 destinations = 4 combinations):
+
+| dump | outputFile | Result |
+|------|------------|--------|
+| false | null | Markdown table to stdout |
+| false | \<file> | Markdown table to file |
+| true | null | TSV to stdout |
+| true | \<file> | TSV to file |
 
 ## Current Settings (After Pre-Work)
 
@@ -522,90 +588,15 @@ const TestSettings = {
 export { TestSettings };
 ```
 
-### Step 4: Implement Markdown Table Output
+### Step 4: Verify Pre-Work Features
 
-**client/utils.js** (add new functions following existing ToString pattern):
+**Note**: Markdown table output and file output capability will already be implemented as pre-work items #7 and #8. This step simply verifies they work correctly before proceeding to CLI parameter implementation.
 
-```javascript
-// Add playerToMarkdownString as sibling to playerToString and playerToTabDelimitedString
-function playerToMarkdownString(player) {
-  // Player object knows whether to show opponent or BYE based on its own fields
-  const opponentOrBye = player.opponent ? ` | ${player.opponent} |` : player.bye ? ` | ${player.bye} |` : '';
-  return `| ${player.rank} | ${player.name} | ${player.team} |${opponentOrBye}`;
-}
+**Verification**:
 
-// Build complete markdown table with header
-function playersToMarkdownTable(players) {
-  if (!players || players.length === 0) return '';
-  
-  // Determine header based on first player's fields (player knows its own structure)
-  const hasOpponent = !!players[0].opponent;
-  const hasBye = !hasOpponent && !!players[0].bye;
-  
-  // Build header
-  let header = '| Rank | Name | Team |';
-  let separator = '|------|------|------|';
-  
-  if (hasBye) {
-    header += ' BYE |';
-    separator += '-----|';
-  }
-  
-  if (hasOpponent) {
-    header += ' Opponent |';
-    separator += '----------|';
-  }
-  
-  const lines = [header, separator];
-  
-  // Each player renders its own markdown row
-  for (const player of players) {
-    lines.push(playerToMarkdownString(player));
-  }
-  
-  return lines.join('\n');
-}
-
-export {
-  rankingsMetadataToString,
-  playerToString,
-  playerToTabDelimitedString,
-  playerToMarkdownString,    // New export
-  playersToMarkdownTable      // New export
-};
-```
-
-**Note**: This follows the existing architectural pattern where ToString functions act as extension methods on the object. The player object is responsible for rendering itself - it knows whether to show opponent or BYE based on its own fields.
-
-### Step 5: Update Client Output Logic
-
-**client/client.js** (update `displayRankings` for unified output handling):
-
-```javascript
-import { writeFileSync } from 'fs';
-import { playersToMarkdownTable } from './utils.js';
-
-export async function displayRankings(/* ... */) {
-  const result = await fetchRankings(/* ... */);
-  
-  const { outputFile, dump } = Settings;
-  
-  // Generate output in appropriate format
-  const output = dump 
-    ? dumpRankingsToTabDelimited(result)
-    : playersToMarkdownTable(result.players, rankingType);
-  
-  // Write to destination
-  if (outputFile) {
-    writeFileSync(outputFile, output, 'utf8');
-    console.log(`Output written to: ${outputFile}`);
-  } else {
-    console.log(output);
-  }
-}
-```
-
-**Key Simplification**: One code path per format, `-o` just changes the destination.
+- Confirm markdown table formatting works in display mode
+- Confirm file output works for both display and dump modes
+- Confirm the 2×2 output matrix (markdown/TSV × stdout/file) functions correctly
 
 ## Testing Strategy
 
