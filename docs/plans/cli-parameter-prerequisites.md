@@ -130,7 +130,9 @@ This work consists of three phases:
 **Default Behavior**:
 
 - `null` or missing → defensive default is `DRAFT`
-- `DRAFT` chosen as defensive default because it has year-round context (ROS/WEEKLY have no context outside the season)
+- `DRAFT` chosen as defensive default because:
+  - It's always in context year-round, in season or out of season (ROS/WEEKLY make no sense out of season)
+  - It's significantly more common than DYNASTY in fantasy leagues
 
 **Files to Update**:
 

@@ -84,7 +84,7 @@ General principles:
 - YOU MUST NEVER throw away or rewrite implementations without EXPLICIT permission. If you're considering this, YOU MUST STOP and ask first.
 - YOU MUST get John's explicit approval before implementing ANY backward compatibility.
 - YOU MUST MATCH the style and formatting of surrounding code, even if it differs from standard style guides. Consistency within a file trumps external standards.
-- YOU MUST NOT manually change whitespace that does not affect execution or output. Otherwise, use a formatting tool.
+- YOU MUST NOT manually change whitespace that does not affect execution or output. Otherwise, use a formatting tool. **Exception**: Minor formatting changes are acceptable when the file is already open for more substantive edits (e.g., has a PR comment requiring functional changes in the same file).
 - Fix broken things immediately when you find them. Don't ask permission to fix bugs.
 
 ## Naming Conventions
