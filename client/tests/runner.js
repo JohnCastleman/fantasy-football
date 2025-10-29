@@ -16,12 +16,11 @@ import {
 function runConfigurableTests() {
   const { rankingType, testOutputTypes, positions } = TestSettings;
   
-  const rankingTypeToTest = rankingType ?? RankingTypeEnum.DRAFT; // defensive default for ranking type is DRAFT
+  // defensive default - DRAFT: always in context, year-round, unlike ROS/WEEKLY, and significantly more common than DYNASTY
+  const rankingTypeToTest = rankingType ?? RankingTypeEnum.DRAFT;
   
   // Determine which positions to test  
-  const positionsToTest = positions === null
-    ? [PositionEnum.QB, PositionEnum.RB, PositionEnum.WR, PositionEnum.TE, PositionEnum.K, PositionEnum.DST]
-    : positions;
+  const positionsToTest = positions ?? [PositionEnum.QB, PositionEnum.RB, PositionEnum.WR, PositionEnum.TE, PositionEnum.K, PositionEnum.DST];
   
   // Determine which output types to test
   const shouldTestDisplay = testOutputTypes === TestOutputTypeEnum.ALL || testOutputTypes === TestOutputTypeEnum.DISPLAY;

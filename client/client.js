@@ -19,7 +19,7 @@ function displayRankings(rankings, options = {}) {
   console.log(`\n${title}`);
   console.log('=' + '='.repeat(title.length) + '\n');
 
-  if (displayMaxPlayers !== 0) {
+  if (displayMaxPlayers != null && displayMaxPlayers !== 0) {
     players.slice(0, displayMaxPlayers).forEach(player => {
       console.log(playerToString(player));
     });
