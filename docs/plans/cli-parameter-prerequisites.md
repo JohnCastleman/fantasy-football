@@ -229,79 +229,81 @@ WEEKLY (with Opponent):
 
 **Rationale**: Separates the feature implementation from CLI parameter addition. Once this works via `Settings.outputFile`, the `-o` parameter just needs to override that setting.
 
-**Key Architectural Decision**: Explicit stdout for data output
+**Implementation Approach**: Resource management callback pattern
 
-Before implementing file output, refactor to use explicit stdout for data payload:
+The implementation uses a `withOptionalFileStream` helper function that manages stream lifecycle and provides clean resource cleanup:
 
-- **Data output (payload)** → `process.stdout.write()` or file
-- **Logging/status** → Keep as `console.log()` or `console.info()` (already goes to stdout but semantically clearer)
+**Files Updated**:
 
-This ensures clean separation: data payload uses explicit streams, logging uses console methods.
+- `client/utils.js`: Added `withOptionalFileStream()` helper function
+- `client/client.js`: Updated `displayRankings()` and `dumpRankingsToTabDelimited()` to accept stream parameter
+- `client/display.js`: All 24 display functions use `withOptionalFileStream` callback pattern
+- `client/dump.js`: All 24 dump functions use `withOptionalFileStream` callback pattern
 
-**Files to Update**:
+**Key Implementation Details**:
 
-- `client/client.js`: Identify and refactor data payload calls to use `process.stdout.write()`
-- `client/client.js`: Review non-data console calls and use `console.log()` vs `console.info()` appropriately
-- `client/client.js`: Update `displayRankings()` to check `Settings.outputFile` and write to file if specified
-- `client/client.js`: Update `dumpRankingsToTabDelimited()` to check `Settings.outputFile` and write to file if specified
-
-**Implementation Approach**:
-
-Step 1 - Refactor data output to explicit stdout:
+1. **Resource Management Helper** (`client/utils.js`):
 
 ```javascript
-// Data output (payload) - currently console.log for table/TSV data
-process.stdout.write(output + '\n');
+async function withOptionalFileStream(options, callback) {
+  const outputFile = options.outputFile ?? Settings.outputFile;
 
-// Logging/status - keep as console methods
-console.log('Fetching rankings using API param strings...', apiParams);
-// or
-console.info('Fetching rankings using API param strings...', apiParams);
-```
-
-Step 2 - Add file output capability using streams:
-
-```javascript
-import { createWriteStream } from 'fs';
-
-// Update function signatures to accept optional output stream
-function displayRankings(rankingType, position, outStream = process.stdout) {
-  // Stream data writes line-by-line
-  outStream.write(rankingsMetadataToMarkdownString(metadata) + '\n');
-  outStream.write('| Rank | Name | Team | ... |\n');
-  outStream.write('|------|------|------|-----|\n');
-  
-  for (const player of players) {
-    outStream.write(playerToMarkdownString(player) + '\n');
+  let stream = null;
+  try {
+    if (outputFile) {
+      stream = createWriteStream(outputFile);
+    }
+    await callback(stream || process.stdout);
+    
+    if (stream && outputFile) {
+      console.info(`Output written to: ${outputFile}`);
+    }
+  } catch (error) {
+    console.error(`Error writing output:`, error);
+    throw error;
+  } finally {
+    if (stream) {
+      stream.end();
+    }
   }
-}
-
-function dumpRankingsToTabDelimited(rankingType, position, outStream = process.stdout) {
-  // Stream TSV line-by-line
-  outStream.write(tabDelimitedHeader + '\n');
-  
-  for (const player of players) {
-    outStream.write(playerToTabDelimitedString(player) + '\n');
-  }
-}
-
-// Call site handles stream creation/cleanup:
-if (Settings.outputFile) {
-  const outStream = createWriteStream(Settings.outputFile);
-  displayRankings(rankingType, position, outStream);
-  outStream.end();
-  console.info(`Output written to: ${Settings.outputFile}`);
-} else {
-  displayRankings(rankingType, position);  // Defaults to stdout
 }
 ```
 
-**Benefits of stream-based approach**:
+1. **Core Functions Accept Stream** (`client/client.js`):
 
-- Scales well for large outputs (thousands of lines)
-- Standard Node.js pattern (dependency injection)
-- Functions don't depend on Settings
-- Default parameter makes stdout usage clean and simple
+```javascript
+function displayRankings(rankings, options = {}, outStream = process.stdout) {
+  // Write to provided stream (file or stdout)
+  outStream.write(data);
+}
+
+function dumpRankingsToTabDelimited(rankings, options = {}, outStream = process.stdout) {
+  // Write to provided stream (file or stdout)
+  outStream.write(data);
+}
+```
+
+1. **Wrapper Functions Use Callback Pattern** (`client/display.js` & `client/dump.js`):
+
+```javascript
+async function displayRosQbRankings() {
+  const rankingType = RankingTypeEnum.ROS;
+  const position = PositionEnum.QB;
+
+  await withOptionalFileStream({}, async (stream) => {
+    const rankings = await getRankings(rankingType, position);
+    displayRankings(rankings, {}, stream);
+  });
+}
+```
+
+**Benefits of this approach**:
+
+- Centralized stream lifecycle management (one place handles create/cleanup/error)
+- Proper resource cleanup via try/finally even on errors
+- No repetitive boilerplate in 48 wrapper functions
+- Core functions remain pure (just write to stream, no file logic)
+- Errors properly propagated to callers after logging
 
 **Output Matrix** (2 formats × 2 destinations = 4 combinations):
 
