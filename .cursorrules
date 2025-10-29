@@ -264,6 +264,19 @@ When splitting or reorganizing commits during interactive rebase:
 - The native diff/merge interface is superior to `git diff` output in chat for reviewing changes
 - Wait for John to accept changes before proceeding to git operations
 
+### Pull Request Closing
+
+**Closing PRs:**
+
+- YOU MUST use GitHub MCP to merge PRs (via `mcp_github_merge_pull_request`)
+- **Strongly prefer** squash merge (`merge_method: "squash"`) unless John requests a different method for that specific PR
+- After successful merge, YOU MUST:
+  1. Switch to main branch locally: `git checkout main`
+  2. Pull the squash merge commit: `git pull`
+  3. Delete local feature branch: `git branch -d <branch-name>`
+  4. Delete remote feature branch: `git push origin --delete <branch-name>`
+- YOU MUST NEVER use local `git merge --squash` as part of closing a PR - always use GitHub MCP merge (Note: `git merge --squash` may be appropriate in other local git workflows, just not for PR closing)
+
 ## Task Management and Backlog Integration
 
 ### Source of Truth

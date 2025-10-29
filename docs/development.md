@@ -14,13 +14,14 @@
 
 ### 🎯 Active Focus
 
-**Primary Goal**: Display and Output Enhancements - Working Set 1 (Simple Renamings)
+**Primary Goal**: Display and Output Enhancements - Working Set 2 (New Setting and Defaults)
 
 **Current Session Tasks**:
 
-1. ✅ Rename `displaySize` → `displayMaxPlayers`
-2. ✅ Rename `testRankingTypes` → `rankingType` (array → single enum)
-3. ✅ Rename `testPositions` → `positions`
+1. ⏸️ Add `outputFile` setting
+2. ⏸️ Apply defensive defaults
+
+**See**: [plans/cli-parameter-prerequisites.md](plans/cli-parameter-prerequisites.md) for full working set details
 
 ## Development Workflow
 
@@ -158,22 +159,28 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### Completed
 
-1. ~~**SECURITY**: Revoke GitHub Personal Access Token (shared in chat session) and generate a new one at <https://github.com/settings/tokens>~~ ✅
-2. ~~**API Key Setup**: Install dotenv package and configure to load .env file (test with new GitHub PAT)~~ ✅
-3. ~~**Dependency Migration**: Move globally-installed packages to local node_modules (date-fns installed locally, axios not used in code)~~ ✅
-4. ~~**Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly~~ ✅
-5. ~~**ES Modules Migration**: Convert entire project from CommonJS (require/module.exports) to ES modules (import/export)~~ ✅
-6. ~~**Process (Important)**: Define TodoWrite/backlog integration in .cursorrules - TodoWrite acts as writethrough cache of subset of development.md backlog for active session work~~ ✅
-7. ~~**Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)~~ ✅
-8. ~~**Player Data: BYE Week Field**~~ ✅
-   - ~~Server: Add BYE to ranking results in ROS and WEEKLY (and anywhere else where available in API response)~~
-   - ~~Client DISPLAY: Surface BYE in tabular display anywhere it's available in the ranking result~~
-   - ~~Client DUMP: Add "bye" column ONLY in ROS dumped results (per TSV usage requirements)~~
-9. ~~**Player Data: Opponent Field**~~ ✅
-   - ~~Server: Add Opponent only in WEEKLY ranking results (opponent changes week-to-week, only makes sense in that context)~~
-   - ~~Client DISPLAY: Surface Opponent in tabular display anywhere it's available in the ranking result (should only be WEEKLY)~~
-   - ~~Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)~~
-10. ~~**Interactive Rebase**: Reorganize commits 931ec30 through b2e3329 into focused, single-purpose commits following commit message guidelines - see [archive/rebase-plan-OCT-24-work.md](archive/rebase-plan-OCT-24-work.md)~~ ✅
+- [x] **SECURITY**: Revoke GitHub Personal Access Token (shared in chat session) and generate a new one at <https://github.com/settings/tokens>
+- [x] **API Key Setup**: Install dotenv package and configure to load .env file (test with new GitHub PAT)
+- [x] **Dependency Migration**: Move globally-installed packages to local node_modules (date-fns installed locally, axios not used in code)
+- [x] **Environment Cleanup**: Remove NODE_PATH workaround from package.json now that we're off Google Drive and npm works properly
+- [x] **ES Modules Migration**: Convert entire project from CommonJS (require/module.exports) to ES modules (import/export)
+- [x] **Process (Important)**: Define TodoWrite/backlog integration in .cursorrules - TodoWrite acts as writethrough cache of subset of development.md backlog for active session work
+- [x] **Process (Important)**: Scrub .cursorrules to separate clear AI instructions (.cursorrules) vs project/process details (move to docs/*.md)
+- [x] **Player Data: BYE Week Field**
+  - [x] Server: Add BYE to ranking results in ROS and WEEKLY (and anywhere else where available in API response)
+  - [x] Client DISPLAY: Surface BYE in tabular display anywhere it's available in the ranking result
+  - [x] Client DUMP: Add "bye" column ONLY in ROS dumped results (per TSV usage requirements)
+- [x] **Player Data: Opponent Field**
+  - [x] Server: Add Opponent only in WEEKLY ranking results (opponent changes week-to-week, only makes sense in that context)
+  - [x] Client DISPLAY: Surface Opponent in tabular display anywhere it's available in the ranking result (should only be WEEKLY)
+  - [x] Client DUMP: Add "opponent" column ONLY in WEEKLY dumped results (per TSV usage requirements)
+- [x] **Interactive Rebase**: Reorganize commits 931ec30 through b2e3329 into focused, single-purpose commits following commit message guidelines - see [archive/rebase-plan-OCT-24-work.md](archive/rebase-plan-OCT-24-work.md)
+- [x] **Display and Output Enhancements - Working Set 1**: Simple renamings for clarity and consistency - see [archive/pr-2-implementation.md](archive/pr-2-implementation.md)
+  - [x] Rename `displaySize` → `displayMaxPlayers`
+  - [x] Rename `testRankingTypes` → `rankingType` (array → single enum)
+  - [x] Rename `testPositions` → `positions`
+  - [x] Fix null handling in displayMaxPlayers
+  - [x] Document DRAFT default reasoning
 
 ### High Priority (top of the backlog)
 
@@ -181,41 +188,41 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 ### Backlog
 
-1. **Display and Output Enhancements**: Settings refactoring, markdown table formatting, and file output capabilities - see [plans/cli-parameter-prerequisites.md](plans/cli-parameter-prerequisites.md)
-   - Settings refactoring: clearer names, simplified types, defensive defaults
-   - Markdown table output format (replaces plain text display)
-   - File output with Node.js streams (precise control over file contents vs console logging)
-   - **Status**: IN PROGRESS - Working Set 1 (Simple Renamings) active on `feature/display-output-enhancements` branch
-2. **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
-   - Enables rapid iteration and investigation for features like player ownership integration
-   - Commander.js integration for POSIX-style CLI parameters
-   - **Status**: Requires completion of Display and Output Enhancements (item #1)
-   - Parameters: `-v` (verbose), `-d` (dump), `-o` (output), `-t` (type), `-p` (position), `-m` (max-players)
-3. **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
-4. **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
-   - `server/settings.js`: Extract `fantasyprosApiMapping` to `server/api-mappings.js`
-   - `server/settings.js`: Extract `fantasyprosLeagues` to `server/leagues.js`
-   - `client/settings.js`: Extract `tabDelimitedHeader` to `client/header-formats.js`
-   - `client/settings.js`: Extract `displayText` to `client/display-text.js`
-5. **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
+- [ ] **Display and Output Enhancements**: Settings refactoring, markdown table formatting, and file output capabilities - see [plans/cli-parameter-prerequisites.md](plans/cli-parameter-prerequisites.md)
+  - [x] Working Set 1 (Simple Renamings): clearer names, simplified types, defensive defaults - **COMPLETE** (PR #2, merged 2025-10-28)
+  - [ ] Working Set 2 (New Setting and Defaults): Add `outputFile` setting, apply defensive defaults
+  - [ ] Working Set 3 (Output Enhancements): Markdown table output format, file output with Node.js streams, replace `testOutputTypes` enum with `dump` boolean
+  - **Status**: IN PROGRESS - Working Set 2 (New Setting and Defaults) next
+- [ ] **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
+  - Enables rapid iteration and investigation for features like player ownership integration
+  - Commander.js integration for POSIX-style CLI parameters
+  - **Status**: Requires completion of Display and Output Enhancements
+  - Parameters: `-v` (verbose), `-d` (dump), `-o` (output), `-t` (type), `-p` (position), `-m` (max-players)
+- [ ] **Player Ownership Integration**: Add league roster data to show which team owns each player in rankings - see [plans/player-ownership-integration.md](plans/player-ownership-integration.md)
+- [ ] **Extract Configuration to Separate Files**: Refactor inline configuration objects to dedicated config files for better organization and maintainability
+  - `server/settings.js`: Extract `fantasyprosApiMapping` to `server/api-mappings.js`
+  - `server/settings.js`: Extract `fantasyprosLeagues` to `server/leagues.js`
+  - `client/settings.js`: Extract `tabDelimitedHeader` to `client/header-formats.js`
+  - `client/settings.js`: Extract `displayText` to `client/display-text.js`
+- [ ] **Server Architecture**: Host server in separate process with HTTP API for client access (enables multiple client types and remote access)
 
 ### Future Enhancements (might get to some day)
 
-1. **Player Data Expansion (Full API)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
-2. **Additional Data Source Integrations**: Integrate additional data sources (e.g., Flock Fantasy API - sample responses available in `docs/api-samples/`)
-3. **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
-4. **TypeScript Migration**: Port JavaScript to TypeScript for type safety
-5. **Cross-Device AI Context**: Enable async AI model execution in the cloud (similar to GitHub Copilot Coding Agent or Google Jules) - submit instructions from any device (e.g., phone) that run to completion asynchronously using Cursor Pro subscription
+- [ ] **Player Data Expansion (Full API)**: Fetch all available fields from FantasyPros API response and perform filtering client-side instead of server-side (e.g., projections, injury status, ADP, tiers)
+- [ ] **Additional Data Source Integrations**: Integrate additional data sources (e.g., Flock Fantasy API - sample responses available in `docs/api-samples/`)
+- [ ] **Standard npm Scripts**: Add proper npm test and task runner scripts (grunt/gulp-style automation)
+- [ ] **TypeScript Migration**: Port JavaScript to TypeScript for type safety
+- [ ] **Cross-Device AI Context**: Enable async AI model execution in the cloud (similar to GitHub Copilot Coding Agent or Google Jules) - submit instructions from any device (e.g., phone) that run to completion asynchronously using Cursor Pro subscription
 
 ### Nice to Haves
 
-1. **Server- and Client-Side Logging**: Add configurable logging framework for debugging and monitoring (e.g., winston, pino, or debug module)
-   - Server: Log API requests, responses, errors, and performance metrics
-   - Client: Log display/dump operations, settings overrides, and errors
-   - Configurable log levels (error, warn, info, debug, trace)
-   - Optional log file output with rotation
-2. **Alternative GSheets Integration**: Explore options beyond TSV-to-stdout for transferring DUMP results into Google Sheets (e.g., direct Google Sheets API integration). Note: Current TSV-to-stdout implementation is intentional and works well with shell redirection/piping
-3. **UI Client**: Supplement existing CLI client with a UI client (web or desktop) that provides the same functionality. Would leverage the separate HTTP API server from task #4 in High Priority
+- [ ] **Server- and Client-Side Logging**: Add configurable logging framework for debugging and monitoring (e.g., winston, pino, or debug module)
+  - Server: Log API requests, responses, errors, and performance metrics
+  - Client: Log display/dump operations, settings overrides, and errors
+  - Configurable log levels (error, warn, info, debug, trace)
+  - Optional log file output with rotation
+- [ ] **Alternative GSheets Integration**: Explore options beyond TSV-to-stdout for transferring DUMP results into Google Sheets (e.g., direct Google Sheets API integration). Note: Current TSV-to-stdout implementation is intentional and works well with shell redirection/piping
+- [ ] **UI Client**: Supplement existing CLI client with a UI client (web or desktop) that provides the same functionality. Would leverage the separate HTTP API server
 
 ## Recent Development History
 
