@@ -11,29 +11,32 @@ async function getRankings(rankingType, position) {
   }
 }
 
-function displayRankings(rankings, options = {}) {
+function displayRankings(rankings, options = {}, outStream = process.stdout) {
   const { players, metadata } = rankings;
-  const { displayMaxPlayers = Settings.displayMaxPlayers ?? 0, verbose = Settings.verbose } = options;
+  const { 
+    displayMaxPlayers = Settings.displayMaxPlayers ?? null, 
+    verbose = Settings.verbose ?? false
+  } = options;
 
   const title = rankingsMetadataToString(metadata, verbose);  
-  console.log(`\n${title}`);
-  console.log('=' + '='.repeat(title.length) + '\n');
+  outStream.write(`\n${title}\n`);
+  outStream.write('=' + '='.repeat(title.length) + '\n\n');
 
   if (displayMaxPlayers != null && displayMaxPlayers !== 0) {
     players.slice(0, displayMaxPlayers).forEach(player => {
-      console.log(playerToString(player));
+      outStream.write(playerToString(player) + '\n');
     });
     console.log('... (showing', displayMaxPlayers, 'of', players.length, 'players)');
   } else {
     players.forEach(player => {
-      console.log(playerToString(player));
+      outStream.write(playerToString(player) + '\n');
     });
   }
   
-  console.log('');
+  outStream.write('\n');
 }
 
-function dumpRankingsToTabDelimited(rankings) {
+function dumpRankingsToTabDelimited(rankings, options = {}, outStream = process.stdout) {
   const { players, metadata } = rankings;
 
   const title = rankingsMetadataToString(metadata) + " (tab-delimited)";  
@@ -43,14 +46,14 @@ function dumpRankingsToTabDelimited(rankings) {
   const header = Settings.tabDelimitedHeader[metadata.rankingType];
   
   if (header) {
-    console.log(header);
+    outStream.write(header + '\n');
   }
 
   players.forEach(player => {
-    console.log(playerToTabDelimitedString(player));
+    outStream.write(playerToTabDelimitedString(player) + '\n');
   });
   
-  console.log('');
+  outStream.write('\n');
 }
 
 export {

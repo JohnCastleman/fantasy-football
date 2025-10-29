@@ -1,3 +1,4 @@
+import { createWriteStream } from 'fs';
 import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 import { Settings } from './settings.js';
 
@@ -32,8 +33,32 @@ function playerToTabDelimitedString(player) {
   return `${player.rank}\t${player.name}\t${player.team}${opponentOrBye}`;
 }
 
+async function withOptionalFileStream(options, callback) {
+  const outputFile = options.outputFile ?? Settings.outputFile;
+
+  let stream = null;
+  try {
+    if (outputFile) {
+      stream = createWriteStream(outputFile);
+    }
+    await callback(stream || process.stdout);
+    
+    if (stream && outputFile) {
+      console.info(`Output written to: ${outputFile}`);
+    }
+  } catch (error) {
+    console.error(`Error writing output:`, error);
+    throw error;
+  } finally {
+    if (stream) {
+      stream.end();
+    }
+  }
+}
+
 export {
   rankingsMetadataToString,
   playerToString,
-  playerToTabDelimitedString
+  playerToTabDelimitedString,
+  withOptionalFileStream
 };
