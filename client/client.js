@@ -13,7 +13,7 @@ async function getRankings(rankingType, position) {
 
 function displayRankings(rankings, options = {}) {
   const { players, metadata } = rankings;
-  const { displayMaxPlayers = Settings.displayMaxPlayers ?? 0, verbose = Settings.verbose } = options;
+  const { displayMaxPlayers = Settings.displayMaxPlayers ?? null, verbose = Settings.verbose ?? false } = options;
 
   const title = rankingsMetadataToString(metadata, verbose);  
   console.log(`\n${title}`);
