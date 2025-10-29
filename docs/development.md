@@ -14,15 +14,13 @@
 
 ### 🎯 Active Focus
 
-**Primary Goal**: Expand player data (bye weeks, opponent teams) and secure API key
+**Primary Goal**: Display and Output Enhancements - Working Set 1 (Simple Renamings)
 
 **Current Session Tasks**:
 
-1. ✅ Migrate from editor-specific folders to portable documentation
-2. ✅ Add environment variable support for API key
-3. ✅ Prepare baseline for git commit
-4. 🔜 Expand ROS rankings to include BYE week per player (after git setup)
-5. 🔜 Expand WEEKLY rankings to include opponent team per player (after git setup)
+1. ✅ Rename `displaySize` → `displayMaxPlayers`
+2. ✅ Rename `testRankingTypes` → `rankingType` (array → single enum)
+3. ✅ Rename `testPositions` → `positions`
 
 ## Development Workflow
 
@@ -187,7 +185,7 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
    - Settings refactoring: clearer names, simplified types, defensive defaults
    - Markdown table output format (replaces plain text display)
    - File output with Node.js streams (precise control over file contents vs console logging)
-   - **Status**: Ready for implementation - prerequisites for CLI parameter support
+   - **Status**: IN PROGRESS - Working Set 1 (Simple Renamings) active on `feature/display-output-enhancements` branch
 2. **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
    - Enables rapid iteration and investigation for features like player ownership integration
    - Commander.js integration for POSIX-style CLI parameters

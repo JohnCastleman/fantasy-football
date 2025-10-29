@@ -170,6 +170,24 @@ npm test -- -m 5
 npm test -- -m 0               # Show all
 ```
 
+**Testing Strategy**:
+
+Once this parameter is implemented, comprehensive testing of `displayMaxPlayers` behavior becomes trivial:
+
+```bash
+# Test various limits
+npm test -- -m 1 -t DRAFT -p QB    # Show exactly 1 player
+npm test -- -m 5 -t DRAFT -p QB    # Show exactly 5 players
+npm test -- -m 0 -t DRAFT -p QB    # Show all players
+npm test -- -t DRAFT -p QB          # Use settings file default (null = all)
+
+# Verify message output
+# - With limit: "... (showing 5 of X players)"
+# - Without limit: no truncation message
+```
+
+This addresses the test coverage gap identified in PR #2 review, where `displayMaxPlayers` null/0/undefined handling lacked explicit test coverage. With CLI parameters, all edge cases can be tested without modifying settings files.
+
 ### `-d, --dump, --no-dump`
 
 **Type**: Boolean (negatable)
@@ -403,6 +421,53 @@ export { TestSettings };
 - Confirm the 2×2 output matrix (markdown/TSV × stdout/file) functions correctly
 
 ## Testing Strategy
+
+### Comprehensive Test Coverage via npm Scripts
+
+Once CLI parameters are implemented, `package.json` should include npm test rules to systematically cover all test facets:
+
+**Current State** (pre-CLI parameters):
+
+- Tests both DISPLAY and DUMP output modes
+- Tests all four ranking types (DRAFT, DYNASTY, ROS, WEEKLY)
+- 8 total combinations (2 modes × 4 types)
+
+**Future State** (once both `-t` and `-d` CLI parameters are available):
+
+Full 2×4 matrix coverage (all 8 combinations):
+
+```json
+"scripts": {
+  "test": "node client/tests/index.js",
+  
+  "test:display-draft": "npm test -- -t DRAFT",
+  "test:display-dynasty": "npm test -- -t DYNASTY",
+  "test:display-ros": "npm test -- -t ROS",
+  "test:display-weekly": "npm test -- -t WEEKLY",
+  
+  "test:dump-draft": "npm test -- -d -t DRAFT",
+  "test:dump-dynasty": "npm test -- -d -t DYNASTY",
+  "test:dump-ros": "npm test -- -d -t ROS",
+  "test:dump-weekly": "npm test -- -d -t WEEKLY",
+  
+  "test:display-all-types": "npm run test:display-draft && npm run test:display-dynasty && npm run test:display-ros && npm run test:display-weekly",
+  "test:dump-all-types": "npm run test:dump-draft && npm run test:dump-dynasty && npm run test:dump-ros && npm run test:dump-weekly",
+  
+  "test:comprehensive": "npm run test:display-all-types && npm run test:dump-all-types"
+}
+```
+
+**Transition Plan**:
+
+During the transition from `testOutputTypes` enum to boolean `dump`, initially support `null` meaning "test both DISPLAY and DUMP modes." Once the `-d` CLI parameter is implemented, enforce either DISPLAY or DUMP (not both), and use npm scripts for comprehensive coverage.
+
+This approach provides:
+
+- Fast iteration during development (single ranking type, single mode)
+- Full 8-combination coverage when needed (all 2×4 matrix via npm scripts)
+- Grouped testing via `display-all-types` and `dump-all-types`
+- No need for array-based settings (CLI parameters provide the flexibility)
+- Clear documentation via named scripts
 
 ### Test Coverage
 

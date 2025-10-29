@@ -14,17 +14,13 @@ import {
 } from '../index.js';
 
 function runConfigurableTests() {
-  const { testRankingTypes, testOutputTypes, testPositions } = TestSettings;
+  const { rankingType, testOutputTypes, positions } = TestSettings;
   
-  // Determine which ranking types to test
-  const rankingTypesToTest = testRankingTypes === null
-    ? [RankingTypeEnum.ROS, RankingTypeEnum.WEEKLY, RankingTypeEnum.DYNASTY, RankingTypeEnum.DRAFT]
-    : testRankingTypes;
+  // defensive default - DRAFT: always in context, year-round, unlike ROS/WEEKLY, and significantly more common than DYNASTY
+  const rankingTypeToTest = rankingType ?? RankingTypeEnum.DRAFT;
   
   // Determine which positions to test  
-  const positionsToTest = testPositions === null
-    ? [PositionEnum.QB, PositionEnum.RB, PositionEnum.WR, PositionEnum.TE, PositionEnum.K, PositionEnum.DST]
-    : testPositions;
+  const positionsToTest = positions ?? [PositionEnum.QB, PositionEnum.RB, PositionEnum.WR, PositionEnum.TE, PositionEnum.K, PositionEnum.DST];
   
   // Determine which output types to test
   const shouldTestDisplay = testOutputTypes === TestOutputTypeEnum.ALL || testOutputTypes === TestOutputTypeEnum.DISPLAY;
@@ -103,22 +99,18 @@ function runConfigurableTests() {
   
   // Run display tests
   if (shouldTestDisplay) {
-    for (const rankingType of rankingTypesToTest) {
-      for (const position of positionsToTest) {
-        if (displayFunctions[rankingType] && displayFunctions[rankingType][position]) {
-          displayFunctions[rankingType][position]();
-        }
+    for (const position of positionsToTest) {
+      if (displayFunctions[rankingTypeToTest] && displayFunctions[rankingTypeToTest][position]) {
+        displayFunctions[rankingTypeToTest][position]();
       }
     }
   }
   
   // Run dump tests  
   if (shouldTestDump) {
-    for (const rankingType of rankingTypesToTest) {
-      for (const position of positionsToTest) {
-        if (dumpFunctions[rankingType] && dumpFunctions[rankingType][position]) {
-          dumpFunctions[rankingType][position]();
-        }
+    for (const position of positionsToTest) {
+      if (dumpFunctions[rankingTypeToTest] && dumpFunctions[rankingTypeToTest][position]) {
+        dumpFunctions[rankingTypeToTest][position]();
       }
     }
   }
