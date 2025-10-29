@@ -173,6 +173,15 @@ We follow trunk-based development principles:
 - Don't add random test files to the repo.
 - Git commit messages should be as simple as possible, preferably fitting on one line. If multiple sentences/paragraphs are needed, the same could often be done with multiple commits to reduce complexity.
 
+### Branch Strategy for Commit Types
+
+- **When working on a feature branch (before PR exists)**:
+  - AI rules (.cursorrules) and documentation (docs/) commits: Switch to main, commit there, then switch back to feature branch
+  - Code commits: Stay on feature branch
+- **After PR exists (during PR review)**:
+  - ALL commits (including .cursorrules, docs/, and code): Stay on PR branch
+  - This ensures all PR-related changes are captured in the PR for review
+
 ### Git Push Safety
 
 - ALWAYS use `git push --force-with-lease` instead of `git push --force`
@@ -243,6 +252,7 @@ When running git commands in PowerShell:
 - **Separate commits by area of work**: Process changes (.cursorrules, docs/) should be in separate commits from development work
 - **Separate .cursorrules commits**: Changes to .cursorrules should be in their own commit, separate from other process or documentation changes
 - **Commit early and often**: Make multiple local commits per task as work progresses
+- **Atomic commits**: Break work into separate commits as much as possible, but ensure each commit is atomic (don't commit dependent code before the code it depends on)
 - **One push per task**: Generally push once at the end of task completion
 - **Interactive rebase (before pushing)**: Consider using interactive rebase to clean up commit history after completing a task but before pushing - MUST include John in the rebase decision and in the actual rebase process. Interactive rebase is valuable for reorganizing/combining/splitting commits to better tell a story for PR reviewers
 - **Interactive rebase / Squashing (post-PR review)**: May use interactive rebase or squash after PR review if needed - MUST include John in the decision and process
