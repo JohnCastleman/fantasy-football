@@ -16,21 +16,21 @@ function displayRankings(rankings, options = {}) {
   const { displayMaxPlayers = Settings.displayMaxPlayers ?? null, verbose = Settings.verbose ?? false } = options;
 
   const title = rankingsMetadataToString(metadata, verbose);  
-  console.log(`\n${title}`);
-  console.log('=' + '='.repeat(title.length) + '\n');
+  process.stdout.write(`\n${title}\n`);
+  process.stdout.write('=' + '='.repeat(title.length) + '\n\n');
 
   if (displayMaxPlayers != null && displayMaxPlayers !== 0) {
     players.slice(0, displayMaxPlayers).forEach(player => {
-      console.log(playerToString(player));
+      process.stdout.write(playerToString(player) + '\n');
     });
     console.log('... (showing', displayMaxPlayers, 'of', players.length, 'players)');
   } else {
     players.forEach(player => {
-      console.log(playerToString(player));
+      process.stdout.write(playerToString(player) + '\n');
     });
   }
   
-  console.log('');
+  process.stdout.write('\n');
 }
 
 function dumpRankingsToTabDelimited(rankings) {
@@ -43,14 +43,14 @@ function dumpRankingsToTabDelimited(rankings) {
   const header = Settings.tabDelimitedHeader[metadata.rankingType];
   
   if (header) {
-    console.log(header);
+    process.stdout.write(header + '\n');
   }
 
   players.forEach(player => {
-    console.log(playerToTabDelimitedString(player));
+    process.stdout.write(playerToTabDelimitedString(player) + '\n');
   });
   
-  console.log('');
+  process.stdout.write('\n');
 }
 
 export {
