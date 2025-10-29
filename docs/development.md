@@ -14,12 +14,12 @@
 
 ### 🎯 Active Focus
 
-**Primary Goal**: Display and Output Enhancements - Working Set 2 (New Setting and Defaults)
+**Primary Goal**: Display and Output Enhancements - Working Set 3 (Format Enhancements)
 
 **Current Session Tasks**:
 
-1. ⏸️ Add `outputFile` setting
-2. ⏸️ Apply defensive defaults
+1. ⏸️ Implement markdown table output format
+2. ⏸️ Replace `testOutputTypes` enum with `dump` boolean
 
 **See**: [plans/cli-parameter-prerequisites.md](plans/cli-parameter-prerequisites.md) for full working set details
 
@@ -190,9 +190,9 @@ Raw API response samples are stored in `docs/api-samples/` for reference:
 
 - [ ] **Display and Output Enhancements**: Settings refactoring, markdown table formatting, and file output capabilities - see [plans/cli-parameter-prerequisites.md](plans/cli-parameter-prerequisites.md)
   - [x] Working Set 1 (Simple Renamings): clearer names, simplified types, defensive defaults - **COMPLETE** (PR #2, merged 2025-10-28)
-  - [ ] Working Set 2 (New Setting and Defaults): Add `outputFile` setting, apply defensive defaults
-  - [ ] Working Set 3 (Output Enhancements): Markdown table output format, file output with Node.js streams, replace `testOutputTypes` enum with `dump` boolean
-  - **Status**: IN PROGRESS - Working Set 2 (New Setting and Defaults) next
+  - [x] Working Set 2 (Defaults and File Output Setting Implementation): Add `outputFile` setting, apply defensive defaults, implement file output capability - **COMPLETE** (PR #4, pending review)
+  - [ ] Working Set 3 (Format Enhancements): Markdown table output format, replace `testOutputTypes` enum with `dump` boolean
+  - **Status**: IN PROGRESS - Working Set 3 (Format Enhancements) next
 - [ ] **CLI Parameter Overrides**: Implement command-line parameter overrides for flexible testing without modifying settings files - see [plans/cli-parameter-overrides.md](plans/cli-parameter-overrides.md)
   - Enables rapid iteration and investigation for features like player ownership integration
   - Commander.js integration for POSIX-style CLI parameters
