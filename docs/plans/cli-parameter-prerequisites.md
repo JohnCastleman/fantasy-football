@@ -20,26 +20,20 @@ The work will be implemented in three working sets to respect task dependencies 
 
 **Rationale**: Three quick wins with no dependencies between them. All are straightforward renamings that can be tested immediately.
 
-### Working Set 2: New Setting and Defaults (Tasks 3, 6)
+### Working Set 2: Defaults and File Output Setting Implementation (Tasks 3, 6, 8)
 
-- Add `outputFile` setting
 - Apply defensive defaults
+- Add `outputFile` setting
+- Implement file output capability
 
-**Rationale**: Isolates the new setting work. Defensive defaults done first in this set (likely already close to complete). Task 2 deferred to Working Set 3 due to dependency on markdown table output.
+**Rationale**: A setting without its implementation is useless. Tasks 3 and 8 should be done together. File output works with current plain text format - no dependency on markdown tables. Defensive defaults grouped here as they're quick and already mostly complete.
 
-### Working Set 3: Output Enhancements (Tasks 7, 8, 2)
+### Working Set 3: Format Enhancements (Tasks 7, 2)
 
 - Implement markdown table output format (task 7)
-- Implement file output capability (task 8)
 - Replace `testOutputTypes` enum with `dump` boolean (task 2)
 
-**Rationale**: Task 2 describes `dump=false` as "markdown table format", so markdown must exist first. While technically we could make task 2 agnostic to output format (it's just enum→boolean conversion), keeping this order:
-
-1. Gets three quick wins in first working set
-2. Isolates outputFile work with defensive defaults
-3. Collects related output format work together (markdown + file output + format selector)
-
-**Dependency Note**: Task 2 was originally in "Settings Refactoring" phase but moved to Working Set 3 because the boolean's default behavior assumes markdown table format exists.
+**Rationale**: These are both format-related changes. Task 8 moved to WS2 because implementing file output without the setting it uses makes no sense. The enum→boolean conversion (task 2) doesn't technically depend on markdown, but grouping format-related work together makes sense.
 
 ## Prerequisites Overview
 
