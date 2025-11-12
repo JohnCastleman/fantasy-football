@@ -55,46 +55,59 @@ The reviewer demonstrated solid technical expertise, caught critical bugs, and p
 
 ## Implementation Plan
 
+**Note**: Review comments are posted directly on [PR #4](https://github.com/JohnCastleman/fantasy-football/pull/4) as line-specific comments. Implementation will involve:
+
+1. Making code changes to address valid issues
+2. Committing and pushing changes to the PR branch
+3. Responding to each comment thread on GitHub with actions taken or explanations
+4. Marking resolved threads as resolved
+5. Requesting re-review
+
 ### 🔴 Critical Priority (Fix Before Merge)
 
-#### [ ] Issue 1: console.log inconsistency in displayRankings
+#### [ ] **[PR Comment #2519763069](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763069): console.log inconsistency in displayRankings**
 
+- **File**: `client/client.js:26`
 - **Reviewer's suggestion**: Replace `console.log()` with `outStream.write()` for the "... (showing X of Y players)" message
 - **My approach**: Same as reviewer's suggestion - this is a clear bug that breaks file output consistency
 - **Time estimate**: 5 minutes
-- **File**: `client/client.js:26`
+- **Commit message**: 'Fix console.log inconsistency in displayRankings'
 
-#### [ ] Issue 2: Missing stream error handling
+### 🟠 High Priority (Fix Before Merge)
 
-- **Reviewer's suggestion**: Add error event handler to catch stream errors asynchronously
-- **My approach**: Use simpler approach - add error event handler, but let errors propagate naturally through the callback promise rejection. Don't need the complex Promise wrapper the reviewer suggested.
-- **Time estimate**: 15 minutes
-- **File**: `client/utils.js:36-52`
+#### [ ] **[PR Comment #2519763267](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763267): Missing stream error handling**
 
-#### [ ] Issue 3: Stream not waited for completion
-
-- **Reviewer's suggestion**: Wait for 'finish' event before reporting success using Promise wrapper
-- **My approach**: Use Node.js `stream.finished()` utility (Node.js 10.17.0+) which is cleaner and handles edge cases better. If Node.js version is a concern, use the Promise approach but keep it simpler than reviewer's suggestion.
-- **Time estimate**: 20 minutes
-- **File**: `client/utils.js:36-52`
-
-### 🟠 High Priority (Fix This Sprint)
-
-#### [ ] Issue 4: Missing directory validation
-
-- **Reviewer's suggestion**: Create directory if it doesn't exist, or at least provide better error messages
-- **My approach**: Start with fail-fast approach with clear error messages. Directory creation is a UX decision that should be discussed - it may create unexpected directories. Better to fail fast with clear message: "Directory does not exist for output file: ${outputFile}. Please create the directory first."
-- **Time estimate**: 15 minutes
 - **File**: `client/utils.js:42`
+- **Reviewer's suggestion**: Add error event handler to catch stream errors asynchronously
+- **My approach**: Add error event handler. Let errors propagate through callback promise rejection (simpler than reviewer's Promise wrapper). Errors will be caught by the try/catch block.
+- **Time estimate**: 15 minutes
+- **Commit message**: 'Add stream error handling in withOptionalFileStream'
 
-### 🟡 Medium Priority (Next Sprint)
+#### [ ] **[PR Comment #2519763428](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763428): Stream not waited for completion**
 
-#### [ ] Issue 5: Defensive default logic inconsistency
+- **File**: `client/utils.js:47`
+- **Reviewer's suggestion**: Wait for 'finish' event before reporting success using Promise wrapper
+- **My approach**: Use Node.js `stream.finished()` utility if available (Node.js 10.17.0+), otherwise use Promise approach similar to reviewer's but integrated with existing error handling
+- **Time estimate**: 20 minutes
+- **Commit message**: 'Wait for stream completion before reporting success'
 
-- **Reviewer's suggestion**: Update comment in settings.js to be clearer about null vs 0 behavior
+### 🟡 Medium Priority (Fix This Sprint)
+
+#### [ ] **[PR Comment #2519763654](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763654): Missing directory validation**
+
+- **File**: `client/utils.js:42`
+- **Reviewer's suggestion**: Add better error handling or directory validation with clearer error messages
+- **My approach**: Add error handling for ENOENT errors with clear message. Use fail-fast approach (don't auto-create directories - that's a UX decision). Wrap createWriteStream in try/catch to provide clearer error messages.
+- **Time estimate**: 15 minutes
+- **Commit message**: 'Add directory validation with clear error messages'
+
+#### [ ] **[PR Comment #2519763815](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763815): Comment could be clearer**
+
+- **File**: `client/settings.js:5`
+- **Reviewer's suggestion**: Update comment to be more explicit about null vs 0 behavior and what positive numbers mean
 - **My approach**: Same as reviewer - update comment for clarity. The code is correct, just need better documentation.
 - **Time estimate**: 2 minutes
-- **File**: `client/settings.js:5`
+- **Commit message**: 'Clarify displayMaxPlayers comment'
 
 ### 🟢 Low Priority (Backlog)
 
@@ -237,14 +250,16 @@ The reviewer's focus on the critical and high-severity issues is appropriate. Th
 ## Next Steps
 
 1. **Immediate Actions** (Today):
-   - [ ] Fix console.log inconsistency in displayRankings (Issue 1)
-   - [ ] Add stream error handling (Issue 2)
-   - [ ] Wait for stream completion (Issue 3)
-   - [ ] Discuss directory creation vs fail-fast with John
+   - [ ] Fix console.log inconsistency in displayRankings ([PR Comment #2519763069](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763069))
+   - [ ] Add stream error handling ([PR Comment #2519763267](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763267))
+   - [ ] Wait for stream completion ([PR Comment #2519763428](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763428))
+   - [ ] Respond to each PR comment thread on GitHub with actions taken
+   - [ ] Mark resolved threads as resolved
+   - [ ] Request re-review
 
 2. **This Week**:
-   - [ ] Implement directory validation or better error messages (Issue 4)
-   - [ ] Update settings.js comment for clarity (Issue 5)
+   - [ ] Implement directory validation with clear error messages ([PR Comment #2519763654](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763654))
+   - [ ] Update settings.js comment for clarity ([PR Comment #2519763815](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763815))
    - [ ] Add tests for file output functionality
    - [ ] Add tests for stream error handling
 
@@ -255,8 +270,8 @@ The reviewer's focus on the critical and high-severity issues is appropriate. Th
    - [ ] Verify all output goes to file (no console.log leaks)
 
 4. **Team Discussion Items**:
-   - [ ] Directory creation vs fail-fast (with John, before implementing Issue 4)
-   - [ ] Stream completion handling approach (with John, before implementing Issue 3)
+   - [ ] Directory creation vs fail-fast (with John, before implementing [PR Comment #2519763654](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763654))
+   - [ ] Stream completion handling approach (with John, before implementing [PR Comment #2519763428](https://github.com/JohnCastleman/fantasy-football/pull/4#discussion_r2519763428))
 
 ---
 
