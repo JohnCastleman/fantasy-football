@@ -32,11 +32,13 @@ All 5 code review comments accepted. Implementation involves:
   - **Implementation**:
 
     Change line 29 from:
+
     ```javascript
     console.log('... (showing', displayMaxPlayers, 'of', players.length, 'players)');
     ```
 
     To:
+
     ```javascript
     outStream.write(`... (showing ${displayMaxPlayers} of ${players.length} players)\n`);
     ```
@@ -77,6 +79,7 @@ All 5 code review comments accepted. Implementation involves:
   - **Implementation**:
 
     Option 1 (preferred if Node.js 10.17.0+):
+
     ```javascript
     import { finished } from 'stream/promises';
     
@@ -88,6 +91,7 @@ All 5 code review comments accepted. Implementation involves:
     ```
 
     Option 2 (fallback for older Node.js):
+
     ```javascript
     if (stream && outputFile) {
       await new Promise((resolve, reject) => {
@@ -133,6 +137,7 @@ All 5 code review comments accepted. Implementation involves:
   - **Implementation Option**:
 
     Display factory:
+
     ```javascript
     function createDisplayFunction(rankingType, position) {
       return async function() {
@@ -149,6 +154,7 @@ All 5 code review comments accepted. Implementation involves:
     ```
 
     Dump factory:
+
     ```javascript
     function createDumpFunction(rankingType, position) {
       return async function() {
@@ -210,4 +216,3 @@ After implementation:
 **IN PROGRESS** - Code changes needed
 
 All review comments accepted. Implementation in progress.
-
