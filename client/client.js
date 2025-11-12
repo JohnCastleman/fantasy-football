@@ -26,7 +26,7 @@ function displayRankings(rankings, options = {}, outStream = process.stdout) {
     players.slice(0, displayMaxPlayers).forEach(player => {
       outStream.write(playerToString(player) + '\n');
     });
-    console.log('... (showing', displayMaxPlayers, 'of', players.length, 'players)');
+    outStream.write(`... (showing ${displayMaxPlayers} of ${players.length} players)\n`);
   } else {
     players.forEach(player => {
       outStream.write(playerToString(player) + '\n');

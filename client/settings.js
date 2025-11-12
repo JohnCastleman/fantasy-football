@@ -2,7 +2,7 @@ import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.
 
 const Settings = {
   verbose: false,          // Whether to show detailed ranking metadata (and, later, expanded player stats)
-  displayMaxPlayers: null, // Default number of players to show in display rankings; set to null or 0 to show all
+  displayMaxPlayers: null, // Default number of players to show in display rankings; null or 0 = show all, o/w, show that many
   outputFile: null,        // Output file path; set to null to write to stdout
   
   // Set any one of these to null to suppress header row in tab-delimited output for that ranking type

@@ -40,19 +40,31 @@ async function withOptionalFileStream(options, callback) {
   try {
     if (outputFile) {
       stream = createWriteStream(outputFile);
+      stream.on('error', (error) => {
+        if (error.code === 'ENOENT') {
+          console.error(`Directory does not exist for output file: ${outputFile}. Please create the directory first.`);
+        } else {
+          console.error(`Error writing to file ${outputFile}:`, error);
+        }
+        // Error will propagate through callback promise rejection, caught by try/catch
+      });
     }
     await callback(stream || process.stdout);
     
     if (stream && outputFile) {
+      await new Promise((resolve, reject) => {
+        stream.on('finish', resolve);
+        stream.on('error', reject);
+        stream.end();
+      });
       console.info(`Output written to: ${outputFile}`);
     }
   } catch (error) {
-    console.error(`Error writing output:`, error);
-    throw error;
-  } finally {
-    if (stream) {
+    if (stream && outputFile) {
       stream.end();
     }
+    console.error(`Error writing output:`, error);
+    throw error;
   }
 }
 
