@@ -13,6 +13,7 @@ tmp_*
 # Editor/IDE
 .vscode/
 .cursor/
+!.cursor/rules/
 *.swp
 *.swo
 *~

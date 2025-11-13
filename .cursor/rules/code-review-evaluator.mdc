@@ -1,0 +1,392 @@
+---
+description: Evaluate external reviewer feedback and create implementation plan
+alwaysApply: false
+---
+
+# Code Author: Evaluating External Review Feedback
+
+**Context:** An external contractor provided a review of your pull request. They're
+hoping to establish a long-term working relationship with our team and are reading
+the codebase for the first time ("fresh eyes").
+
+**Your Task:** Critically evaluate their review analysis and make informed decisions
+about what to implement, what to skip, and whether this reviewer is worth hiring.
+
+---
+
+## Evaluation Framework
+
+### Part 1: Assess the Reviewer (Meta-Evaluation)
+
+Rate the reviewer on a scale of 1-10 based on these criteria:
+
+#### Accuracy (Weight: 30%)
+
+- Are identified issues actually problems?
+- How many false positives did they flag?
+- Did they understand the code correctly?
+- Are severity assessments appropriate?
+
+**Score: __/10**
+
+#### Completeness (Weight: 25%)
+
+- Did they miss obvious issues you can see?
+- Did they review all changed files thoroughly?
+- Were edge cases considered?
+- Did they check security/performance/tests?
+
+**Score: __/10**
+
+#### Actionability (Weight: 25%)
+
+- Are suggestions specific and implementable?
+- Did they provide code examples?
+- Are fixes practical given project constraints?
+- Is the effort-to-benefit ratio reasonable?
+
+**Score: __/10**
+
+#### Understanding (Weight: 15%)
+
+- Did they grasp the code's purpose?
+- Did they consider project context?
+- Were they aware of architectural decisions?
+- Did they understand domain logic?
+
+**Score: __/10**
+
+#### Communication (Weight: 5%)
+
+- Was feedback constructive?
+- Were explanations clear?
+- Did they acknowledge good patterns?
+- Was tone professional and helpful?
+
+**Score: __/10**
+
+**Overall Reviewer Score: __/10**
+
+---
+
+### Part 2: Triage Each Flagged Issue
+
+For every issue the reviewer identified, categorize it:
+
+#### ✅ Valid Issues to Fix
+
+**Criteria for "Valid":**
+
+- Issue is real and impacts quality/security/performance
+- Fix is practical within project constraints
+- Benefit outweighs implementation cost
+- Aligns with team standards
+
+**For each valid issue:**
+
+```
+- [ ] Issue: [Brief summary]
+      File: [file:line]
+      Severity: [Critical/High/Medium/Low]
+      Reviewer's Fix: [their suggestion]
+      My Approach: [what you'll actually do - may differ]
+      Priority: [Immediate/This Sprint/Next Sprint/Backlog]
+      Estimated Time: [time to implement]
+```
+
+#### ❌ Invalid Issues to Skip
+
+**Criteria for "Invalid":**
+
+- Issue is a false positive
+- Reviewer misunderstood the code/requirements
+- Already handled elsewhere they didn't see
+- Contradicts established architectural decisions
+- Not actually a problem in this context
+
+**For each invalid issue:**
+
+```
+Issue: [Brief summary]
+Why Skip: [Specific reason - be detailed]
+Context Reviewer Missed: [What information would have changed their assessment]
+Documentation Needed: [Should this be clarified to prevent future confusion?]
+```
+
+#### 🤔 Debatable Issues (Requires Discussion)
+
+**Criteria for "Debatable":**
+
+- Valid point but disagree with approach
+- Trade-offs are unclear
+- Team consensus needed
+- Architectural decision required
+
+**For each debatable issue:**
+
+```
+Issue: [Brief summary]
+Reviewer's View: [their position]
+My View: [your position]
+Trade-offs: [pros/cons of each approach]
+Decision Needed From: [team lead, architect, security team, etc.]
+```
+
+---
+
+### Part 3: Identify What Reviewer Missed
+
+**Critical Self-Check:**
+Review the code yourself and identify issues the external reviewer should have caught
+but didn't. This reveals gaps in their expertise.
+
+**Categories to check:**
+
+- Security vulnerabilities
+- Performance bottlenecks  
+- Logic errors
+- Missing edge cases
+- Test coverage gaps
+- Documentation needs
+
+**For each missed issue:**
+
+```
+Missed Issue: [What they should have caught]
+Severity: [How bad is this oversight?]
+Why They Missed It: [Lack of expertise? Rushed? Missed context?]
+Impact on Hiring Decision: [Does this gap concern you?]
+```
+
+---
+
+## Output Template
+
+Use this structure for your evaluation:
+
+```markdown
+# Review Evaluation: [Reviewer Name/Session]
+
+## Executive Summary
+- Total Issues Flagged: [count]
+- Valid Issues: [count] ([percentage]%)
+- False Positives: [count] ([percentage]%)
+- Critical Issues Caught: [count]
+- Critical Issues Missed: [count]
+- Overall Quality: [Excellent/Good/Fair/Poor]
+
+---
+
+## Reviewer Performance: [X]/10
+
+### Scoring Breakdown
+- Accuracy: [X]/10 - [Brief explanation]
+- Completeness: [X]/10 - [Brief explanation]
+- Actionability: [X]/10 - [Brief explanation]
+- Understanding: [X]/10 - [Brief explanation]
+- Communication: [X]/10 - [Brief explanation]
+
+### Strengths
+- [What they did well]
+- [Valuable insights provided]
+- [Areas of expertise demonstrated]
+
+### Weaknesses
+- [What they missed or misunderstood]
+- [Areas where expertise was lacking]
+- [Problematic patterns in their review]
+
+### Hiring Recommendation
+**Decision: [YES / NO / MAYBE with conditions]**
+
+**Reasoning:**
+[Detailed explanation of hiring decision based on review quality]
+
+**Conditions (if MAYBE):**
+- [What they need to improve]
+- [Additional evaluation needed]
+
+---
+
+## Implementation Plan
+
+### 🔴 Critical Priority (Fix Before Merge)
+- [ ] [Issue 1]
+      - Reviewer's suggestion: [summary]
+      - My approach: [implementation plan]
+      - Time estimate: [hours/days]
+
+### 🟠 High Priority (Fix This Sprint)
+- [ ] [Issue 2]
+      - Reviewer's suggestion: [summary]
+      - My approach: [implementation plan]
+      - Time estimate: [hours/days]
+
+### 🟡 Medium Priority (Next Sprint)
+- [ ] [Issue 3]
+      - Reviewer's suggestion: [summary]
+      - My approach: [implementation plan]
+      - Time estimate: [hours/days]
+
+### 🟢 Low Priority (Backlog)
+- [ ] [Issue 4]
+      - Reviewer's suggestion: [summary]
+      - My approach: [implementation plan]
+      - Time estimate: [hours/days]
+
+### ❌ Skipped Issues
+
+1. **[Issue Name]**
+   - Reviewer flagged as: [Severity]
+   - Why skipping: [Detailed reason]
+   - Context missed: [What they didn't know]
+   - Doc improvement: [Should we clarify this?]
+
+2. **[Issue Name]**
+   - Reviewer flagged as: [Severity]
+   - Why skipping: [Detailed reason]
+   - Context missed: [What they didn't know]
+   - Doc improvement: [Should we clarify this?]
+
+### 🤔 Items Requiring Team Discussion
+
+1. **[Issue Name]**
+   - Reviewer suggests: [their approach]
+   - I suggest: [my approach]
+   - Trade-offs: [analysis]
+   - Decision maker: [who should decide?]
+   - Timeline: [when do we need to decide?]
+
+---
+
+## What Reviewer Missed
+
+### Critical Oversights
+- **[Issue 1]**: [What they missed]
+  - Why serious: [impact]
+  - Why missed: [analysis]
+  
+- **[Issue 2]**: [What they missed]
+  - Why serious: [impact]
+  - Why missed: [analysis]
+
+### Minor Oversights
+- [Issue 3]: [Brief description]
+- [Issue 4]: [Brief description]
+
+### Assessment
+[How do these gaps affect your view of the reviewer's expertise?]
+
+---
+
+## Self-Reflection & Improvements
+
+### What I Learned from This Review
+- [Insight 1]
+- [Insight 2]
+- [Insight 3]
+
+### How I Can Improve My Code/Documentation
+- [Change 1 to prevent similar confusion]
+- [Change 2 to make review easier]
+- [Change 3 to improve quality]
+
+### Process Improvements
+- [What would make reviews more effective?]
+- [What context should be provided upfront?]
+- [What documentation is missing?]
+
+---
+
+## Next Steps
+
+1. **Immediate Actions** (Today):
+   - [ ] [Action item]
+   - [ ] [Action item]
+
+2. **This Week**:
+   - [ ] [Action item]
+   - [ ] [Action item]
+
+3. **Follow-Up Reviews Needed**:
+   - [ ] [Specific area to re-review after changes]
+   - [ ] [Additional testing needed]
+
+4. **Team Discussion Items**:
+   - [ ] [Topic 1 - with whom, by when]
+   - [ ] [Topic 2 - with whom, by when]
+
+---
+
+## Metrics for Future Comparison
+
+Track these to improve review quality over time:
+
+- Reviewer accuracy: [percentage]% valid issues
+- Issues caught vs missed: [caught] / [total actual issues]
+- Implementation rate: [percentage]% of suggestions implemented
+- False positive rate: [percentage]% invalid flags
+- Time to complete review: [duration]
+- Your satisfaction with review: [1-10]
+
+**Save these metrics to compare across multiple reviews and reviewers.**
+```
+
+---
+
+## Evaluation Best Practices
+
+### ✅ Do's
+
+1. **Be Objective:** Don't dismiss criticism defensively
+2. **Be Thorough:** Check every flagged issue carefully
+3. **Be Honest:** If they caught real problems, acknowledge it
+4. **Be Fair:** Credit good insights even if you disagree on approach
+5. **Learn:** Every review is an opportunity to improve your code
+
+### ❌ Don'ts
+
+1. **Don't auto-reject:** Just because they're external doesn't mean they're wrong
+2. **Don't skip evaluation:** The meta-analysis is as important as the review
+3. **Don't forget missed issues:** What they didn't catch matters
+4. **Don't neglect documentation:** If they misunderstood, maybe docs need improvement
+5. **Don't rush:** Take time to assess each issue thoughtfully
+
+---
+
+## Red Flags (Poor Reviewer Quality)
+
+Watch for these warning signs:
+
+- ❌ 50%+ false positives (misunderstood the code)
+- ❌ Generic feedback without specific suggestions
+- ❌ Missed obvious security vulnerabilities
+- ❌ Nitpicking style while ignoring logic errors
+- ❌ Suggested "fixes" that break functionality
+- ❌ No acknowledgment of good patterns
+- ❌ Misunderstood the project's domain/purpose
+- ❌ Overly harsh or unprofessional tone
+
+**If 3+ red flags present, hiring recommendation should be NO.**
+
+---
+
+## Green Flags (Excellent Reviewer)
+
+Look for these positive indicators:
+
+- ✅ High accuracy (80%+ valid issues)
+- ✅ Caught subtle security or performance issues
+- ✅ Provided specific, implementable fixes with examples
+- ✅ Demonstrated understanding of project context
+- ✅ Balanced criticism with acknowledgment of good work
+- ✅ Prioritized issues appropriately
+- ✅ Explained "why" for each suggestion
+- ✅ Constructive, professional tone
+
+**If 5+ green flags present, strong candidate for hiring.**
+
+---
+
+**Remember:** This evaluation helps improve both the code AND future review processes.
+Take it seriously, be fair, and use insights to level up your development practices.

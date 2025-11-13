@@ -1,0 +1,359 @@
+---
+description: Posts structured code review to GitHub PR using official review API
+alwaysApply: false
+---
+
+# GitHub PR Review Poster
+
+**Purpose:** Read a structured code review markdown file and post it to GitHub as an official PR review with inline comments.
+
+**Usage:**
+
+```text
+@code-review-github-poster
+
+Post review from: pr-2-code-review.md
+To PR: #123
+In repo: owner/repo-name
+Action: REQUEST_CHANGES (or COMMENT or APPROVE)
+```
+
+---
+
+## Required Inputs
+
+When using this rule, you MUST specify:
+
+1. **Review File:** Path to the markdown file containing the review (e.g., `pr-2-code-review.md`)
+2. **PR Number:** The pull request number (e.g., `#123` or just `123`)
+3. **Repository:** In format `owner/repo-name` (e.g., `JohnCastleman/my-project`)
+4. **Review Action:** One of:
+   - `REQUEST_CHANGES` - Block merge until issues addressed
+   - `COMMENT` - Feedback without blocking
+   - `APPROVE` - Approve the PR
+
+---
+
+## Expected Review File Format
+
+The review markdown file must follow this structure:
+
+```markdown
+## PR Review Summary
+
+[Optional summary paragraph]
+
+---
+
+### Critical Issues
+
+**File:** `path/to/file.py`
+**Line:** 45
+**Issue:** [Description of the problem]
+**Impact:** [Why this matters]
+**Suggestion:**
+\`\`\`python
+# Fixed code example
+\`\`\`
+
+**File:** `path/to/other.js`
+**Line:** 23
+**Issue:** [Description]
+**Impact:** [Impact]
+**Suggestion:**
+\`\`\`javascript
+// Fixed code
+\`\`\`
+
+### High Priority Issues
+
+[Same format as above]
+
+### Medium Priority Issues
+
+[Same format as above]
+
+### Low Priority / Suggestions
+
+[Same format as above]
+
+---
+
+## Overall Assessment
+
+[Final summary and recommendation]
+```
+
+---
+
+## Your Task
+
+1. **Read the specified review file**
+   - Parse all issues from the markdown
+   - Extract: File path, Line number, Issue description, Suggestion
+
+2. **Create GitHub PR Review** using `@github` MCP tools:
+
+   ```text
+   Step 1: Create pending review
+   Tool: pull_request_review_write
+   Parameters:
+   - method: "create"
+   - owner: [from repo input]
+   - repo: [from repo input]
+   - pullNumber: [from PR number input]
+   - body: "[Summary from review file]"
+   
+   Step 2: Add each inline comment
+   Tool: add_comment_to_pending_review
+   For EACH issue in the review file:
+   - owner: [from repo]
+   - repo: [from repo]
+   - pullNumber: [PR number]
+   - path: [File path from review]
+   - line: [Line number from review]
+   - body: [Issue + Impact + Suggestion combined]
+   - subjectType: "LINE"
+   
+   Step 3: Submit the review
+   Tool: pull_request_review_write
+   Parameters:
+   - method: "submit_pending"
+   - owner: [from repo]
+   - repo: [from repo]
+   - pullNumber: [PR number]
+   - event: [Action from input: APPROVE/REQUEST_CHANGES/COMMENT]
+   - body: "[Overall assessment from review file]"
+   ```
+
+3. **Format each inline comment** as:
+
+   ```markdown
+   ### [Severity]: [Issue Title]
+   
+   **Problem:**
+   [Issue description]
+   
+   **Impact:**
+   [Why this matters]
+   
+   **Suggested Fix:**
+   [Code example or description]
+   ```
+
+4. **Error Handling:**
+   - If review file not found: Ask user to specify correct path
+   - If file format invalid: Explain expected format
+   - If GitHub API fails: Report error with details
+   - If PR doesn't exist: Confirm PR number and repo
+
+5. **Confirmation:**
+   After posting, report:
+   - Number of comments posted
+   - Review status (Pending/Submitted)
+   - Link to the PR review
+
+---
+
+## Parsing Guidelines
+
+### Extracting File Path
+
+- Look for: `**File:** \`path/to/file.ext\``
+- Extract the backtick-enclosed path
+
+### Extracting Line Number
+
+- Look for: `**Line:** 45` or `**Lines:** 45-50`
+- If range, use the ending line number
+- If missing, post as file-level comment (omit `line` parameter)
+
+### Extracting Issue Details
+
+- **Issue:** The description paragraph
+- **Impact:** Why it matters (if present)
+- **Suggestion:** Code block or text after "Suggestion:"
+
+### Combining for GitHub Comment
+
+Merge Issue + Impact + Suggestion into single coherent comment body
+
+---
+
+## Example Usage Session
+
+**User:**
+
+```text
+@code-review-github-poster
+
+Post review from: pr-5-code-review.md
+To PR: #5
+In repo: JohnCastleman/my-app
+Action: REQUEST_CHANGES
+```
+
+**You:**
+
+```text
+Reading review file: pr-5-code-review.md...
+Found 8 issues to post:
+- 2 Critical
+- 3 High Priority
+- 2 Medium Priority
+- 1 Low Priority
+
+Creating GitHub PR review for PR #5...
+
+Step 1: Creating pending review... ✓
+Step 2: Adding inline comments...
+  ✓ auth.py:45 - SQL injection vulnerability
+  ✓ api/routes.py:23 - Missing rate limiting
+  ✓ utils/helper.js:67 - Memory leak in loop
+  ... [all 8 comments] ✓
+  
+Step 3: Submitting review as REQUEST_CHANGES... ✓
+
+Review posted successfully!
+- 8 inline comments added
+- Review submitted with REQUEST_CHANGES status
+- View at: https://github.com/JohnCastleman/my-app/pull/5
+
+The PR author will now see your review and can respond to each comment.
+```
+
+---
+
+## Alternative: File-Level Comments
+
+If a line number isn't specified or the issue affects multiple lines:
+
+```text
+Tool: add_comment_to_pending_review
+Parameters:
+- subjectType: "FILE"
+- path: [file path]
+- body: [comment]
+(omit 'line', 'side', 'startLine', 'startSide')
+```
+
+---
+
+## Handling Multi-Line Comments
+
+If the review specifies a range (e.g., Lines 45-50):
+
+```text
+Tool: add_comment_to_pending_review
+Parameters:
+- line: 50 (ending line)
+- startLine: 45 (starting line)
+- side: "RIGHT"
+- startSide: "RIGHT"
+```
+
+---
+
+## Review Body Structure
+
+**For initial review body (Step 1):**
+Use the summary section from the review file, or if missing:
+
+```markdown
+## Code Review Summary
+
+This review was generated using custom AI analysis with incentive-based prompting.
+
+**Issues Found:**
+- Critical: [count]
+- High: [count]
+- Medium: [count]
+- Low: [count]
+
+Please see inline comments for details.
+```
+
+**For final submission body (Step 3):**
+Use the "Overall Assessment" section from review file
+
+---
+
+## Tips for Success
+
+1. **Validate inputs first:**
+   - Check review file exists
+   - Verify repo format (owner/repo)
+   - Confirm PR number is numeric
+
+2. **Parse carefully:**
+   - Don't skip issues without line numbers (post as file-level)
+   - Handle malformed markdown gracefully
+   - Preserve code formatting in suggestions
+
+3. **Batch operations:**
+   - Create review once
+   - Add all comments
+   - Submit once
+   - Don't create multiple reviews
+
+4. **Error recovery:**
+   - If a comment fails, continue with others
+   - Report which comments succeeded/failed
+   - Don't abandon the entire review
+
+5. **User feedback:**
+   - Show progress for long reviews
+   - Report each step clearly
+   - Provide actionable error messages
+
+---
+
+## Security Notes
+
+- Never modify the review content
+- Post exactly what's in the file
+- Don't add opinions or additional analysis
+- You're just a posting mechanism
+
+---
+
+## Integration with Review Workflow
+
+This rule is designed to work with:
+
+1. **@code-review-reviewer** - Generates the detailed review
+2. **THIS RULE** - Posts it to GitHub
+3. **@code-review-evaluator** - Evaluates the posted review
+
+**Full workflow:**
+
+```text
+Step 1: Generate review
+@code-review-reviewer
+Review PR #5, save to pr-5-code-review.md
+
+Step 2: Post to GitHub
+@code-review-github-poster
+Post review from: pr-5-code-review.md
+To PR: #5
+In repo: owner/repo
+Action: REQUEST_CHANGES
+
+Step 3: Evaluate (as PR author)
+@code-review-evaluator
+[Review the GitHub PR review]
+Evaluate and create implementation plan
+```
+
+---
+
+## Limitations
+
+- Review shows as YOUR GitHub account (not a separate reviewer)
+- Cannot edit comments after posting (would need to delete/recreate review)
+- Line numbers must match current PR state (stale reviews fail)
+- File paths must be exact (case-sensitive)
+
+---
+
+**Remember:** You are a utility that faithfully translates a structured markdown review into GitHub's PR review API. Be accurate, be clear, and handle errors gracefully.
