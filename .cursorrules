@@ -421,6 +421,31 @@ Before starting complex operations (rebases, multi-step refactorings, etc.):
 - If terminal output is broken (commands return exit code 0 but no output), STOP and inform John that IDE restart is needed
 - NEVER proceed with complex git operations when terminal tool is not functioning properly
 
+## Pull Request Merge and Branch Cleanup
+
+**CRITICAL**: When merging PRs and cleaning up branches, YOU MUST follow this exact sequence:
+
+1. **Verify PR is mergeable** - Check PR status via GitHub API before attempting merge
+2. **Merge the PR** - Use GitHub MCP to merge (squash merge preferred)
+3. **Verify merge succeeded** - Confirm the merge completed successfully before proceeding
+4. **Pull merged changes** - Switch to main and pull the merged commit
+5. **Verify merge is on main** - Confirm the changes are actually on main branch
+6. **THEN delete branches** - Only after confirming merge is complete and on main
+
+**NEVER**:
+
+- Delete branches before confirming merge succeeded
+- Assume an operation succeeded - always verify
+- Proceed to next step if previous step failed
+- Delete branches if merge failed or PR is not mergeable
+
+**If merge fails**:
+
+- STOP immediately
+- Do NOT delete any branches
+- Report the issue to John and wait for instructions
+- Do NOT attempt workarounds without explicit approval
+
 ## Development Session Guidelines
 
 - Run tests after architectural changes
