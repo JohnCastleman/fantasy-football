@@ -37,33 +37,51 @@ async function withOptionalFileStream(options, callback) {
   const outputFile = options.outputFile ?? Settings.outputFile;
 
   let stream = null;
+  let streamError = null;
+  
+  const handleStreamError = (error) => {
+    streamError = error;
+    if (error.code === 'ENOENT') {
+      console.error(`Directory does not exist for output file: ${outputFile}. Please create the directory first.`);
+    } else {
+      console.error(`Error writing to file ${outputFile}:`, error);
+    }
+  };
+  
   try {
     if (outputFile) {
       stream = createWriteStream(outputFile);
-      stream.on('error', (error) => {
-        if (error.code === 'ENOENT') {
-          console.error(`Directory does not exist for output file: ${outputFile}. Please create the directory first.`);
-        } else {
-          console.error(`Error writing to file ${outputFile}:`, error);
-        }
-        // Error will propagate through callback promise rejection, caught by try/catch
-      });
+      stream.once('error', handleStreamError);
     }
     await callback(stream || process.stdout);
     
+    if (streamError) {
+      throw streamError;
+    }
+    
     if (stream && outputFile) {
       await new Promise((resolve, reject) => {
-        stream.on('finish', resolve);
-        stream.on('error', reject);
+        if (streamError) {
+          reject(streamError);
+          return;
+        }
+        
+        stream.once('finish', resolve);
+        stream.once('error', (error) => {
+          handleStreamError(error);
+          reject(error);
+        });
         stream.end();
       });
       console.info(`Output written to: ${outputFile}`);
     }
   } catch (error) {
-    if (stream && outputFile) {
+    if (stream && outputFile && !streamError) {
       stream.end();
     }
-    console.error(`Error writing output:`, error);
+    if (error !== streamError) {
+      console.error(`Error writing output:`, error);
+    }
     throw error;
   }
 }
