@@ -165,6 +165,55 @@
 - `docs/` contains historical context and reference material
 - Both synced via git for cross-device access
 
+### 12. File Output with Atomic Writes (November 2025)
+
+**Decision**: Use atomic write pattern (temp file + rename) for file output
+**Context**: Need reliable file output that prevents partial writes on failure
+**Alternatives**: Direct write, append mode, file locking
+
+**Chosen**: Atomic write using temporary file + rename
+**Rationale**:
+
+- Prevents partial file writes on failure
+- Ensures file is only visible when complete
+- Standard pattern for reliable file I/O
+- Works across all filesystems
+
+**Implementation**: `withTempFile` wrapper function that creates temp file, writes to it, then atomically renames to final path. Integrated into `withOptionalFileStream` for all file writes.
+
+### 13. Factory Pattern for Wrapper Functions (November 2025)
+
+**Decision**: Use factory functions to generate wrapper functions instead of explicit definitions
+**Context**: 48 wrapper functions (24 display + 24 dump) with identical structure, only differing in parameters
+**Alternatives**: Keep explicit function definitions, use class-based approach, use higher-order functions inline
+
+**Chosen**: Factory pattern with `createDisplayFunction` and `createDumpFunction`
+**Rationale**:
+
+- Significantly reduces code duplication (500+ lines to ~90 lines)
+- Single point of maintenance for pattern changes
+- API unchanged - all exports preserved identically
+- Same functionality - factory returns async functions with identical behavior
+- Simpler than expected in JavaScript
+
+**Implementation**: `client/display.js` and `client/dump.js` use factory functions to generate all 48 wrapper functions.
+
+### 14. Stream Error Handling and Resource Management (November 2025)
+
+**Decision**: Use `finally` blocks and proper error propagation for stream cleanup
+**Context**: Need to ensure streams are always closed, even on error, to prevent resource leaks
+**Alternatives**: Try/catch only, manual cleanup in catch blocks, stream.destroy() only
+
+**Chosen**: `finally` block with `streamEnded` flag to prevent double-cleanup
+**Rationale**:
+
+- Ensures cleanup always happens regardless of error path
+- Prevents resource leaks from unclosed streams
+- Uses `stream.destroy()` for error cases, `stream.end()` for normal cases
+- Proper error propagation with custom error objects
+
+**Implementation**: `withTempFile` and `withOptionalFileStream` use `finally` blocks with conditional cleanup based on stream state.
+
 ### 10. Todo Management: Editor Built-in Tool (October 2025)
 
 **Decision**: Use editor's built-in todo list tool as primary task manager
