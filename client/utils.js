@@ -38,6 +38,7 @@ async function withOptionalFileStream(options, callback) {
 
   let stream = null;
   let streamError = null;
+  let streamEnded = false;
   
   const handleStreamError = (error) => {
     streamError = error;
@@ -66,7 +67,10 @@ async function withOptionalFileStream(options, callback) {
           return;
         }
         
-        stream.once('finish', resolve);
+        stream.once('finish', () => {
+          streamEnded = true;
+          resolve();
+        });
         stream.once('error', (error) => {
           handleStreamError(error);
           reject(error);
@@ -76,13 +80,18 @@ async function withOptionalFileStream(options, callback) {
       console.info(`Output written to: ${outputFile}`);
     }
   } catch (error) {
-    if (stream && outputFile && !streamError) {
-      stream.end();
-    }
     if (error !== streamError) {
       console.error(`Error writing output:`, error);
     }
     throw error;
+  } finally {
+    if (stream && outputFile && !streamEnded) {
+      if (streamError || stream.destroyed) {
+        stream.destroy();
+      } else {
+        stream.end();
+      }
+    }
   }
 }
 
