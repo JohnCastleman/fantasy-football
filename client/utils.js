@@ -1,4 +1,6 @@
 import { createWriteStream } from 'fs';
+import { stat } from 'fs/promises';
+import path from 'path';
 import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 import { Settings } from './settings.js';
 
@@ -51,7 +53,26 @@ async function withOptionalFileStream(options, callback) {
   
   try {
     if (outputFile) {
-      stream = createWriteStream(outputFile);
+      const resolvedPath = path.resolve(outputFile);
+      
+      if (resolvedPath.includes('..')) {
+        throw new Error(`Invalid output file path: path traversal not allowed (${outputFile})`);
+      }
+      
+      const parentDir = path.dirname(resolvedPath);
+      try {
+        const parentStat = await stat(parentDir);
+        if (!parentStat.isDirectory()) {
+          throw new Error(`Parent path is not a directory: ${parentDir}`);
+        }
+      } catch (error) {
+        if (error.code === 'ENOENT') {
+          throw new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
+        }
+        throw error;
+      }
+      
+      stream = createWriteStream(resolvedPath);
       stream.once('error', handleStreamError);
     }
     await callback(stream || process.stdout);
