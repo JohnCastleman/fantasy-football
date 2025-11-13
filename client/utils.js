@@ -88,7 +88,7 @@ async function withTempFile(finalPath, callback) {
       });
       stream.once('error', (error) => {
         handleStreamError(error);
-        reject(error);
+        reject(streamError);
       });
       stream.end();
     });
@@ -119,10 +119,6 @@ async function withOptionalFileStream(options, callback) {
 
   if (outputFile) {
     const resolvedPath = path.resolve(outputFile);
-    
-    if (resolvedPath.includes('..')) {
-      throw new Error(`Invalid output file path: path traversal not allowed (${outputFile})`);
-    }
     
     await withTempFile(resolvedPath, async (stream) => {
       await callback(stream);
