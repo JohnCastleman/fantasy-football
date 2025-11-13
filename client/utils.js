@@ -1,5 +1,5 @@
 import { createWriteStream } from 'fs';
-import { stat } from 'fs/promises';
+import { stat, rename, unlink } from 'fs/promises';
 import path from 'path';
 import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 import { Settings } from './settings.js';
@@ -35,72 +35,76 @@ function playerToTabDelimitedString(player) {
   return `${player.rank}\t${player.name}\t${player.team}${opponentOrBye}`;
 }
 
-async function withOptionalFileStream(options, callback) {
-  const outputFile = options.outputFile ?? Settings.outputFile;
+async function withTempFile(finalPath, callback) {
+  const resolvedPath = path.resolve(finalPath);
+  const parentDir = path.dirname(resolvedPath);
+  const basename = path.basename(resolvedPath);
+  const tempName = `.tmp-${process.pid}-${Date.now()}-${basename}`;
+  const tempPath = path.join(parentDir, tempName);
 
   let stream = null;
   let streamError = null;
   let streamEnded = false;
-  
+
   const handleStreamError = (error) => {
     if (error.code === 'ENOENT') {
-      streamError = new Error(`Directory does not exist for output file: ${outputFile}. Please create the directory first.`);
+      streamError = new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
     } else {
-      streamError = new Error(`Error writing to file ${outputFile}: ${error.message}`);
+      streamError = new Error(`Error writing to temp file ${tempPath}: ${error.message}`);
     }
   };
-  
+
   try {
-    if (outputFile) {
-      const resolvedPath = path.resolve(outputFile);
-      
-      if (resolvedPath.includes('..')) {
-        throw new Error(`Invalid output file path: path traversal not allowed (${outputFile})`);
+    try {
+      const parentStat = await stat(parentDir);
+      if (!parentStat.isDirectory()) {
+        throw new Error(`Parent path is not a directory: ${parentDir}`);
       }
-      
-      const parentDir = path.dirname(resolvedPath);
-      try {
-        const parentStat = await stat(parentDir);
-        if (!parentStat.isDirectory()) {
-          throw new Error(`Parent path is not a directory: ${parentDir}`);
-        }
-      } catch (error) {
-        if (error.code === 'ENOENT') {
-          throw new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
-        }
-        throw error;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        throw new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
       }
-      
-      stream = createWriteStream(resolvedPath);
-      stream.once('error', handleStreamError);
+      throw error;
     }
-    await callback(stream || process.stdout);
-    
+
+    stream = createWriteStream(tempPath);
+    stream.once('error', handleStreamError);
+
+    await callback(stream);
+
     if (streamError) {
       throw streamError;
     }
-    
-    if (stream && outputFile) {
-      await new Promise((resolve, reject) => {
-        if (streamError) {
-          reject(streamError);
-          return;
-        }
-        
-        stream.once('finish', () => {
-          streamEnded = true;
-          resolve();
-        });
-        stream.once('error', (error) => {
-          handleStreamError(error);
-          reject(error);
-        });
-        stream.end();
+
+    await new Promise((resolve, reject) => {
+      if (streamError) {
+        reject(streamError);
+        return;
+      }
+
+      stream.once('finish', () => {
+        streamEnded = true;
+        resolve();
       });
-      console.info(`Output written to: ${outputFile}`);
+      stream.once('error', (error) => {
+        handleStreamError(error);
+        reject(error);
+      });
+      stream.end();
+    });
+
+    await rename(tempPath, resolvedPath);
+  } catch (error) {
+    if (tempPath) {
+      try {
+        await unlink(tempPath);
+      } catch (unlinkError) {
+        // Ignore unlink errors - temp file may not exist or already removed
+      }
     }
+    throw error;
   } finally {
-    if (stream && outputFile && !streamEnded) {
+    if (stream && !streamEnded) {
       if (streamError || stream.destroyed) {
         stream.destroy();
       } else {
@@ -110,9 +114,29 @@ async function withOptionalFileStream(options, callback) {
   }
 }
 
+async function withOptionalFileStream(options, callback) {
+  const outputFile = options.outputFile ?? Settings.outputFile;
+
+  if (outputFile) {
+    const resolvedPath = path.resolve(outputFile);
+    
+    if (resolvedPath.includes('..')) {
+      throw new Error(`Invalid output file path: path traversal not allowed (${outputFile})`);
+    }
+    
+    await withTempFile(resolvedPath, async (stream) => {
+      await callback(stream);
+    });
+    console.info(`Output written to: ${outputFile}`);
+  } else {
+    await callback(process.stdout);
+  }
+}
+
 export {
   rankingsMetadataToString,
   playerToString,
   playerToTabDelimitedString,
+  withTempFile,
   withOptionalFileStream
 };
