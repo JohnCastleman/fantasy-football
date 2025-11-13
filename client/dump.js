@@ -1,204 +1,44 @@
 import { RankingTypeEnum, PositionEnum } from '../common/index.js';
 import { getRankings, dumpRankingsToTabDelimited } from './client.js';
+import { withOptionalFileStream } from './utils.js';
 
 // ==========================================
 // Dump Functions (tab-delimited data output)
 // ==========================================
-async function dumpRosQbRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.QB;
 
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
+function createDumpFunction(rankingType, position) {
+  return async function(options = {}) {
+    await withOptionalFileStream(options, async (stream) => {
+      const rankings = await getRankings(rankingType, position);
+      dumpRankingsToTabDelimited(rankings, options, stream);
+    });
+  };
 }
 
-async function dumpRosRbRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.RB;
+export const dumpRosQbRankings = createDumpFunction(RankingTypeEnum.ROS, PositionEnum.QB);
+export const dumpRosRbRankings = createDumpFunction(RankingTypeEnum.ROS, PositionEnum.RB);
+export const dumpRosWrRankings = createDumpFunction(RankingTypeEnum.ROS, PositionEnum.WR);
+export const dumpRosTeRankings = createDumpFunction(RankingTypeEnum.ROS, PositionEnum.TE);
+export const dumpRosKRankings = createDumpFunction(RankingTypeEnum.ROS, PositionEnum.K);
+export const dumpRosDstRankings = createDumpFunction(RankingTypeEnum.ROS, PositionEnum.DST);
 
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
+export const dumpWeeklyQbRankings = createDumpFunction(RankingTypeEnum.WEEKLY, PositionEnum.QB);
+export const dumpWeeklyRbRankings = createDumpFunction(RankingTypeEnum.WEEKLY, PositionEnum.RB);
+export const dumpWeeklyWrRankings = createDumpFunction(RankingTypeEnum.WEEKLY, PositionEnum.WR);
+export const dumpWeeklyTeRankings = createDumpFunction(RankingTypeEnum.WEEKLY, PositionEnum.TE);
+export const dumpWeeklyKRankings = createDumpFunction(RankingTypeEnum.WEEKLY, PositionEnum.K);
+export const dumpWeeklyDstRankings = createDumpFunction(RankingTypeEnum.WEEKLY, PositionEnum.DST);
 
-async function dumpRosWrRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.WR;
+export const dumpDynastyQbRankings = createDumpFunction(RankingTypeEnum.DYNASTY, PositionEnum.QB);
+export const dumpDynastyRbRankings = createDumpFunction(RankingTypeEnum.DYNASTY, PositionEnum.RB);
+export const dumpDynastyWrRankings = createDumpFunction(RankingTypeEnum.DYNASTY, PositionEnum.WR);
+export const dumpDynastyTeRankings = createDumpFunction(RankingTypeEnum.DYNASTY, PositionEnum.TE);
+export const dumpDynastyKRankings = createDumpFunction(RankingTypeEnum.DYNASTY, PositionEnum.K);
+export const dumpDynastyDstRankings = createDumpFunction(RankingTypeEnum.DYNASTY, PositionEnum.DST);
 
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpRosTeRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpRosKRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpRosDstRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpWeeklyQbRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.QB;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpWeeklyRbRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.RB;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpWeeklyWrRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.WR;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpWeeklyTeRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpWeeklyKRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpWeeklyDstRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDynastyQbRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.QB;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDynastyRbRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.RB;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDynastyWrRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.WR;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDynastyTeRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDynastyKRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDynastyDstRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDraftQbRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.QB;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDraftRbRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.RB;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDraftWrRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.WR;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDraftTeRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDraftKRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-async function dumpDraftDstRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  dumpRankingsToTabDelimited(rankings);
-}
-
-export {
-  dumpRosQbRankings, dumpRosRbRankings, dumpRosWrRankings, dumpRosTeRankings, dumpRosKRankings, dumpRosDstRankings,
-  dumpWeeklyQbRankings, dumpWeeklyRbRankings, dumpWeeklyWrRankings, dumpWeeklyTeRankings, dumpWeeklyKRankings, dumpWeeklyDstRankings,
-  dumpDynastyQbRankings, dumpDynastyRbRankings, dumpDynastyWrRankings, dumpDynastyTeRankings, dumpDynastyKRankings, dumpDynastyDstRankings,
-  dumpDraftQbRankings, dumpDraftRbRankings, dumpDraftWrRankings, dumpDraftTeRankings, dumpDraftKRankings, dumpDraftDstRankings
-};
+export const dumpDraftQbRankings = createDumpFunction(RankingTypeEnum.DRAFT, PositionEnum.QB);
+export const dumpDraftRbRankings = createDumpFunction(RankingTypeEnum.DRAFT, PositionEnum.RB);
+export const dumpDraftWrRankings = createDumpFunction(RankingTypeEnum.DRAFT, PositionEnum.WR);
+export const dumpDraftTeRankings = createDumpFunction(RankingTypeEnum.DRAFT, PositionEnum.TE);
+export const dumpDraftKRankings = createDumpFunction(RankingTypeEnum.DRAFT, PositionEnum.K);
+export const dumpDraftDstRankings = createDumpFunction(RankingTypeEnum.DRAFT, PositionEnum.DST);

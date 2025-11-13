@@ -11,46 +11,59 @@ async function getRankings(rankingType, position) {
   }
 }
 
-function displayRankings(rankings, options = {}) {
-  const { players, metadata } = rankings;
-  const { displayMaxPlayers = Settings.displayMaxPlayers ?? 0, verbose = Settings.verbose } = options;
+function displayRankings(rankings, options = {}, outStream = process.stdout) {
+  try {
+    const { players, metadata } = rankings;
+    const { 
+      displayMaxPlayers = Settings.displayMaxPlayers ?? null, 
+      verbose = Settings.verbose ?? false
+    } = options;
 
-  const title = rankingsMetadataToString(metadata, verbose);  
-  console.log(`\n${title}`);
-  console.log('=' + '='.repeat(title.length) + '\n');
+    const title = rankingsMetadataToString(metadata, verbose);  
+    outStream.write(`\n${title}\n`);
+    outStream.write('=' + '='.repeat(title.length) + '\n\n');
 
-  if (displayMaxPlayers != null && displayMaxPlayers !== 0) {
-    players.slice(0, displayMaxPlayers).forEach(player => {
-      console.log(playerToString(player));
-    });
-    console.log('... (showing', displayMaxPlayers, 'of', players.length, 'players)');
-  } else {
-    players.forEach(player => {
-      console.log(playerToString(player));
-    });
+    if (displayMaxPlayers != null && displayMaxPlayers !== 0) {
+      players.slice(0, displayMaxPlayers).forEach(player => {
+        outStream.write(playerToString(player) + '\n');
+      });
+      outStream.write(`... (showing ${displayMaxPlayers} of ${players.length} players)\n`);
+    } else {
+      players.forEach(player => {
+        outStream.write(playerToString(player) + '\n');
+      });
+    }
+    
+    outStream.write('\n');
+  } catch (error) {
+    console.error(`Error displaying rankings:`, error.message);
+    throw error;
   }
-  
-  console.log('');
 }
 
-function dumpRankingsToTabDelimited(rankings) {
-  const { players, metadata } = rankings;
+function dumpRankingsToTabDelimited(rankings, options = {}, outStream = process.stdout) {
+  try {
+    const { players, metadata } = rankings;
 
-  const title = rankingsMetadataToString(metadata) + " (tab-delimited)";  
-  console.log(`\n${title}`);
-  console.log('=' + '='.repeat(title.length) + '\n');
+    const title = rankingsMetadataToString(metadata) + " (tab-delimited)";  
+    console.log(`\n${title}`);
+    console.log('=' + '='.repeat(title.length) + '\n');
 
-  const header = Settings.tabDelimitedHeader[metadata.rankingType];
-  
-  if (header) {
-    console.log(header);
+    const header = Settings.tabDelimitedHeader[metadata.rankingType];
+    
+    if (header) {
+      outStream.write(header + '\n');
+    }
+
+    players.forEach(player => {
+      outStream.write(playerToTabDelimitedString(player) + '\n');
+    });
+    
+    outStream.write('\n');
+  } catch (error) {
+    console.error(`Error dumping rankings:`, error.message);
+    throw error;
   }
-
-  players.forEach(player => {
-    console.log(playerToTabDelimitedString(player));
-  });
-  
-  console.log('');
 }
 
 export {

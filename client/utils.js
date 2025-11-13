@@ -1,3 +1,6 @@
+import { createWriteStream } from 'fs';
+import { stat, rename, unlink } from 'fs/promises';
+import path from 'path';
 import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 import { Settings } from './settings.js';
 
@@ -32,8 +35,104 @@ function playerToTabDelimitedString(player) {
   return `${player.rank}\t${player.name}\t${player.team}${opponentOrBye}`;
 }
 
+async function withTempFile(finalPath, callback) {
+  const resolvedPath = path.resolve(finalPath);
+  const parentDir = path.dirname(resolvedPath);
+  const basename = path.basename(resolvedPath);
+  const tempName = `.tmp-${process.pid}-${Date.now()}-${basename}`;
+  const tempPath = path.join(parentDir, tempName);
+
+  let stream = null;
+  let streamError = null;
+  let streamEnded = false;
+
+  const handleStreamError = (error) => {
+    if (error.code === 'ENOENT') {
+      streamError = new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
+    } else {
+      streamError = new Error(`Error writing to temp file ${tempPath}: ${error.message}`);
+    }
+  };
+
+  try {
+    try {
+      const parentStat = await stat(parentDir);
+      if (!parentStat.isDirectory()) {
+        throw new Error(`Parent path is not a directory: ${parentDir}`);
+      }
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        throw new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
+      }
+      throw error;
+    }
+
+    stream = createWriteStream(tempPath);
+    stream.once('error', handleStreamError);
+
+    await callback(stream);
+
+    if (streamError) {
+      throw streamError;
+    }
+
+    await new Promise((resolve, reject) => {
+      if (streamError) {
+        reject(streamError);
+        return;
+      }
+
+      stream.once('finish', () => {
+        streamEnded = true;
+        resolve();
+      });
+      stream.once('error', (error) => {
+        handleStreamError(error);
+        reject(streamError);
+      });
+      stream.end();
+    });
+
+    await rename(tempPath, resolvedPath);
+  } catch (error) {
+    if (tempPath) {
+      try {
+        await unlink(tempPath);
+      } catch (unlinkError) {
+        // Ignore unlink errors - temp file may not exist or already removed
+      }
+    }
+    throw error;
+  } finally {
+    if (stream && !streamEnded) {
+      if (streamError || stream.destroyed) {
+        stream.destroy();
+      } else {
+        stream.end();
+      }
+    }
+  }
+}
+
+async function withOptionalFileStream(options, callback) {
+  const outputFile = options.outputFile ?? Settings.outputFile;
+
+  if (outputFile) {
+    const resolvedPath = path.resolve(outputFile);
+    
+    await withTempFile(resolvedPath, async (stream) => {
+      await callback(stream);
+    });
+    console.info(`Output written to: ${outputFile}`);
+  } else {
+    await callback(process.stdout);
+  }
+}
+
 export {
   rankingsMetadataToString,
   playerToString,
-  playerToTabDelimitedString
+  playerToTabDelimitedString,
+  withTempFile,
+  withOptionalFileStream
 };

@@ -1,204 +1,44 @@
 import { RankingTypeEnum, PositionEnum } from '../common/index.js';
 import { getRankings, displayRankings } from './client.js';
+import { withOptionalFileStream } from './utils.js';
 
 // ==========================================
 // Display Functions (human-readable Output)
 // ==========================================
-async function displayRosQbRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.QB;
 
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
+function createDisplayFunction(rankingType, position) {
+  return async function(options = {}) {
+    await withOptionalFileStream(options, async (stream) => {
+      const rankings = await getRankings(rankingType, position);
+      displayRankings(rankings, options, stream);
+    });
+  };
 }
 
-async function displayRosRbRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.RB;
+export const displayRosQbRankings = createDisplayFunction(RankingTypeEnum.ROS, PositionEnum.QB);
+export const displayRosRbRankings = createDisplayFunction(RankingTypeEnum.ROS, PositionEnum.RB);
+export const displayRosWrRankings = createDisplayFunction(RankingTypeEnum.ROS, PositionEnum.WR);
+export const displayRosTeRankings = createDisplayFunction(RankingTypeEnum.ROS, PositionEnum.TE);
+export const displayRosKRankings = createDisplayFunction(RankingTypeEnum.ROS, PositionEnum.K);
+export const displayRosDstRankings = createDisplayFunction(RankingTypeEnum.ROS, PositionEnum.DST);
 
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
+export const displayWeeklyQbRankings = createDisplayFunction(RankingTypeEnum.WEEKLY, PositionEnum.QB);
+export const displayWeeklyRbRankings = createDisplayFunction(RankingTypeEnum.WEEKLY, PositionEnum.RB);
+export const displayWeeklyWrRankings = createDisplayFunction(RankingTypeEnum.WEEKLY, PositionEnum.WR);
+export const displayWeeklyTeRankings = createDisplayFunction(RankingTypeEnum.WEEKLY, PositionEnum.TE);
+export const displayWeeklyKRankings = createDisplayFunction(RankingTypeEnum.WEEKLY, PositionEnum.K);
+export const displayWeeklyDstRankings = createDisplayFunction(RankingTypeEnum.WEEKLY, PositionEnum.DST);
 
-async function displayRosWrRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.WR;
+export const displayDynastyQbRankings = createDisplayFunction(RankingTypeEnum.DYNASTY, PositionEnum.QB);
+export const displayDynastyRbRankings = createDisplayFunction(RankingTypeEnum.DYNASTY, PositionEnum.RB);
+export const displayDynastyWrRankings = createDisplayFunction(RankingTypeEnum.DYNASTY, PositionEnum.WR);
+export const displayDynastyTeRankings = createDisplayFunction(RankingTypeEnum.DYNASTY, PositionEnum.TE);
+export const displayDynastyKRankings = createDisplayFunction(RankingTypeEnum.DYNASTY, PositionEnum.K);
+export const displayDynastyDstRankings = createDisplayFunction(RankingTypeEnum.DYNASTY, PositionEnum.DST);
 
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayRosTeRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayRosKRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayRosDstRankings() {
-  const rankingType = RankingTypeEnum.ROS;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayWeeklyQbRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.QB;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayWeeklyRbRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.RB;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayWeeklyWrRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.WR;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayWeeklyTeRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayWeeklyKRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayWeeklyDstRankings() {
-  const rankingType = RankingTypeEnum.WEEKLY;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDynastyQbRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.QB;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDynastyRbRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.RB;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDynastyWrRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.WR;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDynastyTeRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDynastyKRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDynastyDstRankings() {
-  const rankingType = RankingTypeEnum.DYNASTY;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDraftQbRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.QB;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDraftRbRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.RB;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDraftWrRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.WR;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDraftTeRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.TE;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDraftKRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.K;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-async function displayDraftDstRankings() {
-  const rankingType = RankingTypeEnum.DRAFT;
-  const position = PositionEnum.DST;
-
-  const rankings = await getRankings(rankingType, position);
-  displayRankings(rankings);
-}
-
-export {
-  displayRosQbRankings, displayRosRbRankings, displayRosWrRankings, displayRosTeRankings, displayRosKRankings, displayRosDstRankings,
-  displayWeeklyQbRankings, displayWeeklyRbRankings, displayWeeklyWrRankings, displayWeeklyTeRankings, displayWeeklyKRankings, displayWeeklyDstRankings,
-  displayDynastyQbRankings, displayDynastyRbRankings, displayDynastyWrRankings, displayDynastyTeRankings, displayDynastyKRankings, displayDynastyDstRankings,
-  displayDraftQbRankings, displayDraftRbRankings, displayDraftWrRankings, displayDraftTeRankings, displayDraftKRankings, displayDraftDstRankings
-};
+export const displayDraftQbRankings = createDisplayFunction(RankingTypeEnum.DRAFT, PositionEnum.QB);
+export const displayDraftRbRankings = createDisplayFunction(RankingTypeEnum.DRAFT, PositionEnum.RB);
+export const displayDraftWrRankings = createDisplayFunction(RankingTypeEnum.DRAFT, PositionEnum.WR);
+export const displayDraftTeRankings = createDisplayFunction(RankingTypeEnum.DRAFT, PositionEnum.TE);
+export const displayDraftKRankings = createDisplayFunction(RankingTypeEnum.DRAFT, PositionEnum.K);
+export const displayDraftDstRankings = createDisplayFunction(RankingTypeEnum.DRAFT, PositionEnum.DST);
