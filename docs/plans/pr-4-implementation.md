@@ -314,9 +314,11 @@ After implementation:
 
 ## Status
 
-**IN PROGRESS** - Original review issues fixed, new issues identified from Copilot Pro and cursor bot
+**COMPLETED** - All code changes implemented and committed
 
 ### Implementation Summary
+
+**Original Review Issues:**
 
 - ✅ **Critical**: Fixed console.log inconsistency in displayRankings
 - ✅ **High**: Added stream error handling with ENOENT detection
@@ -325,6 +327,15 @@ After implementation:
 - ✅ **Medium**: Clarified displayMaxPlayers comment
 - ✅ **Optional**: Implemented factory pattern for wrapper functions
 - ✅ **Post-Implementation**: Fixed duplicate stream error handlers
+
+**Additional Review Issues (Copilot Pro + Cursor Bot):**
+
+- ✅ **Phase 1**: Fixed resource leak in error handling (finally block)
+- ✅ **Phase 1**: Added path sanitization and validation
+- ✅ **Phase 1**: Implemented atomic writes using `withTempFile` wrapper
+- ✅ **Phase 1**: Refactored console logging (removed error logging, kept success logging)
+- ✅ **Phase 1.5**: Added error handling in displayRankings and dumpRankingsToTabDelimited
+- ✅ **Phase 2**: Added options forwarding in wrapper functions
 
 ### Outstanding Issues Summary
 
@@ -531,17 +542,17 @@ After implementation:
 
 ### Phase 1: utils.js fixes (in order, separate commits)
 
-1. [ ] **Fix resource leak in error handling**
+1. [x] **Fix resource leak in error handling**
    - **Reference**: Cursor Bot r2520354116 + Copilot Pro feedback
-   - **Status**: 🔍 **UNDER REVIEW**
+   - **Status**: ✅ **COMPLETED**
    - **Issue**: Stream not closed when error occurs during callback execution
    - **Fix**: Use `finally` block to ensure stream cleanup always happens. Use `stream.destroy()` for error cases, `stream.end()` for normal cases
-   - **Note**: Review Copilot's suggestion (Untitled-1) for `finished()` from `stream/promises` approach
+   - **Implementation**: Added `streamEnded` flag and `finally` block to ensure cleanup always happens
    - **Time**: 15-30 minutes
 
-2. [ ] **Add path sanitization and validation**
+2. [x] **Add path sanitization and validation**
    - **Reference**: Copilot Pro feedback + project constraints
-   - **Status**: 📋 **PENDING**
+   - **Status**: ✅ **COMPLETED**
    - **Issue**: No `path.resolve()` used, no path traversal prevention
    - **Constraints** (from project discussion):
      - Require target folder to exist (error/throw, don't create)
@@ -551,39 +562,55 @@ After implementation:
      - Basic path validation (prevent obvious path traversal, validate path structure)
      - If checking for "calling folder or child folders" makes implementation easier, add that check; otherwise skip it
      - Verify parent directory exists before creating stream (throw error if missing)
+   - **Implementation**: Added `path.resolve()`, path traversal check (`..`), and parent directory validation using `stat()`
    - **Time**: 45 minutes
 
-3. [ ] **Add atomic write strategy**
+3. [x] **Add atomic write strategy**
    - **Reference**: Copilot Pro feedback
-   - **Status**: 📋 **PENDING - NEEDS DISCUSSION**
+   - **Status**: ✅ **COMPLETED**
    - **Issue**: No temp file + rename pattern, partial files could be left on failure
-   - **Note**: Implementation approach needs discussion before starting
    - **Constraints** (from project discussion):
      - Always overwrite (no setting needed)
    - **Fix**: Write to temp file in same directory, then rename atomically on success. Clean up temp file on error.
+   - **Implementation**: Created `withTempFile` wrapper function for atomic write pattern. Refactored `withOptionalFileStream` to use `withTempFile` for all file writes.
    - **Time**: 45 minutes (after discussion)
 
-4. [ ] **Refactor console logging in helper**
+4. [x] **Refactor console logging in helper**
    - **Reference**: Copilot Pro feedback
-   - **Status**: 📋 **PENDING**
+   - **Status**: ✅ **COMPLETED**
    - **Issue**: `console.info`/`console.error` side effects in utility function
-   - **Fix**: Consider returning metadata or throwing errors, let caller handle logging. Evaluate if logging should stay in helper for consistency.
+   - **Fix**: Removed error logging from utility function (callers handle it). Kept success logging (`console.info`) since utility is the only place that knows about file writes. Create custom Error objects instead of logging.
+   - **Implementation**: Removed `console.error` from `handleStreamError` and catch block. `handleStreamError` now creates custom Error objects. Success message stays in utility.
    - **Time**: 30 minutes
 
 5. [ ] **Add newline at EOF**
    - **Reference**: Copilot Pro feedback
-   - **Status**: 📋 **PENDING**
+   - **Status**: ✅ **NOT NEEDED** - Caller responsibility (already handled in client.js)
    - **Issue**: File may end without trailing newline
-   - **Fix**: Ensure trailing newline when writing files
-   - **Time**: 10 minutes
+   - **Resolution**: Newline handling is caller's responsibility. client.js already writes trailing newline.
+
+### Phase 1.5: Error Handling in Callers
+
+1. [x] **Add error handling in displayRankings and dumpRankingsToTabDelimited**
+   - **Reference**: Follow-up from task 4 (console logging refactor)
+   - **Status**: ✅ **COMPLETED**
+   - **Issue**: withOptionalFileStream now throws custom errors instead of logging them. Callers need to catch and log these errors.
+   - **Files**: `client/client.js`
+   - **Fix**:
+     - Wrap stream write operations in try/catch blocks
+     - Catch errors and log them with `console.error`
+     - Ensure errors are properly reported to users
+   - **Implementation**: Added try/catch blocks in `displayRankings` and `dumpRankingsToTabDelimited` to catch and log errors from stream operations
+   - **Time**: 15-20 minutes
 
 ### Phase 2: Options forwarding
 
-1. [ ] **Add options forwarding in wrapper functions**
+1. [x] **Add options forwarding in wrapper functions**
    - **Reference**: Copilot Pro feedback
-   - **Status**: 📋 **PENDING**
+   - **Status**: ✅ **COMPLETED**
    - **Issue**: Wrappers pass `{}` to `withOptionalFileStream`, preventing per-call overrides
    - **Fix**: Accept options parameter in wrapper functions (display.js and dump.js), forward to helper
+   - **Implementation**: Updated `createDisplayFunction` and `createDumpFunction` to accept `options = {}` parameter and forward to both `withOptionalFileStream` and display/dump functions
    - **Time**: 30 minutes
 
 #### Deferred (Already in Project Backlog)
