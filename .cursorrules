@@ -446,6 +446,14 @@ Before starting complex operations (rebases, multi-step refactorings, etc.):
 - Report the issue to John and wait for instructions
 - Do NOT attempt workarounds without explicit approval
 
+**If branch was accidentally deleted before merge**:
+
+- GitHub provides a "Restore branch" button in the PR when a branch is deleted
+- The GitHub MCP server does NOT have a tool to restore branches programmatically
+- YOU MUST ask John to click the "Restore branch" button in GitHub's web UI
+- After branch is restored, follow the normal merge sequence above
+- Alternative: Recreate branch from PR commit SHA if restore is not available, but prefer restore button
+
 ## Development Session Guidelines
 
 - Run tests after architectural changes
