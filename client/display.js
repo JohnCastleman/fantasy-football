@@ -7,10 +7,10 @@ import { withOptionalFileStream } from './utils.js';
 // ==========================================
 
 function createDisplayFunction(rankingType, position) {
-  return async function() {
-    await withOptionalFileStream({}, async (stream) => {
+  return async function(options = {}) {
+    await withOptionalFileStream(options, async (stream) => {
       const rankings = await getRankings(rankingType, position);
-      displayRankings(rankings, {}, stream);
+      displayRankings(rankings, options, stream);
     });
   };
 }

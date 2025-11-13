@@ -7,10 +7,10 @@ import { withOptionalFileStream } from './utils.js';
 // ==========================================
 
 function createDumpFunction(rankingType, position) {
-  return async function() {
-    await withOptionalFileStream({}, async (stream) => {
+  return async function(options = {}) {
+    await withOptionalFileStream(options, async (stream) => {
       const rankings = await getRankings(rankingType, position);
-      dumpRankingsToTabDelimited(rankings, {}, stream);
+      dumpRankingsToTabDelimited(rankings, options, stream);
     });
   };
 }
