@@ -43,11 +43,10 @@ async function withOptionalFileStream(options, callback) {
   let streamEnded = false;
   
   const handleStreamError = (error) => {
-    streamError = error;
     if (error.code === 'ENOENT') {
-      console.error(`Directory does not exist for output file: ${outputFile}. Please create the directory first.`);
+      streamError = new Error(`Directory does not exist for output file: ${outputFile}. Please create the directory first.`);
     } else {
-      console.error(`Error writing to file ${outputFile}:`, error);
+      streamError = new Error(`Error writing to file ${outputFile}: ${error.message}`);
     }
   };
   
@@ -100,11 +99,6 @@ async function withOptionalFileStream(options, callback) {
       });
       console.info(`Output written to: ${outputFile}`);
     }
-  } catch (error) {
-    if (error !== streamError) {
-      console.error(`Error writing output:`, error);
-    }
-    throw error;
   } finally {
     if (stream && outputFile && !streamEnded) {
       if (streamError || stream.destroyed) {
