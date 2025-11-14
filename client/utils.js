@@ -1,5 +1,7 @@
 import { createWriteStream } from 'fs';
-import { stat, rename, unlink } from 'fs/promises';
+import { mkdir, rename, unlink } from 'fs/promises';
+import { pipeline } from 'stream/promises';
+import { PassThrough } from 'stream';
 import path from 'path';
 import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 import { Settings } from './settings.js';
@@ -35,82 +37,69 @@ function playerToTabDelimitedString(player) {
   return `${player.rank}\t${player.name}\t${player.team}${opponentOrBye}`;
 }
 
-async function withTempFile(finalPath, callback) {
-  const resolvedPath = path.resolve(finalPath);
+async function ensureDirectoryExists(dirPath) {
+  try {
+    await mkdir(dirPath, { recursive: true });
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      throw new Error(`Failed to create directory ${dirPath}: ${error.message}`);
+    }
+  }
+}
+
+async function withWritableFile(filePath, callback, options = {}) {
+  const { atomic = true, ...streamOptions } = options;
+  const resolvedPath = path.resolve(filePath);
   const parentDir = path.dirname(resolvedPath);
-  const basename = path.basename(resolvedPath);
+  
+  await ensureDirectoryExists(parentDir);
+
+  if (atomic) {
+    return await withAtomicFile(resolvedPath, callback, streamOptions);
+  } else {
+    return await withDirectFile(resolvedPath, callback, streamOptions);
+  }
+}
+
+async function withAtomicFile(finalPath, callback, streamOptions = {}) {
+  const parentDir = path.dirname(finalPath);
+  const basename = path.basename(finalPath);
   const tempName = `.tmp-${process.pid}-${Date.now()}-${basename}`;
   const tempPath = path.join(parentDir, tempName);
 
-  let stream = null;
-  let streamError = null;
-  let streamEnded = false;
-
-  const handleStreamError = (error) => {
-    if (error.code === 'ENOENT') {
-      streamError = new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
-    } else {
-      streamError = new Error(`Error writing to temp file ${tempPath}: ${error.message}`);
-    }
-  };
-
   try {
-    try {
-      const parentStat = await stat(parentDir);
-      if (!parentStat.isDirectory()) {
-        throw new Error(`Parent path is not a directory: ${parentDir}`);
-      }
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        throw new Error(`Directory does not exist for output file: ${parentDir}. Please create the directory first.`);
-      }
-      throw error;
-    }
-
-    stream = createWriteStream(tempPath);
-    stream.once('error', handleStreamError);
-
-    await callback(stream);
-
-    if (streamError) {
-      throw streamError;
-    }
-
-    await new Promise((resolve, reject) => {
-      if (streamError) {
-        reject(streamError);
-        return;
-      }
-
-      stream.once('finish', () => {
-        streamEnded = true;
-        resolve();
-      });
-      stream.once('error', (error) => {
-        handleStreamError(error);
-        reject(streamError);
-      });
-      stream.end();
-    });
-
-    await rename(tempPath, resolvedPath);
+    await withDirectFile(tempPath, callback, streamOptions);
+    await rename(tempPath, finalPath);
   } catch (error) {
-    if (tempPath) {
-      try {
-        await unlink(tempPath);
-      } catch (unlinkError) {
-        // Ignore unlink errors - temp file may not exist or already removed
-      }
+    try {
+      await unlink(tempPath);
+    } catch (unlinkError) {
+      // Ignore unlink errors - temp file may not exist or already removed
     }
     throw error;
-  } finally {
-    if (stream && !streamEnded) {
-      if (streamError || stream.destroyed) {
-        stream.destroy();
-      } else {
-        stream.end();
-      }
+  }
+}
+
+async function withDirectFile(filePath, callback, streamOptions = {}) {
+  const inputStream = new PassThrough();
+  const writeStream = createWriteStream(filePath, streamOptions);
+
+  try {
+    const pipelinePromise = pipeline(inputStream, writeStream);
+
+    await callback(inputStream);
+
+    inputStream.end();
+
+    await pipelinePromise;
+  } catch (error) {
+    if (!inputStream.destroyed) {
+      inputStream.destroy();
     }
+    if (!writeStream.destroyed) {
+      writeStream.destroy();
+    }
+    throw error;
   }
 }
 
@@ -119,10 +108,11 @@ async function withOptionalFileStream(options, callback) {
 
   if (outputFile) {
     const resolvedPath = path.resolve(outputFile);
+    const { atomic, ...fileOptions } = options;
     
-    await withTempFile(resolvedPath, async (stream) => {
+    await withWritableFile(resolvedPath, async (stream) => {
       await callback(stream);
-    });
+    }, { atomic: atomic ?? true, ...fileOptions });
     console.info(`Output written to: ${outputFile}`);
   } else {
     await callback(process.stdout);
@@ -133,6 +123,6 @@ export {
   rankingsMetadataToString,
   playerToString,
   playerToTabDelimitedString,
-  withTempFile,
+  withWritableFile,
   withOptionalFileStream
 };
