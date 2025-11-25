@@ -254,3 +254,7 @@ When moving to local git repository:
 - [ ] Consider migrating to ES6 imports
 - [ ] Add npm scripts for common tasks
 - [ ] Set up GitHub repository as remote origin
+
+## Waiver Report Tool
+
+Automation scripts and docs for processing Ron Stewart's waiver report live under `tools/waiver-report/`. See [tools/waiver-report/README.md](tools/waiver-report/README.md) for setup, workflow details, and deployment guidance.

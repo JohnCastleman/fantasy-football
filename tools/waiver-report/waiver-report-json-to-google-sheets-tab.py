@@ -1,0 +1,207 @@
+import argparse
+import importlib.util
+import json
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+# Determine paths
+SCRIPT_DIR = Path(__file__).resolve().parent
+TOOLS_DIR = SCRIPT_DIR.parent
+
+# Add script directory to sys.path for local lib imports
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+try:
+    from googleapiclient.discovery import build
+    from googleapiclient.errors import HttpError
+except ModuleNotFoundError as err:
+    print('Error: google-api-python-client is not installed.')
+    print('Run "pip install google-api-python-client google-auth-oauthlib google-auth"')
+    raise SystemExit(1) from err
+
+# Import shared google_auth_utils from tools/lib/ using importlib
+# (avoiding conflict with local lib package)
+SHARED_AUTH_PATH = TOOLS_DIR / 'lib' / 'google_auth_utils.py'
+spec = importlib.util.spec_from_file_location('shared_google_auth_utils', SHARED_AUTH_PATH)
+shared_google_auth = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(shared_google_auth)
+get_credentials = shared_google_auth.get_credentials
+
+# Import from local lib (tools/waiver-report/lib/)
+from lib.waiver_processing import extract_id_from_url, load_rows_from_json
+from lib.sheets_utils import (
+    ensure_grid_with_boundary,
+    initialize_tab,
+    auto_resize_rows,
+    add_tab,
+    rename_tab,
+    create_temp_tab,
+    delete_tab,
+)
+
+CONFIG_FILE = SCRIPT_DIR / 'waiver-report-sheets.json'
+
+
+def load_config() -> Dict[str, Any]:
+    config_path = CONFIG_FILE
+    if not config_path.exists():
+        print(f"Warning: Config file '{config_path.name}' not found in {config_path.parent}.")
+        print("Creating placeholder config. Please populate 'target_sheet_id' and rerun.")
+        config_path.write_text(json.dumps({'target_sheet_id': 'TARGET_SHEET_ID_HERE'}, indent=2), encoding='utf-8')
+        raise SystemExit(1)
+
+    data = json.loads(config_path.read_text(encoding='utf-8'))
+    target_sheet = data.get('target_sheet_id')
+    if not target_sheet or target_sheet == 'TARGET_SHEET_ID_HERE':
+        print(f"Error: '{config_path}' must contain a valid 'target_sheet_id'.")
+        raise SystemExit(1)
+
+    try:
+        data['target_sheet_id'] = extract_id_from_url(target_sheet, allow_gid=False)
+    except ValueError as err:
+        print(f'Error: {err}')
+        raise SystemExit(1)
+
+    return data
+
+
+def build_cell_data(cell: Dict[str, Any]) -> Dict[str, Any]:
+    segments = cell.get('segments', [])
+    text = ''
+    format_runs: List[Dict[str, Any]] = []
+    index = 0
+
+    for segment in segments:
+        if segment.get('newline'):
+            text += '\n'
+            index += 1
+        segment_text = segment.get('text', '')
+        bold = bool(segment.get('bold'))
+        italic = bool(segment.get('italic'))
+        if segment_text:
+            format_runs.append({
+                'startIndex': index,
+                'format': {
+                    'bold': bold,
+                    'italic': italic
+                }
+            })
+            text += segment_text
+            index += len(segment_text)
+
+    cell_data: Dict[str, Any] = {
+        'userEnteredValue': {'stringValue': text},
+        'userEnteredFormat': {'wrapStrategy': 'WRAP'}
+    }
+
+    if format_runs:
+        cell_data['textFormatRuns'] = format_runs
+    else:
+        cell_data['textFormatRuns'] = []
+
+    return cell_data
+
+
+def write_rows_to_sheet(sheets_service, sheet_id: str, tab_id: int, rows: List[Dict[str, Any]]) -> Tuple[int, int]:
+    data_rows = len(rows)
+    data_cols = max((len(row.get('cells', [])) for row in rows), default=1)
+
+    requests: List[Dict[str, Any]] = []
+
+    for row_index, row in enumerate(rows):
+        cells = row.get('cells', [])
+        cell_values = []
+        for cell in cells:
+            cell_values.append(build_cell_data(cell))
+        while len(cell_values) < data_cols:
+            cell_values.append({'userEnteredValue': {'stringValue': ''}, 'userEnteredFormat': {'wrapStrategy': 'WRAP'}, 'textFormatRuns': []})
+
+        requests.append({
+            'updateCells': {
+                'range': {
+                    'sheetId': tab_id,
+                    'startRowIndex': row_index,
+                    'endRowIndex': row_index + 1,
+                    'startColumnIndex': 0,
+                    'endColumnIndex': data_cols
+                },
+                'rows': [{'values': cell_values}],
+                'fields': 'userEnteredValue,userEnteredFormat.wrapStrategy,textFormatRuns'
+            }
+        })
+
+    if requests:
+        sheets_service.spreadsheets().batchUpdate(
+            spreadsheetId=sheet_id,
+            body={'requests': requests}
+        ).execute()
+
+    return data_rows, data_cols
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description='Write waiver report JSON into a Google Sheets tab'
+    )
+    parser.add_argument('json_path', help='Path to JSON report generated by ron-stewart-weekly-waiver-report-to-json.py')
+    parser.add_argument('--tab-name', help='Override tab name (defaults to name inside JSON metadata)')
+    return parser.parse_args()
+
+
+def main():
+    config = load_config()
+    sheet_id = config['target_sheet_id']
+
+    args = parse_args()
+    json_path = Path(args.json_path)
+    if not json_path.exists():
+        print(f"Error: JSON file '{json_path}' does not exist.")
+        raise SystemExit(1)
+
+    payload = load_rows_from_json(str(json_path))
+    metadata = payload.get('metadata', {})
+    rows = payload.get('rows', [])
+
+    if not rows:
+        print('Error: No rows found in JSON payload.')
+        raise SystemExit(1)
+
+    tab_name = args.tab_name or metadata.get('tab_name', 'weekly waivers')
+
+    creds = get_credentials(['https://www.googleapis.com/auth/spreadsheets'])
+    sheets_service = build('sheets', 'v4', credentials=creds)
+
+    tab_id = None
+    temp_tab_name = None
+    finalized = False
+    try:
+        tab_id, temp_tab_name = create_temp_tab(sheets_service, sheet_id)
+        print(f"Temporary tab '{temp_tab_name}' created")
+        initialize_tab(sheets_service, sheet_id, tab_id, temp_tab_name)
+
+        pre_rows = len(rows)
+        pre_cols = max((len(row.get('cells', [])) for row in rows), default=1)
+        ensure_grid_with_boundary(sheets_service, sheet_id, tab_id, pre_rows, pre_cols)
+
+        data_rows, data_cols = write_rows_to_sheet(sheets_service, sheet_id, tab_id, rows)
+        auto_resize_rows(sheets_service, sheet_id, tab_id, data_rows)
+
+        rename_tab(sheets_service, sheet_id, tab_id, tab_name)
+        print(f"Tab renamed to '{tab_name}'")
+
+        print('Done! View the sheet at:')
+        print(f'https://docs.google.com/spreadsheets/d/{sheet_id}')
+        finalized = True
+    except HttpError as err:
+        print(f"Google Sheets API error ({err.resp.status}): {err}")
+        finalized = False
+        raise SystemExit(1)
+    finally:
+        if tab_id and temp_tab_name and not finalized:
+            delete_tab(sheets_service, sheet_id, temp_tab_name)
+
+if __name__ == '__main__':
+    main()
+
