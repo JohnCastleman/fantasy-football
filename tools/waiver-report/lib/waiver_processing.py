@@ -378,28 +378,41 @@ def render_rows_to_html(metadata: Dict[str, Any], rows: List[Dict[str, Any]]) ->
             cells_html.append(f'<td>{cell_html}</td>')
         if not cells_html:
             cells_html.append('<td></td>')
-        table_rows.append(f"<tr>{''.join(cells_html)}</tr>")
+        table_rows.append(f"      <tr>{''.join(cells_html)}</tr>")
 
-    table_html = '<table><tbody>' + ''.join(table_rows) + '</tbody></table>'
+    table_html = '    <table>\n      <tbody>\n' + '\n'.join(table_rows) + '\n      </tbody>\n    </table>'
 
     title = escape(metadata.get('tab_name', 'waiver report'))
 
     return f"""<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-  <meta charset=\"utf-8\">
-  <title>{title}</title>
-  <style>
-    body {{ font-family: Arial, sans-serif; line-height: 1.4; }}
-    table {{ border-collapse: collapse; width: 100%; }}
-    td {{ border: 1px solid #ccc; padding: 6px; vertical-align: top; white-space: pre-wrap; }}
-    h1 {{ font-size: 1.5rem; }}
-  </style>
-</head>
-<body>
-  <h1>{title}</h1>
-  {table_html}
-</body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{title}</title>
+    <style>
+      body {{
+        font-family: Arial, sans-serif;
+        line-height: 1.4;
+      }}
+      table {{
+        border-collapse: collapse;
+        width: 100%;
+      }}
+      td {{
+        border: 1px solid #ccc;
+        padding: 6px;
+        vertical-align: top;
+        white-space: pre-wrap;
+      }}
+      h1 {{
+        font-size: 1.5rem;
+      }}
+    </style>
+  </head>
+  <body>
+    <h1>{title}</h1>
+{table_html}
+  </body>
 </html>
 """
 
