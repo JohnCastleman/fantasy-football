@@ -29,3 +29,30 @@ client/tests/output/
 # Legacy backup files (already in legacy folder)
 *.backup.js
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Google OAuth tokens
+.config/private/google/token.pickle
+
+# Configuration (may contain sensitive data)
+tools/waiver-report/waiver-report-sheets.json
+
+# Python virtual environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
+
+# Payload folder and installer
+payload/
+.cursor/rules/payload-installer.mdc
