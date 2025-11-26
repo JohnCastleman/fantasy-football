@@ -41,6 +41,7 @@ __pycache__/
 
 # Configuration (may contain sensitive data)
 tools/waiver-report/waiver-report-sheets.json
+tools/ros-report/ros-report-sheets.json
 
 # Python virtual environments
 .venv
