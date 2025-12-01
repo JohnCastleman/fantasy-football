@@ -23,7 +23,7 @@ This project uses the stored credentials registry system described in the [Manag
 
 ## Token Cache
 
-OAuth refresh tokens are cached in `.config/private/google/token.pickle` (gitignored). This file is automatically created on first authentication and reused for subsequent runs.
+OAuth refresh tokens are cached in `%APPDATA%/fantasy-football-tools/token.pickle` (Windows) or `~/.config/fantasy-football-tools/token.pickle` (Linux/Mac). This file is automatically created on first authentication and reused for subsequent runs. The token file is stored outside the repository, so no gitignore rules are needed.
 
 ## For More Details
 

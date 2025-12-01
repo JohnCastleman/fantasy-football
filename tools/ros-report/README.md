@@ -8,6 +8,7 @@ This tool copies Rest of Season (ROS) rankings from a source Google Sheet tab to
 
    ```bash
    pip install google-api-python-client google-auth-oauthlib google-auth
+   pip install -e ../google-auth-utils
    ```
 
 2. **Configure OAuth credentials:**
@@ -23,7 +24,7 @@ This tool copies Rest of Season (ROS) rankings from a source Google Sheet tab to
 
 4. **First run authentication:**
 
-   The first time you run the script, a browser window will open for OAuth authentication. After authorizing access, credentials are cached in `.config/private/google/token.pickle` for future runs (this file is gitignored).
+   The first time you run the script, a browser window will open for OAuth authentication. After authorizing access, credentials are cached in `%APPDATA%/fantasy-football-tools/token.pickle` (Windows) or `~/.config/fantasy-football-tools/token.pickle` (Linux/Mac) for future runs.
 
 ## Usage
 
@@ -90,7 +91,7 @@ Provide either the bare ID (`1A2B3CExampleSheetID456DEF`) or the root Sheets URL
 **Authentication errors:**
 
 - Verify that `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` are exported by your launcher profile or script
-- Delete `.config/private/google/token.pickle` and rerun to trigger a fresh OAuth flow if the cached token becomes invalid
+- Delete `%APPDATA%/fantasy-football-tools/token.pickle` (Windows) or `~/.config/fantasy-football-tools/token.pickle` (Linux/Mac) and rerun to trigger a fresh OAuth flow if the cached token becomes invalid
 - Ensure google-api-python-client, google-auth-oauthlib, and google-auth python libraries are installed
 
 **Config errors:**
@@ -101,4 +102,3 @@ Provide either the bare ID (`1A2B3CExampleSheetID456DEF`) or the root Sheets URL
 
 - The script expects data to start at A4 (QB rank 1)
 - Ensure the source tab has data in columns A-X (Top 150 Position column)
-

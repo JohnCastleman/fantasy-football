@@ -1,5 +1,4 @@
 import argparse
-import importlib.util
 import sys
 import uuid
 from pathlib import Path
@@ -20,13 +19,8 @@ except ModuleNotFoundError as err:
     print('Run "pip install google-api-python-client google-auth-oauthlib google-auth"')
     raise SystemExit(1) from err
 
-# Import shared google_auth_utils from tools/lib/ using importlib
-# (avoiding conflict with local lib package)
-SHARED_AUTH_PATH = TOOLS_DIR / 'lib' / 'google_auth_utils.py'
-spec = importlib.util.spec_from_file_location('shared_google_auth_utils', SHARED_AUTH_PATH)
-shared_google_auth = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(shared_google_auth)
-get_credentials = shared_google_auth.get_credentials
+# Import google_auth_utils from editable package
+from google_auth_utils import get_credentials
 
 # Import from local lib (tools/waiver-report/lib/)
 from lib.waiver_processing import (
@@ -72,7 +66,7 @@ def main():
         print(f'Error: {err}')
         raise SystemExit(1)
 
-    creds = get_credentials(['https://www.googleapis.com/auth/documents.readonly'])
+    creds = get_credentials(['https://www.googleapis.com/auth/documents.readonly'], app_name='fantasy-football-tools')
     docs_service = build('docs', 'v1', credentials=creds)
 
     print(f'Reading Google Doc {doc_id} ...')

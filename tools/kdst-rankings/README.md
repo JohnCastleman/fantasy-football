@@ -8,6 +8,7 @@ This tool writes FantasyPros rankings TSV output directly to Google Sheets.
 
    ```bash
    pip install google-api-python-client google-auth-oauthlib google-auth
+   pip install -e ../google-auth-utils
    ```
 
 2. **Configure OAuth credentials:**
@@ -23,7 +24,7 @@ This tool writes FantasyPros rankings TSV output directly to Google Sheets.
 
 4. **First run authentication:**
 
-   The first time you run the script, a browser window will open for OAuth authentication. After authorizing access, credentials are cached in `.config/private/google/token.pickle` for future runs (this file is gitignored).
+   The first time you run the script, a browser window will open for OAuth authentication. After authorizing access, credentials are cached in `%APPDATA%/fantasy-football-tools/token.pickle` (Windows) or `~/.config/fantasy-football-tools/token.pickle` (Linux/Mac) for future runs.
 
 5. **Configure target sheet:**
 

@@ -8,6 +8,7 @@ This repository provides a two-step workflow for capturing Ron Stewart's weekly 
 
    ```bash
    pip install google-api-python-client google-auth-oauthlib google-auth
+   pip install -e ../google-auth-utils
    ```
 
 2. **Configure OAuth credentials:**
@@ -23,7 +24,7 @@ This repository provides a two-step workflow for capturing Ron Stewart's weekly 
 
 4. **First run authentication:**
 
-   The first time you run either script, a browser window will open for OAuth authentication. After authorizing access, credentials are cached in `.config/private/google/token.pickle` for future runs (this file is gitignored).
+   The first time you run either script, a browser window will open for OAuth authentication. After authorizing access, credentials are cached in `%APPDATA%/fantasy-football-tools/token.pickle` (Windows) or `~/.config/fantasy-football-tools/token.pickle` (Linux/Mac) for future runs.
 
 ## Workflow Overview
 
@@ -101,10 +102,10 @@ Provide either the bare ID (`1A2B3CExampleSheetID456DEF`) or the root Sheets URL
 - `waiver-report-json-to-html.py` – Optional HTML preview generator from the JSON payload.
 - `lib/waiver_processing.py` – Shared helpers for parsing content and serializing/deserializing report rows.
 - `lib/sheets_utils.py` – Shared Google Sheets helpers (grid setup, temp tab management).
-- `lib/google_auth_utils.py` – Shared OAuth helper.
+- `google-auth-utils` package – OAuth helper (installed as editable package from `../google-auth-utils`).
 - `waiver-report-sheets.json` – Writer configuration (auto-created, gitignored, lives alongside these scripts).
 - `docs/google-oauth-credential-setup.md` – Notes for storing credentials and exporting them before running the tools.
-- `.config/private/google/token.pickle` – Cached OAuth token (auto-generated in a private directory, gitignored).
+- `%APPDATA%/fantasy-football-tools/token.pickle` (Windows) or `~/.config/fantasy-football-tools/token.pickle` (Linux/Mac) – Cached OAuth token (auto-generated, stored outside the repository).
 
 ## Notes
 
@@ -120,7 +121,7 @@ Provide either the bare ID (`1A2B3CExampleSheetID456DEF`) or the root Sheets URL
 **Authentication errors:**
 
 - Verify that `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` are exported by your launcher profile or script (see `docs/google-oauth-credential-setup.md`).
-- Delete `.config/private/google/token.pickle` and rerun to trigger a fresh OAuth flow if the cached token becomes invalid.
+- Delete `%APPDATA%/fantasy-football-tools/token.pickle` (Windows) or `~/.config/fantasy-football-tools/token.pickle` (Linux/Mac) and rerun to trigger a fresh OAuth flow if the cached token becomes invalid.
 - ensure google-api-python-client, google-auth-oauthlib, and google-auth python libraries are loaded (see below reference link here)
 
 **Config errors (writer step):**

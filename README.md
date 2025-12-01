@@ -180,7 +180,6 @@ This project uses a portable, AI-friendly documentation structure:
 - **`.cursorrules`** - AI development guidelines and coding standards
 - **`docs/architecture.md`** - Architectural decisions and rationale
 - **`docs/development.md`** - Development guide and workflow reference
-- **`docs/command-history.md`** - Command usage history for reproducibility
 - **`docs/api-samples/`** - Sample API responses for reference
 
 ## Current Limitations & Future Work
@@ -255,6 +254,12 @@ When moving to local git repository:
 - [ ] Add npm scripts for common tasks
 - [ ] Set up GitHub repository as remote origin
 
-## Waiver Report Tool
+## Google Sheets Integration Tools
 
-Automation scripts and docs for processing Ron Stewart's waiver report live under `tools/waiver-report/`. See [tools/waiver-report/README.md](tools/waiver-report/README.md) for setup, workflow details, and deployment guidance.
+Automation scripts for integrating fantasy football data with Google Sheets:
+
+- **Waiver Report Tool** (`tools/waiver-report/`) - Processes Ron Stewart's weekly waiver report from Google Docs to Google Sheets. See [tools/waiver-report/README.md](tools/waiver-report/README.md) for details.
+- **ROS Report Tool** (`tools/ros-report/`) - Copies Rest of Season rankings from source Google Sheet tabs to destination tabs. See [tools/ros-report/README.md](tools/ros-report/README.md) for details.
+- **FantasyPros K/DST Rankings Tool** (`tools/kdst-rankings/`) - Writes FantasyPros Kicker and Defense/Special Teams rankings directly to Google Sheets. See [tools/kdst-rankings/README.md](tools/kdst-rankings/README.md) for details.
+
+All tools use the shared `google-auth-utils` package (installed as editable package from `../google-auth-utils`) for OAuth authentication.

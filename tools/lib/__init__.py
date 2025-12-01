@@ -1,5 +1,4 @@
-from . import google_auth_utils
-
-__all__ = ['google_auth_utils']
+# This directory is reserved for shared tool utilities
+# Currently empty - google-auth-utils is now provided by the editable package
 
 

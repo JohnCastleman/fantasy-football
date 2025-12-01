@@ -1,5 +1,4 @@
 import argparse
-import importlib.util
 import json
 import re
 import sys
@@ -22,12 +21,8 @@ except ModuleNotFoundError as err:
     print('Run "pip install google-api-python-client google-auth-oauthlib google-auth"')
     raise SystemExit(1) from err
 
-# Import shared google_auth_utils from tools/lib/ using importlib
-SHARED_AUTH_PATH = TOOLS_DIR / 'lib' / 'google_auth_utils.py'
-spec = importlib.util.spec_from_file_location('shared_google_auth_utils', SHARED_AUTH_PATH)
-shared_google_auth = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(shared_google_auth)
-get_credentials = shared_google_auth.get_credentials
+# Import google_auth_utils from editable package
+from google_auth_utils import get_credentials
 
 CONFIG_FILE = SCRIPT_DIR / 'ros-report-sheets.json'
 
@@ -424,7 +419,7 @@ def main():
         print(f'Received URL: {args.source_url}')
         raise SystemExit(1)
 
-    creds = get_credentials(['https://www.googleapis.com/auth/spreadsheets'])
+    creds = get_credentials(['https://www.googleapis.com/auth/spreadsheets'], app_name='fantasy-football-tools')
     sheets_service = build('sheets', 'v4', credentials=creds)
 
     # Get source tab name
