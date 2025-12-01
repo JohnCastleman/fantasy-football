@@ -12,13 +12,14 @@ This repository provides a two-step workflow for capturing Ron Stewart's weekly 
 
 2. **Configure OAuth credentials:**
 
-   - Store your Google OAuth Client ID and Secret in Windows Credential Manager (or another secure secret store) using the process outlined in <https://gist.github.com/JohnCastleman/2818eb5127b64ff6d4791b985dbf17fe>.
-   - See `docs/google-oauth-credential-setup.md` for local notes on recreating the credential storage flow and adapting the gist steps without bundled scripts.
+   - Follow the [Managing Secrets Using Windows Credential Manager gist](https://gist.github.com/JohnCastleman/2818eb5127b64ff6d4791b985dbf17fe) to set up the stored credentials registry system.
+   - Verify Google OAuth credentials are registered in `%LOCALAPPDATA%\StoredCredentials\stored-credentials.json`.
+   - See `../../docs/google-oauth-credential-setup.md` for a quick reference.
 
-3. **Launch Cursor (or your preferred shell) with secrets exported:**
+3. **Launch Cursor with stored credentials:**
 
-   - Update your existing launcher script or shell profile to fetch the stored secrets and export `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` before invoking these tools. `docs/google-oauth-credential-setup.md` includes a ready-to-use PowerShell snippet for this purpose.
-   - If you already maintain a launcher that handles other credentials, integrate the snippet rather than replacing the file so all secrets are preserved.
+   - If `%LOCALAPPDATA%\StoredCredentials\` exists, the Cursor launcher has likely already been set up. The design principle (discussed in the gist) is to copy `cursor-with-stored-credentials.ps1` to a location collocated with your Cursor shortcut and edit the shortcut to call it or to otherwise start Cursor with a copy of the launcher.
+   - This automatically loads `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` environment variables.
 
 4. **First run authentication:**
 
