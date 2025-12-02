@@ -161,6 +161,7 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
     in_player_section = False
     in_drop_section = False
     in_week_section = False
+    in_dst_section = False
     week_note_segments: List[Dict[str, Any]] = []
 
     def line_at(idx: int) -> str:
@@ -168,6 +169,25 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
 
     def normalized(idx: int) -> str:
         return lines[idx].strip()
+
+    def is_positional_section_header(idx: int, clean_text: str) -> bool:
+        """Check if line is a positional section header (only thing on line, with optional ':')"""
+        positional_patterns = [
+            r'^RUNNING BACKS:?$',
+            r'^WIDE RECEIVERS:?$',
+            r'^TIGHT ENDS:?$',
+            r'^QUARTERBACKS:?$',
+            r'^DEFENSES?:?$',
+            r'^DST:?$'
+        ]
+        for pattern in positional_patterns:
+            if re.match(pattern, clean_text, re.IGNORECASE):
+                # Pattern matches - this is a positional section header
+                # Note: Blank line check removed as it was preventing valid matches.
+                # Positional sections typically have blank lines above, but we match
+                # based on pattern and "only thing on line" constraint instead.
+                return True
+        return False
 
     while i < len(lines):
         raw_line = line_at(i)
@@ -180,33 +200,38 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
             i += 1
             continue
 
-        is_section_header = bool(re.match(r'^(WEEK \d+|RUNNING BACKS:|WIDE RECEIVERS:|TIGHT ENDS:|QUARTERBACKS:|Drop List)', clean_norm, re.IGNORECASE))
+        is_week_header = bool(re.match(r'^WEEK \d+', clean_norm, re.IGNORECASE))
+        is_drop_list = 'DROP LIST' in upper_clean
+        is_pos_section = is_positional_section_header(i, clean_norm)
 
-        if re.match(r'^WEEK \d+', clean_norm, re.IGNORECASE):
+        if is_week_header:
             in_week_section = True
             in_wr_section = False
             in_player_section = False
             in_drop_section = False
             week_note_segments = []
-        elif 'WIDE RECEIVERS' in upper_clean:
+        elif is_pos_section and 'WIDE RECEIVERS' in upper_clean:
             in_wr_section = True
             in_player_section = True
             in_week_section = False
             in_drop_section = False
-        elif any(section in upper_clean for section in ['RUNNING BACKS', 'TIGHT ENDS', 'QUARTERBACKS']):
+            in_dst_section = False
+        elif is_pos_section and ('DEFENSES' in upper_clean or 'DST' in upper_clean):
             in_wr_section = False
             in_player_section = True
             in_week_section = False
             in_drop_section = False
-        elif 'DROP LIST' in upper_clean:
+            in_dst_section = True
+        elif is_pos_section:
+            in_wr_section = False
+            in_player_section = True
+            in_week_section = False
+            in_drop_section = False
+            in_dst_section = False
+        elif is_drop_list:
             in_drop_section = True
             in_player_section = False
             in_wr_section = False
-            in_week_section = False
-        elif is_section_header:
-            in_wr_section = False
-            in_player_section = False
-            in_drop_section = False
             in_week_section = False
 
         if in_week_section and (
@@ -222,10 +247,27 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
 
         is_player = False
         if in_player_section:
+            # Regular players have FAAB percentages: "Player Name - 10% to 50%"
             is_player = bool(re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_norm))
+            # DST entries are just team names without percentages
+            if not is_player and in_dst_section:
+                # Check if this looks like a team name (not a section header, not a note, not a bullet)
+                is_not_section = not is_pos_section and not is_week_header and not is_drop_list
+                is_not_note = not clean_norm.upper().startswith('NOTE:')
+                is_not_bullet = not (nesting >= 1) and not bool(re.match(r'^[a-zA-Z]+[\.\)]\s+', clean_norm))
+                is_not_empty = bool(clean_norm)
+                # Simple heuristic: if it's a short line without dashes/percentages, it's likely a DST team name
+                if is_not_section and is_not_note and is_not_bullet and is_not_empty:
+                    # Don't match if it has a dash (would be a regular player) or looks like structured content
+                    if '-' not in clean_norm and '%' not in clean_norm and len(clean_norm.split()) <= 5:
+                        is_player = True
 
         if is_player:
-            transformed = transform_player_name(clean_norm)
+            # DST entries don't have FAAB percentages, so don't transform them
+            if in_dst_section and '-' not in clean_norm:
+                transformed = clean_norm
+            else:
+                transformed = transform_player_name(clean_norm)
             segments = [_make_segment(transformed, bold=True)]
             i += 1
 
@@ -240,7 +282,18 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
                     i += 1
                     continue
 
-                if re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_next) or re.match(r'^(WEEK \d+|RUNNING BACKS:|WIDE RECEIVERS:|TIGHT ENDS:|QUARTERBACKS:|Drop List)', clean_next, re.IGNORECASE):
+                is_next_player = bool(re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_next))
+                # Check for DST team names (if we're in DST section)
+                if not is_next_player and in_dst_section:
+                    is_not_section = not is_positional_section_header(i, clean_next) and not bool(re.match(r'^WEEK \d+', clean_next, re.IGNORECASE)) and 'DROP LIST' not in upper_clean_next
+                    is_not_note = not clean_next.upper().startswith('NOTE:')
+                    is_not_bullet = not (next_nesting >= 1) and not bool(re.match(r'^[a-zA-Z]+[\.\)]\s+', clean_next))
+                    if is_not_section and is_not_note and is_not_bullet and clean_next and '-' not in clean_next and '%' not in clean_next and len(clean_next.split()) <= 5:
+                        is_next_player = True
+                is_next_week = bool(re.match(r'^WEEK \d+', clean_next, re.IGNORECASE))
+                is_next_drop_list = 'DROP LIST' in upper_clean_next
+                is_next_pos_section = is_positional_section_header(i, clean_next)
+                if is_next_player or is_next_week or is_next_drop_list or is_next_pos_section:
                     break
 
                 if upper_clean_next.startswith('NOTE:'):
@@ -296,7 +349,7 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
             i += 1
             continue
 
-        if is_section_header:
+        if is_week_header or is_pos_section or is_drop_list:
             add_row([_make_segment(clean_norm, bold=True)])
             i += 1
             continue

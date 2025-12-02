@@ -2,7 +2,7 @@
   "metadata": {
     "tab_name": "W14 waivers",
     "source_doc_id": "1LYtrbYPHGIAZaw8RcnwJuEUjBCEt2sMWTwSnMI323eY",
-    "generated_at": "2025-12-02T19:00:15.005987+00:00"
+    "generated_at": "2025-12-02T20:38:44.351452+00:00"
   },
   "rows": [
     {
@@ -640,18 +640,34 @@
               "bold": false,
               "italic": false,
               "newline": true
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cells": [
+        {
+          "segments": [
             {
               "text": "DST",
-              "bold": false,
+              "bold": true,
               "italic": false,
-              "newline": true
-            },
+              "newline": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cells": [
+        {
+          "segments": [
             {
               "text": "Bucs",
-              "bold": false,
+              "bold": true,
               "italic": false,
-              "newline": true
+              "newline": false
             },
             {
               "text": "• Gets NO, ATL, CAR, MIA  (5th, 15th, 8th, 9th in points allowed to DST)",
@@ -664,12 +680,20 @@
               "bold": false,
               "italic": false,
               "newline": true
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cells": [
+        {
+          "segments": [
             {
               "text": "Saints",
-              "bold": false,
+              "bold": true,
               "italic": false,
-              "newline": true
+              "newline": false
             },
             {
               "text": "• 14th highest scoring D",
@@ -682,12 +706,20 @@
               "bold": false,
               "italic": false,
               "newline": true
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cells": [
+        {
+          "segments": [
             {
               "text": "Chiefs",
-              "bold": false,
+              "bold": true,
               "italic": false,
-              "newline": true
+              "newline": false
             },
             {
               "text": "• HOU, LAC, TEN, DEN (19th, 11th, 2nd, 27th allowed to DST)",
