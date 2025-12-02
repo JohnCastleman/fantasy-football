@@ -188,6 +188,101 @@ def ensure_sheet_has_rows(
     ).execute()
 
 
+def find_last_row_in_range(
+    sheets_service,
+    sheet_id: str,
+    tab_name: str,
+    start_row: int,
+    start_col: int,
+    num_cols: int,
+    max_rows_to_check: int = 200
+) -> int:
+    """Find the last row with data in a specific column range.
+    Returns the last row index (1-indexed) that has data, or start_row if none found.
+    """
+    # Read a range starting from start_row down to max_rows_to_check
+    # start_row is 1-indexed, convert to A1 notation
+    start_col_letter = chr(65 + start_col) if start_col < 26 else f'A{chr(65 + (start_col-26))}'
+    end_col = start_col + num_cols - 1
+    end_col_letter = chr(65 + end_col) if end_col < 26 else f'A{chr(65 + (end_col-26))}'
+    
+    range_name = f"'{tab_name}'!{start_col_letter}{start_row}:{end_col_letter}{start_row + max_rows_to_check - 1}"
+    
+    try:
+        result = sheets_service.spreadsheets().values().get(
+            spreadsheetId=sheet_id,
+            range=range_name,
+            majorDimension='ROWS'
+        ).execute()
+    except HttpError as err:
+        print(f'Warning: Could not read range to find last row: {err}')
+        return start_row - 1
+    
+    values = result.get('values', [])
+    if not values:
+        return start_row - 1
+    
+    # Find the last row that has any non-empty cell in the range
+    # The values array already contains only the columns we requested, so check all cells in each row
+    last_row_offset = -1  # Will be 0-indexed offset from start_row
+    for i, row in enumerate(values):
+        # Check if any cell in this row has content (row already contains only the requested columns)
+        if any(cell and str(cell).strip() for cell in row):
+            last_row_offset = i
+    
+    # If no data found, return start_row - 1 (so clearing won't happen)
+    if last_row_offset == -1:
+        return start_row - 1
+    
+    # Convert back to 1-indexed absolute row number
+    return start_row + last_row_offset
+
+
+def clear_cells_in_range(
+    sheets_service,
+    sheet_id: str,
+    tab_id: int,
+    start_row: int,
+    end_row: int,
+    start_col: int,
+    num_cols: int
+) -> None:
+    """Clear cells in a specific range (set them to empty).
+    start_row and end_row are 1-indexed.
+    """
+    if end_row <= start_row:
+        return  # Nothing to clear
+    
+    # Convert to 0-indexed for API
+    start_row_index = start_row - 1
+    end_row_index = end_row
+    
+    # Create empty cells for the range
+    num_rows_to_clear = end_row_index - start_row_index
+    empty_rows = []
+    for _ in range(num_rows_to_clear):
+        empty_rows.append({'values': [{}] * num_cols})
+    
+    requests = [{
+        'updateCells': {
+            'range': {
+                'sheetId': tab_id,
+                'startRowIndex': start_row_index,
+                'endRowIndex': end_row_index,
+                'startColumnIndex': start_col,
+                'endColumnIndex': start_col + num_cols
+            },
+            'rows': empty_rows,
+            'fields': 'userEnteredValue'
+        }
+    }]
+    
+    sheets_service.spreadsheets().batchUpdate(
+        spreadsheetId=sheet_id,
+        body={'requests': requests}
+    ).execute()
+
+
 def write_rows_to_sheet(
     sheets_service,
     sheet_id: str,
@@ -340,6 +435,16 @@ def main():
     col_letter = chr(65 + start_col) if start_col < 26 else f'A{chr(65 + (start_col-26))}'
     print(f'Writing to: {col_letter}{start_row} ({num_cols} columns)')
     
+    # Find the current last row in this range before writing (to clean up old data if new data is shorter)
+    old_last_row = find_last_row_in_range(
+        sheets_service,
+        target_sheet_id,
+        tab_name,
+        start_row,
+        start_col,
+        num_cols
+    )
+    
     # Ensure sheet has enough rows (API doesn't auto-expand like UI does)
     required_rows = start_row + len(rows) - 1  # start_row is 1-indexed
     ensure_sheet_has_rows(sheets_service, target_sheet_id, tab_id, required_rows)
@@ -356,6 +461,23 @@ def main():
         headers
     )
     print(f'Wrote {len(rows)} rows successfully')
+    
+    # Calculate the new last row (1-indexed)
+    new_last_row = start_row + len(rows) - 1
+    
+    # Clear cells below the new data if the new range is shorter than the old range
+    # old_last_row will be start_row - 1 if no old data was found
+    if old_last_row >= start_row and new_last_row < old_last_row:
+        clear_cells_in_range(
+            sheets_service,
+            target_sheet_id,
+            tab_id,
+            new_last_row + 1,  # Start clearing from row after new data
+            old_last_row + 1,   # Clear up to and including old last row (end_row is exclusive in API)
+            start_col,
+            num_cols
+        )
+        print(f'Cleared {old_last_row - new_last_row} rows of old data below pasted range')
     
     # Update week number if --week is provided and H1 contains "WEEK:"
     if args.week is not None:
