@@ -248,14 +248,36 @@ def clear_cells_in_range(
     num_cols: int
 ) -> None:
     """Clear cells in a specific range (set them to empty).
-    start_row and end_row are 1-indexed.
+    start_row and end_row are 1-indexed, inclusive.
     """
     if end_row <= start_row:
         return  # Nothing to clear
     
+    # Get current sheet row count to ensure we don't try to clear beyond it
+    try:
+        spreadsheet = sheets_service.spreadsheets().get(
+            spreadsheetId=sheet_id,
+            fields='sheets(properties(sheetId,gridProperties(rowCount)))'
+        ).execute()
+    except HttpError as err:
+        print(f'Warning: Could not read sheet properties for clearing: {err}')
+        return
+    
+    current_row_count = 1000  # Default
+    for sheet in spreadsheet.get('sheets', []):
+        props = sheet.get('properties', {})
+        if props.get('sheetId') == tab_id:
+            grid_props = props.get('gridProperties', {})
+            current_row_count = grid_props.get('rowCount', 1000)
+            break
+    
     # Convert to 0-indexed for API
-    start_row_index = start_row - 1
-    end_row_index = end_row
+    # start_row and end_row are 1-indexed (inclusive), convert to 0-indexed (start inclusive, end exclusive)
+    start_row_index = start_row - 1  # 1-indexed row 40 → 0-indexed row 39
+    end_row_index = min(end_row, current_row_count)  # Don't clear beyond sheet size
+    
+    if end_row_index <= start_row_index:
+        return  # Nothing to clear after adjusting for sheet size
     
     # Create empty cells for the range
     num_rows_to_clear = end_row_index - start_row_index
