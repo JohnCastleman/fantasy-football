@@ -2,7 +2,7 @@
   "metadata": {
     "tab_name": "W16 waivers",
     "source_doc_id": "1HL7IuYC2weyV9tW13tbqz1U02yQ6nr3l_K8Cex5srKo",
-    "generated_at": "2025-12-17T19:21:22.730257+00:00"
+    "generated_at": "2025-12-17T19:36:03.822871+00:00"
   },
   "rows": [
     {
@@ -65,37 +65,21 @@
           "segments": [
             {
               "text": "Blake Corum",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• RB9 at 17.6 PPG over his last 3 games (tough matchup vs SEA this week)",
               "bold": false,
               "italic": false,
-              "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+              "newline": true
+            },
             {
               "text": "• Kyren’s handcuff",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -107,23 +91,15 @@
           "segments": [
             {
               "text": "Michael Carter",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Bam Knight hurt, Trey Benson out. Carter is next man up as an RB3 play this week",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -135,23 +111,15 @@
           "segments": [
             {
               "text": "Jawhar Jordan",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• If Woody Marks & Nick Chubb can’t go, Jordan is an RB3.",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -163,23 +131,15 @@
           "segments": [
             {
               "text": "Brian Robinson",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Priority stash range.",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -191,23 +151,15 @@
           "segments": [
             {
               "text": "Tyler Allgeier",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Priority stash range.",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -219,23 +171,15 @@
           "segments": [
             {
               "text": "Audric Estime",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Devin Neal hurt",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -247,23 +191,15 @@
           "segments": [
             {
               "text": "Evan Hull",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Devin Neal hurt",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -309,37 +245,21 @@
           "segments": [
             {
               "text": "Luther Burden",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Odunze hurt, Burden looks great but also hurt",
               "bold": false,
               "italic": false,
-              "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+              "newline": true
+            },
             {
               "text": "• Luther Burden was hurt in this game sadly. 7-6-84 in this game on just 16 routes. 5.25 YPRR, highs in targets/yards. Just need more routes, injury makes that tricky.",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -351,23 +271,15 @@
           "segments": [
             {
               "text": "Olamide Zaccheaus",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Next man up if Odunze and Burden miss",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -379,23 +291,15 @@
           "segments": [
             {
               "text": "Adonai Mitchell",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• WR19 over last 3 weeks at 15 PPG. In Saints dome this week",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -407,23 +311,15 @@
           "segments": [
             {
               "text": "Jalen Coker",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Back to back TDs, gets TB",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -435,23 +331,15 @@
           "segments": [
             {
               "text": "Darius Slayton",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Coming off a 10 target game, hoping for spike week",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -477,51 +365,27 @@
           "segments": [
             {
               "text": "Colby Parkinson",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Parkinson led the Rams in routes this week",
               "bold": false,
               "italic": false,
-              "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+              "newline": true
+            },
             {
               "text": "• The TE4 with 13.5 PPG since week 10",
               "bold": false,
               "italic": false,
-              "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+              "newline": true
+            },
             {
               "text": "• 70%+ routes 2 weeks in a row",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -533,23 +397,15 @@
           "segments": [
             {
               "text": "Darren Waller",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• TE12 in PPG on the year, 25.6 PPR points on Monday, gets a CIN team allowing the most points to TEs this week",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -561,23 +417,15 @@
           "segments": [
             {
               "text": "Brenton Strange",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• On a cold streak but a fine start this week if desperate",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -603,23 +451,15 @@
           "segments": [
             {
               "text": "Tua Tagovailoa",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Dolphins project for the 3rd most points this week vs a CIN D allowing 2nd most to QBs",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -631,23 +471,15 @@
           "segments": [
             {
               "text": "Tyler Shough",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• At home in a dome, Jets allow 10th most points to QBs",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -659,23 +491,15 @@
           "segments": [
             {
               "text": "Aaron Rodgers",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• In a dome, tied for highest o/u 50.5 vs a Lions D allowing the 5th most fantasy points to QBs",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -687,23 +511,15 @@
           "segments": [
             {
               "text": "JJ McCarthy",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Giants allowing 4th most points to QBs, JJM on a hot 2 game stretch",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -715,23 +531,15 @@
           "segments": [
             {
               "text": "Marcus Mariota",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• Eagles this week so tough but grab him to play vs DAL in week 17",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }
@@ -743,23 +551,15 @@
           "segments": [
             {
               "text": "Kirk Cousins",
-              "bold": false,
+              "bold": true,
               "italic": false,
               "newline": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
+            },
             {
               "text": "• In a dome, coming off a big game. Falcons project for 8th most points.",
               "bold": false,
               "italic": false,
-              "newline": false
+              "newline": true
             }
           ]
         }

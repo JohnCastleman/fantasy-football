@@ -41,6 +41,7 @@ def extract_tab_name_from_doc(first_line: str) -> str:
 
 
 def transform_player_name(line: str) -> str:
+    # Try to match with FAAB percentage: "Player Name - 10%" or "Player Name - 10% to 50%"
     pattern = r'^(.+?)\s*-\s*(\d+)%\s*(?:to\s*(\d+)%)?$'
     match = re.match(pattern, line.strip())
 
@@ -53,7 +54,8 @@ def transform_player_name(line: str) -> str:
             return f'{percent1_num}-{percent2_num}% - {player_name}'
         return f'{percent1_num}% - {player_name}'
 
-    return line
+    # No FAAB percentage found - return the line as-is (player name only)
+    return line.strip()
 
 
 def extract_text_from_doc_elements(elements: Sequence[Dict[str, Any]]) -> List[Tuple[str, int]]:
@@ -247,9 +249,9 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
 
         is_player = False
         if in_player_section:
-            # Regular players have FAAB percentages: "Player Name - 10% to 50%"
+            # Regular players may have FAAB percentages: "Player Name - 10% to 50%"
             is_player = bool(re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_norm))
-            # DST entries are just team names without percentages
+            # If not matched and in DST section, check for team names without percentages
             if not is_player and in_dst_section:
                 # Check if this looks like a team name (not a section header, not a note, not a bullet)
                 is_not_section = not is_pos_section and not is_week_header and not is_drop_list
@@ -261,6 +263,23 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
                     # Don't match if it has a dash (would be a regular player) or looks like structured content
                     if '-' not in clean_norm and '%' not in clean_norm and len(clean_norm.split()) <= 5:
                         is_player = True
+            # If not matched and in a positional section (not DST), check for player names without FAAB percentages
+            elif not is_player and not in_dst_section:
+                # Check if this looks like a player name (not a section header, not a note, not a bullet)
+                is_not_section = not is_pos_section and not is_week_header and not is_drop_list
+                is_not_note = not clean_norm.upper().startswith('NOTE:')
+                is_not_bullet = not (nesting >= 1) and not bool(re.match(r'^[a-zA-Z]+[\.\)]\s+', clean_norm))
+                is_not_empty = bool(clean_norm)
+                # Heuristic: if it's a reasonable-length line that's not structured content, it might be a player name
+                # Allow dashes in case it's "Player Name - 10%" format, but also allow plain names
+                if is_not_section and is_not_note and is_not_bullet and is_not_empty:
+                    # Don't match if it looks like structured content (has percentages without proper format, or too long)
+                    # Match if it's a simple name (with or without a dash-percentage, but we already checked for that above)
+                    # So now we're looking for just plain names: no percentages, reasonable length
+                    if '%' not in clean_norm and len(clean_norm.split()) <= 5:
+                        # But exclude lines that look like sentences or notes (contain certain punctuation)
+                        if not (',' in clean_norm and len(clean_norm) > 30):
+                            is_player = True
 
         if is_player:
             # DST entries don't have FAAB percentages, so don't transform them
@@ -290,6 +309,16 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
                     is_not_bullet = not (next_nesting >= 1) and not bool(re.match(r'^[a-zA-Z]+[\.\)]\s+', clean_next))
                     if is_not_section and is_not_note and is_not_bullet and clean_next and '-' not in clean_next and '%' not in clean_next and len(clean_next.split()) <= 5:
                         is_next_player = True
+                # Check for player names without FAAB percentages (if we're in a positional section but not DST)
+                elif not is_next_player and not in_dst_section and in_player_section:
+                    is_not_section = not is_positional_section_header(i, clean_next) and not bool(re.match(r'^WEEK \d+', clean_next, re.IGNORECASE)) and 'DROP LIST' not in upper_clean_next
+                    is_not_note = not clean_next.upper().startswith('NOTE:')
+                    is_not_bullet = not (next_nesting >= 1) and not bool(re.match(r'^[a-zA-Z]+[\.\)]\s+', clean_next))
+                    if is_not_section and is_not_note and is_not_bullet and clean_next:
+                        # Match plain player names: no percentages, reasonable length, not sentence-like
+                        if '%' not in clean_next and len(clean_next.split()) <= 5:
+                            if not (',' in clean_next and len(clean_next) > 30):
+                                is_next_player = True
                 is_next_week = bool(re.match(r'^WEEK \d+', clean_next, re.IGNORECASE))
                 is_next_drop_list = 'DROP LIST' in upper_clean_next
                 is_next_pos_section = is_positional_section_header(i, clean_next)
