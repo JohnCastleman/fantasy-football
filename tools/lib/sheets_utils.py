@@ -183,8 +183,8 @@ def clear_cells_in_range(
     start_row and end_row are 1-indexed, inclusive.
     start_col is 1-indexed (column 1 = A, column 7 = G, etc.)
     """
-    if end_row <= start_row:
-        return  # Nothing to clear
+    if end_row < start_row:
+        return  # Nothing to clear (allow end_row == start_row to clear that single row)
     
     # Get current sheet row count to ensure we don't try to clear beyond it
     try:

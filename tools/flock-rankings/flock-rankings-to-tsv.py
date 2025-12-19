@@ -187,20 +187,21 @@ def generate_html(tsv_content: str) -> str:
 def main():
     parser = argparse.ArgumentParser(description='Convert Flock Fantasy rankings to TSV (invokes remove-tiers)')
     parser.add_argument('--input', '-i', type=Path, help='Input file (raw rankings, before remove-tiers; default: read from stdin)')
-    parser.add_argument('--output', '-o', type=Path, help='Output file (TSV or HTML)')
+    parser.add_argument('--output', '-o', type=Path, help='Output TSV file (default: write TSV to stdout)')
     parser.add_argument('--type', type=str.upper, choices=['ROS', 'WEEKLY'], required=True, help='Ranking type (case-insensitive)')
     parser.add_argument('--position', type=str.upper, choices=['QB', 'RB', 'WR', 'TE'], help='Position (required for WEEKLY, case-insensitive)')
-    parser.add_argument('--week', type=int, help='Week number (optional, used for default filename generation when --output not provided and writing to file)')
-    parser.add_argument('--html', action='store_true', help='Generate HTML instead of TSV')
+    parser.add_argument('--week', type=int, help='Week number (required for WEEKLY, optional for ROS; used for HTML filename inference)')
+    parser.add_argument('--html', action='store_true', help='Also write HTML file to docs/flock-rankings/ with inferred filename (in addition to TSV output)')
     args = parser.parse_args()
     
-    if args.type == 'WEEKLY' and not args.position:
-        parser.error("--position is required for WEEKLY type")
+    if args.type == 'WEEKLY':
+        if not args.position:
+            parser.error("--position is required for WEEKLY type")
+        if not args.week:
+            parser.error("--week is required for WEEKLY type")
     
-    # Warn if --week or --position provided for ROS (not needed, but harmless - only read during ROS processing to keep things flowing)
+    # Warn if --position provided for ROS (not needed, but harmless)
     if args.type == 'ROS':
-        if args.week:
-            print(f"Warning: --week is not needed for ROS rankings (ignoring week {args.week})", file=sys.stderr)
         if args.position:
             print(f"Warning: --position is not needed for ROS rankings (ignoring position {args.position})", file=sys.stderr)
     
@@ -225,21 +226,41 @@ def main():
     # Note: position is only used/read during WEEKLY processing (ignored for ROS to keep things flowing)
     tsv_content = parse_rankings_to_tsv(cleaned_content, columns_needed, args.type, args.position if args.type == 'WEEKLY' else None)
     
-    # Generate HTML if requested
-    if args.html:
-        output_content = generate_html(tsv_content)
-    else:
-        output_content = tsv_content
+    # Determine default output directory (same as waiver tool: docs/flock-rankings/)
+    repo_root = Path(__file__).resolve().parent.parent.parent
+    default_output_dir = repo_root / 'docs' / 'flock-rankings'
     
-    # Write output (to file if --output provided, otherwise to stdout for piping)
+    # Write TSV (to file if --output provided, otherwise to stdout for piping)
     if args.output:
-        args.output.write_text(output_content, encoding='utf-8')
-        print(f"Wrote {'HTML' if args.html else 'TSV'} to {args.output}", file=sys.stderr)
+        args.output.write_text(tsv_content, encoding='utf-8')
+        print(f"Wrote TSV to {args.output}", file=sys.stderr)
     else:
-        # Write to stdout for piping
-        sys.stdout.write(output_content)
-        if not output_content.endswith('\n'):
+        # Always write TSV to stdout for piping
+        sys.stdout.write(tsv_content)
+        if not tsv_content.endswith('\n'):
             sys.stdout.write('\n')
+    
+    # If --html is set, also write HTML to inferred filename
+    if args.html:
+        if args.output:
+            # Level 1: Infer HTML filename from --output path (same path, .html extension)
+            html_path = args.output.with_suffix('.html')
+            html_path.parent.mkdir(parents=True, exist_ok=True)
+        else:
+            # Level 2: Use default output directory and infer filename from pattern
+            default_output_dir.mkdir(parents=True, exist_ok=True)
+            if args.type == 'ROS':
+                if args.week:
+                    html_filename = f'flock-ROS(W{args.week}).html'
+                else:
+                    html_filename = 'flock-ROS.html'
+            else:  # WEEKLY
+                html_filename = f'flock-W{args.week}-{args.position}.html'
+            html_path = default_output_dir / html_filename
+        
+        html_content = generate_html(tsv_content)
+        html_path.write_text(html_content, encoding='utf-8')
+        print(f'Wrote HTML to {html_path.resolve()}', file=sys.stderr)
 
 
 if __name__ == '__main__':
