@@ -1,4 +1,5 @@
-# This directory is reserved for shared tool utilities
-# Currently empty - google-auth-utils is now provided by the editable package
+"""ABOUTME: Shared library for tools.
+ABOUTME: Common utilities shared across multiple tool directories."""
+from . import sheets_utils
 
-
+__all__ = ['sheets_utils']
