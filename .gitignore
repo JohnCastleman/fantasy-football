@@ -40,6 +40,7 @@ __pycache__/
 tools/waiver-report/waiver-report-sheets.json
 tools/ros-report/ros-report-sheets.json
 tools/kdst-rankings/kdst-rankings-sheets.json
+tools/flock-rankings/flock-rankings-sheets.json
 
 # Python virtual environments
 .venv
