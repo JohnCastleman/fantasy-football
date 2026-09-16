@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { ScoringTypeEnum, RankingTypeEnum, PositionEnum } from '../common/index.js';
 
 const Settings = {
-  season: 2025,
+  season: 2026,
   scoringType: ScoringTypeEnum.STD,
   fantasyprosApiKey: process.env.FANTASYPROS_API_KEY || null, // API Key from environment variable (required)
   
