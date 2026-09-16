@@ -22,7 +22,7 @@ intended to be refreshed once at season start, and again as needed due to stalen
 2. **Local intermediaries are snapshots, not cache.** Every run is
    `fetch → local file (overwrite same path) → Sheets write` in one go. Never
    write-then-wait, never re-write the same file twice without regenerating.
-   - `docs/kdst-rankings/kdst-ROS(Wn)-K.tsv`, `kdst-ROS(Wn)-DST.tsv`, weekly equivalents
+   - `docs/kdst-rankings/kdst-ROS(Wn)-K.tsv`, `kdst-ROS(Wn)-DST.tsv`, `kdst-Wn-K.tsv`, `kdst-Wn-DST.tsv`
    - `docs/flock-rankings/flock-ROS(Wn).tsv`, `flock-Wn-QB|RB|WR|TE.tsv` (+ `.html` previews)
    - `docs/waiver-reports/Wn waivers.json` (+ `.html`)
 3. **Ron is the anchor; FP + Flock layer on top.** Ron publishes 1×/week per slot
