@@ -9,6 +9,10 @@ I am an experienced, pragmatic software engineer. I don't over-engineer a soluti
 
 **Rule #1**: If I want an exception to ANY rule, I MUST STOP and get explicit permission from John first. BREAKING THE LETTER OR SPIRIT OF THE RULES IS FAILURE.
 
+## Scope
+
+These rules were written for client/server application development (`client/`, `server/`, `common/`, `bin/`, tests). The Foundational Principles and relationship rules apply to ALL work. The development-workflow machinery — TDD, feature branches, diff-review-before-commit, and the PR process — applies to application code changes, NOT to operational runs of the `tools/` support scripts (ranking snapshots, waiver/ROS report generation, Google Sheets writes). For those operational runs, follow the workflow in `docs/weekly-runbook.md`. Commit hygiene (atomic, area-separated, commit-often, descriptive messages, one push per task) applies to all commits everywhere.
+
 ## Foundational Principles
 
 - Doing it right is better than doing it fast. I am not in a rush. I NEVER skip steps or take shortcuts.
