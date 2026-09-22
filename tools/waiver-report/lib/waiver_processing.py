@@ -3,7 +3,7 @@ import os
 import re
 import html
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from googleapiclient.errors import HttpError
 
@@ -40,6 +40,40 @@ def extract_tab_name_from_doc(first_line: str) -> str:
     return 'weekly waivers'
 
 
+def _match_no_dash_faab(line: str) -> Optional[Tuple[str, str, Optional[str]]]:
+    """Match the missing-dash FAAB variant: "Bryce Young 5% to 15%" (no ' - ' separator).
+
+    Returns (player_name, percent1, percent2_or_None), or None if no match.
+    Guards (colon/bullet/spaced-dash rejection, word-count caps, 1-100 range)
+    keep this from misclassifying sentences, notes, or headers containing '%'.
+    """
+    stripped = line.strip()
+    if not stripped:
+        return None
+    if ':' in stripped or '•' in stripped:
+        return None
+    if re.search(r'\s-\s', stripped):
+        return None
+    if len(stripped.split()) > 7:
+        return None
+    match = re.match(r"^([A-Za-z][A-Za-z.'\- ]+?)\s+(\d+)%\s*(?:to\s*(\d+)%)?\s*$", stripped)
+    if not match:
+        return None
+    player_name = match.group(1).strip()
+    if not player_name or len(player_name.split()) > 4:
+        return None
+    if any(ch.isdigit() for ch in player_name):
+        return None
+    try:
+        p1 = int(match.group(2))
+        p2 = int(match.group(3)) if match.group(3) else None
+    except ValueError:
+        return None
+    if not 1 <= p1 <= 100 or (p2 is not None and not 1 <= p2 <= 100):
+        return None
+    return player_name, str(p1), (str(p2) if p2 is not None else None)
+
+
 def transform_player_name(line: str) -> str:
     # Try to match with FAAB percentage: "Player Name - 10%" or "Player Name - 10% to 50%"
     pattern = r'^(.+?)\s*-\s*(\d+)%\s*(?:to\s*(\d+)%)?$'
@@ -50,6 +84,14 @@ def transform_player_name(line: str) -> str:
         percent1_num = match.group(2)
         percent2_num = match.group(3)
 
+        if percent2_num:
+            return f'{percent1_num}-{percent2_num}% - {player_name}'
+        return f'{percent1_num}% - {player_name}'
+
+    # Missing-dash variant: "Bryce Young 5% to 15%" -> "5-15% - Bryce Young"
+    no_dash = _match_no_dash_faab(line.strip())
+    if no_dash:
+        player_name, percent1_num, percent2_num = no_dash
         if percent2_num:
             return f'{percent1_num}-{percent2_num}% - {player_name}'
         return f'{percent1_num}% - {player_name}'
@@ -250,7 +292,7 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
         is_player = False
         if in_player_section:
             # Regular players may have FAAB percentages: "Player Name - 10% to 50%"
-            is_player = bool(re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_norm))
+            is_player = bool(re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_norm)) or _match_no_dash_faab(clean_norm) is not None
             # If not matched and in DST section, check for team names without percentages
             if not is_player and in_dst_section:
                 # Check if this looks like a team name (not a section header, not a note, not a bullet)
@@ -301,7 +343,7 @@ def process_document(lines: List[str], nesting_levels: List[int]) -> List[Dict[s
                     i += 1
                     continue
 
-                is_next_player = bool(re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_next))
+                is_next_player = bool(re.match(r'^[^-]+\s*-\s*\d+%\s*(?:to\s*\d+%)?\s*$', clean_next)) or _match_no_dash_faab(clean_next) is not None
                 # Check for DST team names (if we're in DST section)
                 if not is_next_player and in_dst_section:
                     is_not_section = not is_positional_section_header(i, clean_next) and not bool(re.match(r'^WEEK \d+', clean_next, re.IGNORECASE)) and 'DROP LIST' not in upper_clean_next
