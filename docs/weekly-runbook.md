@@ -26,9 +26,12 @@ intended to be refreshed once at season start, and again as needed due to stalen
    - `docs/flock-rankings/flock-ROS(Wn).tsv`, `flock-Wn-QB|RB|WR|TE.tsv` (+ `.html` previews)
    - `docs/waiver-reports/Wn waivers.json` (+ `.html`)
 3. **Ron is the anchor; FP + Flock layer on top.** Ron publishes 1×/week per slot
-   (weekly-only optional mid-week updates). The FP/Flock runs in sync with Ron's
-   publishings are the canonical runs of these scripts; other optional runs can occur
-   before — as the live data becomes available — or after, for freshness.
+   (weekly-only optional mid-week updates). The Tue FP runs are the canonical runs
+   of those scripts (live FP data is already fresh Tue); Flock ROS may also run
+   canonical Tue (ahead of Ron's Wed ROS). Later same-week runs in sync with Ron's
+   Wed/Thu publishings — or after, for freshness — are "refresh" runs (same
+   overwrite + rewrite pattern). Flock Weekly stays synced with Ron's Thu Weekly
+   for now; its scripts still need TLC for the streamlined 2026 formats.
 4. **Backups are manual, in-sheet, no automation.** See Backup discipline below.
 
 ## Ron's publish schedule (CT)
@@ -64,30 +67,50 @@ python tools/waiver-report/waiver-report-json-to-google-sheets-tab.py "docs/waiv
 # → tab "W<n> waivers" (temp-tab-then-rename)
 ```
 
-Optional early full refresh (live sources are already fresh Tue; overwrite same files).
-These are optional pre-runs; the canonical runs follow Ron's Wed/Thu publishings below.
-See Appendix for the FP and Flock command patterns.
+Optional early Flock ROS run (usually ready Tue; overwrite same files).
+Flock Weekly stays synced with Ron's Thu Weekly for now. See Appendix for the
+Flock command patterns.
+
+FP canonical runs (live FP data is already fresh Tue; overwrite same files):
+
+```powershell
+node -e "import('./client/dump.js').then(m => m.dumpRosKRankings({outputFile: 'docs/kdst-rankings/kdst-ROS(W<n>)-K.tsv'}))"
+python tools/kdst-rankings/fantasypros-kdst-rankings-to-google-sheets.py --input "docs/kdst-rankings/kdst-ROS(W<n>)-K.tsv" --position K --type ROS
+# DST: same, position DST → Q3.
+
+node -e "import('./client/dump.js').then(m => m.dumpWeeklyKRankings({outputFile: 'docs/kdst-rankings/kdst-W<n>-K.tsv'}))"
+python tools/kdst-rankings/fantasypros-kdst-rankings-to-google-sheets.py --input "docs/kdst-rankings/kdst-W<n>-K.tsv" --position K --type WEEKLY --week <N>
+# DST: same, position DST → S3 (also stamps I1).
+```
+
+Targets: FP ROS K `L3` / DST `Q3` on `FantasyPros ROS K/DST rankings`;
+FP Weekly K `N3` / DST `S3` on `FantasyPros weekly K/DST rankings`.
+Possible later "refresh" runs alongside Ron's Wed/Thu publishings reuse the same
+files and ranges.
 
 ## Wed — ROS day (from 8:00am CT)
 
 1. **Manual:** rotate backup (delete `(Wn-1)` ROS backup, duplicate current ROS tab →
    `"<name>(Wn)"`), then copypasta Ron's ROS-as-of-Wn grid.
-2. **FP ROS overlay — canonical ROS run** (targets: `FantasyPros ROS K/DST rankings`
-   L3 = K, Q3 = DST; 4 cols `rank, name, team, bye`): FP ROS commands from Appendix.
+2. **FP ROS overlay — "refresh" run if needed** (targets: `FantasyPros ROS K/DST rankings`
+   L3 = K, Q3 = DST; 4 cols `rank, name, team, bye`): FP ROS commands from Appendix
+   (same files, same ranges as the Tue canonical run).
    Verify team/BYE lookups feeding the roster table.
 3. **Flock ROS overlay — canonical ROS run** (target: `Flock ROS raw data`, col L row 3):
    Flock ROS paste → TSV (`docs/flock-rankings/flock-ROS(W<n>).tsv`) → Sheets command
    from Appendix.
 
-ROS is rarely re-run after Wed.
+ROS is rarely re-run after Wed (FP ROS "refresh" only if needed; Flock ROS stays
+canonical Tue unless its scripts get fixed for a later slot).
 
 ## Thu — Weekly day (before TNF; Ron SLA 3:00pm CT)
 
 1. **Manual:** rotate backup for the Weekly tab (same one-generation rule), copypasta
    Ron's Weekly grid. Expect possible mid-week updates — backup is still created once.
-2. **FP Weekly overlay — canonical Weekly run** (targets: `FantasyPros weekly K/DST rankings`
+2. **FP Weekly overlay — "refresh" run if needed** (targets: `FantasyPros weekly K/DST rankings`
    N3 = K, S3 = DST; 4 cols `rank, name, team, opponent`; DST `--week` also stamps I1):
-   FP Weekly commands with `--week <N>` from Appendix.
+   FP Weekly commands with `--week <N>` from Appendix (same files, same ranges as
+   the Tue canonical run).
 3. **Flock Weekly overlay — canonical Weekly run** (target: `Flock weekly raw data`;
    QB:G3 RB:X3 WR:AN3 TE:AY3): paste each position →
    `docs/flock-rankings/flock-W<n>-<POS>.tsv` → Sheets per position (Appendix).
