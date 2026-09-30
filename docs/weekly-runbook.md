@@ -43,8 +43,10 @@ Source: Ron's content-schedule post (ET → CT):
 - **Thu by 3:00pm CT** — Weekly rankings (before TNF)
 - **Sun 10:00am CT** — Weekly rankings update (+ 10–11am CT Start/Sit stream, watch-only)
 
-Waivers process Wed ~midnight (Tue night late), so the Tue waiver write has a hard
-evening deadline.
+Waivers process Wed ~midnight (Tue night late). That is the league's waiver
+deadline and therefore Ron's publish deadline for at least the waiver report
+(sometimes ROS too) — not a deadline for our scripted runs, which may slip
+to Wed morning when convenient.
 
 ## Backup discipline (manual)
 
@@ -54,7 +56,7 @@ evening deadline.
   backups, delete the `(Wn-1)` backups. Backup is created once per week even though
   Weekly is usually written multiple times (ROS is rarely written more than once).
 
-## Tue — Waiver day (deadline: before Wed ~midnight waiver run)
+## Tue — Waiver day (no hard deadline for our runs; may slip to Wed morning)
 
 Ron waiver Doc (usually Tue midday+, SLA 4:30pm CT) — scripted (GDoc format is
 Sheets-hostile):
