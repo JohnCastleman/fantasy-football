@@ -2,7 +2,7 @@
   "metadata": {
     "tab_name": "W5 waivers",
     "source_doc_id": "14YtT6ZKbb6ZYkkavxOEW8q8dxCgXUuBsVsSHAJf5P5s",
-    "generated_at": "2026-10-06T18:20:54.994571+00:00"
+    "generated_at": "2026-10-08T16:39:25.908141+00:00"
   },
   "rows": [
     {
@@ -90,32 +90,6 @@
         {
           "segments": [
             {
-              "text": "15-40% - Will Shipley",
-              "bold": true,
-              "italic": false,
-              "newline": false
-            },
-            {
-              "text": "• The only RB the Eagles got left is Will Shipley. Receiving back is a good matchup for Jags (allow 5th most receiving fantasy points to RBs, 2nd lowest rushing fantasy points to RBs). Free space RB2/3 for however long Saquon is out",
-              "bold": false,
-              "italic": false,
-              "newline": true
-            },
-            {
-              "text": "• Hero RB builds hurting at RB2 could use the fill in",
-              "bold": false,
-              "italic": false,
-              "newline": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
-            {
               "text": "15-40% - Tyler Allgeier",
               "bold": true,
               "italic": false,
@@ -129,6 +103,32 @@
             },
             {
               "text": "• Allgeier is an RB2 if Love misses time. Even a fine spot start RB2 in Hero RB builds with Love healthy if the current split sticks",
+              "bold": false,
+              "italic": false,
+              "newline": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cells": [
+        {
+          "segments": [
+            {
+              "text": "15-40% - Will Shipley",
+              "bold": true,
+              "italic": false,
+              "newline": false
+            },
+            {
+              "text": "• The only RB the Eagles got left is Will Shipley. Receiving back is a good matchup for Jags (allow 5th most receiving fantasy points to RBs, 2nd lowest rushing fantasy points to RBs). Free space RB2/3 for however long Saquon is out",
+              "bold": false,
+              "italic": false,
+              "newline": true
+            },
+            {
+              "text": "• Hero RB builds hurting at RB2 could use the fill in",
               "bold": false,
               "italic": false,
               "newline": true
@@ -398,26 +398,6 @@
         {
           "segments": [
             {
-              "text": "10-25% - Tyreek Hill",
-              "bold": true,
-              "italic": false,
-              "newline": false
-            },
-            {
-              "text": "• Tyreek Hill on the Chiefs after losing Thornton and Rashee Rice is worth being aggressive on in WR hungry leagues",
-              "bold": false,
-              "italic": false,
-              "newline": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "cells": [
-        {
-          "segments": [
-            {
               "text": "10-25% - Keon Coleman",
               "bold": true,
               "italic": false,
@@ -445,6 +425,26 @@
             },
             {
               "text": "• Biggest beneficiary from the Achane ACL tear. Saw 10 targets, 2 rush attempts in this game. Will be a WR3/flex play moving forward",
+              "bold": false,
+              "italic": false,
+              "newline": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cells": [
+        {
+          "segments": [
+            {
+              "text": "5-15% - Tyreek Hill",
+              "bold": true,
+              "italic": false,
+              "newline": false
+            },
+            {
+              "text": "• Tyreek Hill on the Chiefs after losing Thornton and Rashee Rice is worth being aggressive on in WR hungry leagues",
               "bold": false,
               "italic": false,
               "newline": true
