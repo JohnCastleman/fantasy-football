@@ -26,7 +26,8 @@ intended to be refreshed once at season start, and again as needed due to stalen
    - `docs/flock-rankings/flock-ROS(Wn).tsv`, `flock-Wn-QB|RB|WR|TE.tsv` (+ `.html` previews)
    - `docs/waiver-reports/Wn waivers.json` (+ `.html`)
 3. **Ron is the anchor; FP + Flock layer on top.** Ron publishes 1×/week per slot
-   (weekly-only optional mid-week updates). The Tue FP runs are the canonical runs
+   plus an optional Wed "First Look" weekly (non-canonical preview).
+   The Tue FP runs are the canonical runs
    of those scripts (live FP data is already fresh Tue); Flock ROS may also run
    canonical Tue (ahead of Ron's Wed ROS). Later same-week runs in sync with Ron's
    Wed/Thu publishings — or after, for freshness — are "refresh" runs (same
@@ -40,7 +41,9 @@ Source: Ron's content-schedule post (ET → CT):
 
 - **Tue by 4:30pm CT** — Waiver/FAAB Report article
 - **Wed by 8:00am CT** — Rest-of-Season rankings (as of Week w)
-- **Thu by 3:00pm CT** — Weekly rankings (before TNF)
+- **Wed ~4:00pm CT** — Weekly rankings "First Look" (non-canonical: no tiers,
+  no flex table; whether this continues is TBD — first observed W6 2026)
+- **Thu by 3:00pm CT** — Weekly rankings, canonical (before TNF)
 - **Sun 10:00am CT** — Weekly rankings update (+ 10–11am CT Start/Sit stream, watch-only)
 
 Waivers process Wed ~midnight (Tue night late). That is the league's waiver
@@ -90,7 +93,14 @@ FP Weekly K `N3` / DST `S3` on `FantasyPros weekly K/DST rankings`.
 Possible later "refresh" runs alongside Ron's Wed/Thu publishings reuse the same
 files and ranges.
 
-## Wed — ROS day (from 8:00am CT)
+## Wed — ROS day (from 8:00am CT) + Weekly "First Look" (from ~4:00pm CT)
+
+> **W6 2026 playtest:** First Look pastes into the Weekly tab the same way as
+> the canonical Thu grid. It must NOT touch the ROS tab — ROS has no flex
+> table in First Look, and the ROS-grid name lookups feeding pos/tm on the
+> GeekSquadron tab would break. Limited value is still derivable on the
+> GeekSquadron pivot-ish table by ignoring overall-rk and pos-tier cols and
+> sorting on pos-rk alone.
 
 1. **Manual:** rotate backup (delete `(Wn-1)` ROS backup, duplicate current ROS tab →
    `"<name>(Wn)"`), then copypasta Ron's ROS-as-of-Wn grid.
@@ -105,7 +115,12 @@ files and ranges.
 ROS is rarely re-run after Wed (FP ROS "refresh" only if needed; Flock ROS stays
 canonical Tue unless its scripts get fixed for a later slot).
 
-## Thu — Weekly day (before TNF; Ron SLA 3:00pm CT)
+4. **Manual — Weekly "First Look" (non-canonical, no backup):** copypasta Ron's
+   First Look weekly grid into the live Weekly tab. Do NOT rotate the Weekly
+   backup for this — backup is created once, ahead of the Thu canonical paste
+   (Thu re-pastes over the First Look into the same tab).
+
+## Thu — Weekly day, canonical (before TNF; Ron SLA 3:00pm CT)
 
 1. **Manual:** rotate backup for the Weekly tab (same one-generation rule), copypasta
    Ron's Weekly grid. Expect possible mid-week updates — backup is still created once.
