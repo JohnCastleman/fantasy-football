@@ -56,9 +56,10 @@ to Wed morning when convenient.
 - **Waiver tabs:** no backup. Tab title is unique per week (`Wn waivers`), written 1×/week.
 - **Ron ROS + Weekly tabs:** before the first W(n+1) overwrite, duplicate the current tab
   to `"<base name>(Wn)"`. Keep one backup generation only: when creating `(Wn)`
-  backups, delete the `(Wn-1)` backups. Backup is created once per week: the Weekly
-  backup is taken Wed ahead of the First Look paste (the week's first Weekly
-  overwrite) — Thu/Sun re-paste over the live tab with no further backup
+  backups, delete the `(Wn-1)` backups. Backup is created once per week, ahead of
+  the week's FIRST Weekly overwrite — normally Wed before the First Look paste;
+  if Wed is skipped, take it Thu before the canonical paste instead. All later
+  re-pastes (Thu/Sun) overwrite the live tab with no further backup
   (ROS is rarely written more than once).
 
 ## Tue — Waiver day (no hard deadline for our runs; may slip to Wed morning)
@@ -120,13 +121,15 @@ canonical Tue unless its scripts get fixed for a later slot).
 4. **Manual — Weekly "First Look" (non-canonical):** rotate Weekly backup first
    (delete `(Wn-1)` Weekly backup, duplicate current Weekly tab → `"<name>(Wn)"`),
    then copypasta Ron's First Look weekly grid into the live Weekly tab.
-   Thu/Sun re-paste over this same live tab with no further backup.
+   Later re-pastes (Thu canonical, Sun update) overwrite this same live tab with
+   no further backup.
 
 ## Thu — Weekly day, canonical (before TNF; Ron SLA 3:00pm CT)
 
-1. **Manual:** copypasta Ron's canonical Weekly grid over the First Look in the live
-   Weekly tab (no backup — taken Wed). Expect possible mid-week updates — still no
-   further backup.
+1. **Manual:** copypasta Ron's canonical Weekly grid into the live Weekly tab
+   (over the First Look, if pasted). No backup if Wed already took it — but if Wed
+   was skipped, rotate the Weekly backup FIRST (same one-generation rule), since
+   this is the week's first overwrite.
 2. **FP Weekly overlay — "refresh" run if needed** (targets: `FantasyPros weekly K/DST rankings`
    N3 = K, S3 = DST; 4 cols `rank, name, team, opponent`; DST `--week` also stamps I1):
    FP Weekly commands with `--week <N>` from Appendix (same files, same ranges as
